@@ -18,22 +18,22 @@ unMat (Mat m) = m
 
 matrixChar :: Char -> (Natty x, Natty y) -> CharMatrix '(x, y)
 matrixChar c (x, y) = Mat (vcopies y (vcopies x c))
-                      -- alternatively we could do the much less efficient:
+                      -- alternatively we could do the presumably less efficient:
                       --   natter x (natter y (Mat (pure (pure c))))
 
-renderCharBox :: (Natty x, Natty y) -> CharBox '(x, y) -> CharMatrix '(x, y)
-renderCharBox _      (Stuff css)     = css
-renderCharBox (x, y) Clear           = matrixChar ' ' (x, y)
-renderCharBox (x, _) (Ver y1 t y2 b) =
-  Mat (unMat (renderCharBox (x, y1) t) `vappend` unMat (renderCharBox (x, y2) b))
-renderCharBox (_, y) (Hor x1 l x2 r) =
-  Mat (vcopies y vappend `vapp` unMat (renderCharBox (x1, y) l) `vapp` unMat (renderCharBox (x2, y) r))
+renderCharBox' :: (Natty x, Natty y) -> CharBox '(x, y) -> CharMatrix '(x, y)
+renderCharBox' _      (Stuff css)     = css
+renderCharBox' (x, y) Clear           = matrixChar ' ' (x, y)
+renderCharBox' (x, _) (Ver y1 t y2 b) =
+  Mat (unMat (renderCharBox' (x, y1) t) `vappend` unMat (renderCharBox' (x, y2) b))
+renderCharBox' (_, y) (Hor x1 l x2 r) =
+  Mat (vcopies y vappend `vapp` unMat (renderCharBox' (x1, y) l) `vapp` unMat (renderCharBox' (x2, y) r))
 
-renderCharBox' :: (NATTY x, NATTY y) => CharBox '(x, y) -> CharMatrix '(x, y)
-renderCharBox' = renderCharBox (natty, natty)
+renderCharBox :: (NATTY x, NATTY y) => CharBox '(x, y) -> CharMatrix '(x, y)
+renderCharBox = renderCharBox' (natty, natty)
 
 renderBox :: (NATTY x, NATTY y) => (forall xy.p xy -> CharMatrix xy) -> Box p '(x, y) -> CharMatrix '(x, y)
-renderBox f b = renderCharBox' (ebox (Stuff . f) b)
+renderBox f b = renderCharBox (ebox (Stuff . f) b)
 
 clear :: (Natty x, Natty y) -> Box p '(x, y)
 clear (x, y) = Clear
