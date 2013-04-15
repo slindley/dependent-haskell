@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeFamilies, TypeOperators,
     RankNTypes, PolyKinds, ScopedTypeVariables #-}
 
-module NumBox where
+module Box where
 
 import Data.Monoid
 import Control.Applicative
@@ -22,6 +22,11 @@ instance NATTY Z where
 
 instance NATTY n => NATTY (S n) where
   natty = Sy natty
+
+-- natty effectively converts an explicit Natty to an implicit NATTY
+natter :: Natty x -> (NATTY x => t) -> t
+natter Zy     t = t
+natter (Sy x) t = natter x t
 
 type family (m :: Nat) :+ (n :: Nat) :: Nat
 type instance Z :+ n = n
@@ -88,7 +93,6 @@ class Cut (p :: (Nat, Nat) -> *) where
   verCut :: Natty yt -> Natty yb -> p '(x, yt :+ yb) -> (p '(x, yt), p '(x, yb))
 
 instance Cut p => Cut (Box p) where
-
   horCut xl xr (Stuff p) = (Stuff pl, Stuff pr) where (pl, pr) = horCut xl xr p
   horCut xl xr Clear = (Clear, Clear)
   horCut xl xr (Hor x1 b1 x2 b2) = case cmpCuts xl xr x1 x2 of
@@ -124,15 +128,17 @@ data Vec :: Nat -> * -> * where
 instance Show x => Show (Vec n x) where
   show = show . foldMap (:[])
 
+vcopies :: forall n x.Natty n -> x -> Vec n x
+vcopies Zy x = V0
+vcopies (Sy n) x = x :> vcopies n x   
+
+vapp :: forall n s t.Vec n (s -> t) -> Vec n s -> Vec n t
+vapp V0 V0 = V0
+vapp (f :> fs) (s :> ss) = f s :> vapp fs ss
+
 instance NATTY n => Applicative (Vec n) where
   pure = vcopies natty where
-    vcopies :: forall n x.Natty n -> x -> Vec n x
-    vcopies Zy x = V0
-    vcopies (Sy n) x = x :> vcopies n x   
   (<*>) = vapp where
-    vapp :: forall n s t.Vec n (s -> t) -> Vec n s -> Vec n t
-    vapp V0 V0 = V0
-    vapp (f :> fs) (s :> ss) = f s :> vapp fs ss
 
 instance Traversable (Vec n) where
   traverse f V0 = pure V0
