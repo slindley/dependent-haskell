@@ -23,7 +23,7 @@ instance NATTY Z where
 instance NATTY n => NATTY (S n) where
   natty = Sy natty
 
--- natty effectively converts an explicit Natty to an implicit NATTY
+-- natter effectively converts an explicit Natty to an implicit NATTY
 natter :: Natty x -> (NATTY x => t) -> t
 natter Zy     t = t
 natter (Sy x) t = natter x t
@@ -125,6 +125,10 @@ data Vec :: Nat -> * -> * where
   V0 :: Vec Z x
   (:>) :: x -> Vec n x -> Vec (S n) x
 
+vlength :: Vec n x -> Natty n
+vlength V0        = Zy
+vlength (x :> xs) = Sy (vlength xs)
+
 instance Show x => Show (Vec n x) where
   show = show . foldMap (:[])
 
@@ -161,8 +165,105 @@ vchop (Sy m) n (x :> xs) = (x :> ys, zs) where (ys, zs) = vchop m n xs
 data Matrix :: * -> (Nat, Nat) -> * where
   Mat :: Vec y (Vec x a) -> Matrix a '(x, y)
 
+unMat :: Matrix a '(x,y) -> Vec y (Vec x a)
+unMat (Mat m) = m
+
 instance Cut (Matrix e) where
   horCut xl xr (Mat ess) = (Mat (fst <$> lrs), Mat (snd <$> lrs)) where
     lrs = vchop xl xr <$> ess
   verCut yt yb (Mat ess) = (Mat tess, Mat bess) where
     (tess, bess) = vchop yt yb ess
+
+{- smart constructors for clear boxes -}
+clear :: (Natty x, Natty y) -> Box p '(x, y)
+clear (x, y) = Clear
+
+emptyBox :: Box p '(Z, Z)
+emptyBox = Clear
+
+hGap :: Natty x -> Box p '(x, Z)
+hGap x = Clear
+
+vGap :: Natty y -> Box p '(Z, y)
+vGap y = Clear
+
+{- placing boxes -}
+type family Max (m :: Nat) (n :: Nat) :: Nat
+type instance Max Z     n     = n
+type instance Max (S m) Z     = S m
+type instance Max (S m) (S n) = S (Max m n)
+
+maxn :: Natty m -> Natty n -> Natty (Max m n)
+maxn Zy     n      = n
+maxn (Sy m) Zy     = Sy m
+maxn (Sy m) (Sy n) = Sy (maxn m n)
+
+--- lemmas about max ---
+maxAddR :: forall x y z t.Natty x -> Natty y -> ((Max x (x :+ S y) ~ (x :+ S y)) => t) -> t
+maxAddR Zy     y t = t
+maxAddR (Sy x) y t = maxAddR x y t
+
+maxAddL :: forall x y z t.Natty x -> Natty y -> ((Max (x :+ S y) x ~ (x :+ S y)) => t) -> t
+maxAddL x y t = maxAddR x y (maxSym x (x /+/ Sy y) t)
+
+maxRefl :: forall x y t.Natty x -> ((Max x x ~ x) => t) -> t
+maxRefl Zy     t = t
+maxRefl (Sy x) t = maxRefl x t
+
+maxSym :: forall x y t.Natty x -> Natty y -> ((Max x y ~ Max y x) => t) -> t
+maxSym Zy Zy         t = t
+maxSym Zy (Sy y)     t = t
+maxSym (Sy x) Zy     t = t
+maxSym (Sy x) (Sy y) t = maxSym x y t
+------------------------
+
+-- place boxes horizontally
+joinH' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
+            Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(x1 :+ x2, Max y1 y2)
+joinH' (x1, y1) (x2, y2) b1 b2 =
+  case cmp y1 y2 of
+    EQNat ->
+      maxRefl y1 (Hor x1 b1 x2 b2)
+    LTNat n' ->
+      maxAddR y1 n' (Hor x1 (Ver y1 b1 (Sy n') (clear (x1, Sy n'))) x2 b2)
+    GTNat n' ->
+      maxAddL y2 n' (Hor x1 b1 x2 (Ver y2 b2 (Sy n') (clear (x2, Sy n'))))
+joinH :: (NATTY x1, NATTY y1, NATTY x2, NATTY y2) =>
+           Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(x1 :+ x2, Max y1 y2)
+joinH = joinH' (natty, natty) (natty, natty)
+
+-- place boxes vertically
+joinV' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
+            Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(Max x1 x2, y1 :+ y2)
+joinV' (x1, y1) (x2, y2) b1 b2 =
+  case cmp x1 x2 of
+    EQNat    ->
+      maxRefl x1 (Ver y1 b1 y2 b2)
+    LTNat n' ->
+      maxAddR x1 n' (Ver y1 (Hor x1 b1 (Sy n') (clear (Sy n', y1))) y2 b2)
+    GTNat n' ->
+      maxAddL x2 n' (Ver y1 b1 y2 (Hor x2 b2 (Sy n') (clear (Sy n', y2))))
+joinV :: (NATTY x1, NATTY y1, NATTY x2, NATTY y2) =>
+           Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(Max x1 x2, y1 :+ y2)
+joinV = joinV' (natty, natty) (natty, natty)
+
+
+{- cropping -}
+type Size w h = (Natty w, Natty h)
+type Point x y = (Natty x, Natty y)
+
+type Region x y w h = (Point x y, Size w h)
+
+cropBox :: Cut p => (Point x y, Size w h) -> Size r s -> Box p '(x :+ (w :+ r), y :+ (h :+ s)) -> Box p '(w, h)
+cropBox ((x, y), (w, h)) (r, s) b =
+  let (_, bxwr)   = horCut x (w /+/ r) b in
+  let (bxw, _)    = horCut w r bxwr in
+  let (_, bxwyhs) = verCut y (h /+/ s) bxw in
+  let (bxwyh, _)  = verCut h s bxwyhs in
+    bxwyh
+    
+cropBox' :: forall x y w h r s p.(NATTY r, NATTY s, Cut p) =>
+              (Point x y, Size w h) -> Box p '(x :+ (w :+ r), y :+ (h :+ s)) -> Box p '(w, h)
+cropBox' region box = cropBox region ((natty, natty) :: Size r s) box
+
+
