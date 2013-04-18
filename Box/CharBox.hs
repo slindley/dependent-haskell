@@ -76,3 +76,9 @@ boxOfBString s = case splitBString s of
 boxOfBStrings :: Vec h (BString w) -> CharBox '(w, h)
 boxOfBStrings V0        = Clear
 boxOfBStrings (s :> ss) = Ver one (boxOfBString s) (vlength ss) (boxOfBStrings ss)
+
+weakenBString :: BString n -> BString (S n) 
+weakenBString (BNil g)     = BNil (Sy g)
+weakenBString (BCons c cs) = BCons c (weakenBString cs)
+
+
