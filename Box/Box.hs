@@ -37,9 +37,9 @@ Zy /+/ n = n
 Sy m /+/ n = Sy (m /+/ n)
 
 data Cmp :: Nat -> Nat -> * where
-  LTNat :: Natty y -> Cmp x (x :+ S y)
-  EQNat :: Cmp x x
-  GTNat :: Natty x -> Cmp (y :+ S x) y
+  LTNat :: ((Max x (x :+ S y) ~ (x :+ S y))) => Natty y -> Cmp x (x :+ S y)
+  EQNat :: (Max x x ~ x) => Cmp x x
+  GTNat :: ((Max (y :+ S x) y ~ (y :+ S x))) => Natty x -> Cmp (y :+ S x) y
 
 cmp :: Natty x -> Natty y -> Cmp x y
 cmp Zy Zy = EQNat
@@ -198,7 +198,11 @@ maxn Zy     n      = n
 maxn (Sy m) Zy     = Sy m
 maxn (Sy m) (Sy n) = Sy (maxn m n)
 
+{-
 --- lemmas about max ---
+
+-- we wire this knowledge into the Cmp datatype
+
 maxAddR :: forall x y z t.Natty x -> Natty y -> ((Max x (x :+ S y) ~ (x :+ S y)) => t) -> t
 maxAddR Zy     y t = t
 maxAddR (Sy x) y t = maxAddR x y t
@@ -216,6 +220,7 @@ maxSym Zy (Sy y)     t = t
 maxSym (Sy x) Zy     t = t
 maxSym (Sy x) (Sy y) t = maxSym x y t
 ------------------------
+-}
 
 -- place boxes horizontally
 joinH' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
@@ -223,11 +228,11 @@ joinH' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
 joinH' (x1, y1) (x2, y2) b1 b2 =
   case cmp y1 y2 of
     EQNat ->
-      maxRefl y1 (Hor x1 b1 x2 b2)
+       (Hor x1 b1 x2 b2)
     LTNat n' ->
-      maxAddR y1 n' (Hor x1 (Ver y1 b1 (Sy n') (clear (x1, Sy n'))) x2 b2)
+      (Hor x1 (Ver y1 b1 (Sy n') (clear (x1, Sy n'))) x2 b2)
     GTNat n' ->
-      maxAddL y2 n' (Hor x1 b1 x2 (Ver y2 b2 (Sy n') (clear (x2, Sy n'))))
+       (Hor x1 b1 x2 (Ver y2 b2 (Sy n') (clear (x2, Sy n'))))
 joinH :: (NATTY x1, NATTY y1, NATTY x2, NATTY y2) =>
            Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(x1 :+ x2, Max y1 y2)
 joinH = joinH' (natty, natty) (natty, natty)
@@ -238,15 +243,14 @@ joinV' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
 joinV' (x1, y1) (x2, y2) b1 b2 =
   case cmp x1 x2 of
     EQNat    ->
-      maxRefl x1 (Ver y1 b1 y2 b2)
+       (Ver y1 b1 y2 b2)
     LTNat n' ->
-      maxAddR x1 n' (Ver y1 (Hor x1 b1 (Sy n') (clear (Sy n', y1))) y2 b2)
+      (Ver y1 (Hor x1 b1 (Sy n') (clear (Sy n', y1))) y2 b2)
     GTNat n' ->
-      maxAddL x2 n' (Ver y1 b1 y2 (Hor x2 b2 (Sy n') (clear (Sy n', y2))))
+       (Ver y1 b1 y2 (Hor x2 b2 (Sy n') (clear (Sy n', y2))))
 joinV :: (NATTY x1, NATTY y1, NATTY x2, NATTY y2) =>
            Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(Max x1 x2, y1 :+ y2)
 joinV = joinV' (natty, natty) (natty, natty)
-
 
 {- cropping -}
 type Size w h = (Natty w, Natty h)
