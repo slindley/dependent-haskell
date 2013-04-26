@@ -2,7 +2,7 @@
     RankNTypes, PolyKinds, ScopedTypeVariables #-}
 
 module Box where
-
+ 
 import Data.Monoid
 import Control.Applicative
 import Data.Foldable
