@@ -32,6 +32,12 @@ renderCharBox = renderCharBox' (natty, natty)
 renderBox :: (NATTY x, NATTY y) => (forall xy.p xy -> CharMatrix xy) -> Box p '(x, y) -> CharMatrix '(x, y)
 renderBox f b = renderCharBox (ebox (Stuff . f) b)
 
+stringOfCharVec :: Vec n Char -> String
+stringOfCharVec = foldMap (\c -> [c])
+
+stringOfCharMatrix :: CharMatrix '(x, y) -> [String]
+stringOfCharMatrix (Mat vs) = foldMap (\v -> [stringOfCharVec v]) vs
+
 boxChar :: Char -> (Natty x, Natty y) -> CharBox '(x, y)
 boxChar c (x, y) = Stuff (matrixChar c (x, y))
 

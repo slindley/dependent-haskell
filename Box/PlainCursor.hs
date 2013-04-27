@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeFamilies, TypeOperators,
     RankNTypes, PolyKinds #-}
 
-module Cursor where
+module PlainCursor where
 
 import Box
 import CharBox
@@ -14,8 +14,8 @@ type TextCursor = Cursor String StringCursor
 
 deactivate :: Cursor a () -> (Int, [a])
 deactivate c = outward 0 c where
-  outward i ([], (), xs)       = (i, xs)
-  outward i (x : xz, (), xs)  = outward (i + 1) (xz, (), x : xs)
+  outward i ([], (), xs)     = (i, xs)
+  outward i (x : xz, (), xs) = outward (i + 1) (xz, (), x : xs)
 
 
 activate :: (Int, [a]) -> Cursor a ()
@@ -32,6 +32,18 @@ wrapNat :: Int -> WrappedNat
 wrapNat 0 = WNat Zy
 wrapNat n = case wrapNat (n-1) of
               WNat wn -> WNat (Sy wn)
+
+intOfNat :: Natty n -> Int
+intOfNat Zy = 0
+intOfNat (Sy n) = 1 + intOfNat n
+
+data WrappedPoint :: * where
+  WPoint :: Natty x -> Natty y -> WrappedPoint
+
+wrapPoint :: (Int, Int) -> WrappedPoint
+wrapPoint (x, y) =
+  case (wrapNat x, wrapNat y) of
+    (WNat x, WNat y) -> WPoint x y
 
 data WrappedBox :: * where
   WBox :: Size w h -> CharBox '(w, h) -> WrappedBox
@@ -56,11 +68,11 @@ boxOfStrings (s:ss) = case (boxOfString s, boxOfStrings ss) of
                                (x1 `maxn` x2, y1 /+/ y2)
                                (joinV' (x1, y1) (x2, y2) b1 b2)
 
-whatAndWhere :: TextCursor -> WrappedBox
-whatAndWhere (czz, cur, css) = boxOfStrings strs
+whatAndWhere :: TextCursor -> (WrappedBox, (Int, Int))
+whatAndWhere (czz, cur, css) = (boxOfStrings strs, (x, y))
   where
-    (_, cs) = deactivate cur
-    (_, strs) = deactivate (czz, (), cs : css)
+    (x, cs) = deactivate cur
+    (y, strs) = deactivate (czz, (), cs : css)
 
 data ArrowDir = UpArrow | DownArrow | LeftArrow | RightArrow
 data Modifier = Normal | Shift | Control
