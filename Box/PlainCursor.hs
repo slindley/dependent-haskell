@@ -11,7 +11,6 @@ type StringCursor = Cursor Char ()
 
 type TextCursor = Cursor String StringCursor
 
-
 deactivate :: Cursor a () -> (Int, [a])
 deactivate c = outward 0 c where
   outward i ([], (), xs)     = (i, xs)

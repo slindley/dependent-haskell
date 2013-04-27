@@ -17,7 +17,6 @@ import PlainCursor
 data Window = Window
 type WindowPtr = Ptr Window
 
-
 foreign import ccall
   initscr :: IO () 
 
@@ -95,16 +94,17 @@ keyReady = do
             _ -> return $ Just Quit
       _ -> return $ Nothing
 
-layout :: WrappedBox -> [String]
-layout (WBox s l) = stringOfCharMatrix (renderCharBox' s l)
+layout :: Size w h -> CharBox '(w, h) -> [String]
+layout s l = stringsOfCharMatrix (renderCharBox' s l)
 
 outer :: ScreenState -> TextCursor -> IO ()
 outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
   where
-  inner ps@(p, s) tc lc@(WBox (lw, lh) l, c@(cx, cy)) d = do
+  inner ps@(p, _) tc lc@(WBox (lw, lh) l, c@(cx, cy)) d = do
     refresh
     s' <- scrSize
     let ps'@((px, py), (sw, sh)) = onScreen c (p, s')
+    if px < 0 || py < 0 || fst s' < 0 || snd s' < 0 then error "oops" else return ()
     let d' = if ps /= ps' then LotsChanged else d
     case d' of
       LotsChanged -> do
@@ -112,17 +112,15 @@ outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
         resetCursor
         case (wrapPoint (px, py), wrapPoint (sw, sh)) of
           (WPoint x y, WPoint w h) -> do
-            let (w', h') = (minn w (lw /-/ x), minn h (lh /-/ y))
-                cropped = WBox (w', h') (croppy ((x, y), (w, h)) (lw, lh) l)
-            mapM_ putStr (layout cropped)
+            let cropped = cropper ((x, y), (w, h)) (lw, lh) l
+            mapM_ putStr (layout (w, h) cropped)
       LineChanged -> do
         resetCursor
         down (cy - py)
         case (wrapPoint (px, cy), wrapPoint (sw, 1)) of
           (WPoint x y, WPoint w h) -> do
-            let (w', h') = (minn w (lw /-/ x), minn h (lh /-/ y))
-                cropped = WBox (w', h') (croppy ((x, y), (w, h)) (lw, lh) l)
-            mapM_ putStr (layout cropped)
+            let cropped = cropper ((x, y), (w, h)) (lw, lh) l
+            mapM_ putStr (layout (w, h) cropped)
       _ -> return ()
     if d' > NoChange then do
       resetCursor
@@ -131,10 +129,10 @@ outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
      else return ()
     mc <- keyReady
     case mc of
-      Nothing -> inner ps' tc lc NoChange
+      Nothing   -> inner ps' tc lc NoChange
       Just Quit -> return ()
-      Just k -> case handleKey k tc of
-        Nothing -> inner ps' tc lc NoChange
+      Just k    -> case handleKey k tc of
+        Nothing       -> inner ps' tc lc NoChange
         Just (d, tc') -> inner ps' tc' (whatAndWhere tc') d
 
 main = do 

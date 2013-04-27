@@ -32,11 +32,8 @@ renderCharBox = renderCharBox' (natty, natty)
 renderBox :: (NATTY x, NATTY y) => (forall xy.p xy -> CharMatrix xy) -> Box p '(x, y) -> CharMatrix '(x, y)
 renderBox f b = renderCharBox (ebox (Stuff . f) b)
 
-stringOfCharVec :: Vec n Char -> String
-stringOfCharVec = foldMap (\c -> [c])
-
-stringOfCharMatrix :: CharMatrix '(x, y) -> [String]
-stringOfCharMatrix (Mat vs) = foldMap (\v -> [stringOfCharVec v]) vs
+stringsOfCharMatrix :: CharMatrix '(x, y) -> [String]
+stringsOfCharMatrix (Mat vs) = foldMap ((:[]) . foldMap (:[])) vs
 
 boxChar :: Char -> (Natty x, Natty y) -> CharBox '(x, y)
 boxChar c (x, y) = Stuff (matrixChar c (x, y))
@@ -47,6 +44,13 @@ boxZ = emptyBox
 boxS :: Vec x Char -> CharBox '(x, S Z)
 boxS s = Stuff (Mat (pure s))
 
+one  = Sy Zy
+type One = S Z
+
+{- unused bounded stuff -}
+
+{-
+
 -- a bounded string (no more than n characters)
 data BString (n :: Nat) where
   BNil  :: Natty n -> BString n
@@ -56,8 +60,6 @@ bmax :: BString n -> Natty n
 bmax (BNil g)      = g
 bmax (BCons _ cs)  = Sy (bmax cs)
 
-one  = Sy Zy
-type One = S Z
 
 data Split (s :: Nat -> *) (t :: Nat -> *) (n :: Nat) where
   Split :: s l -> t r -> Split s t (l :+ r)
@@ -87,4 +89,4 @@ weakenBString :: BString n -> BString (S n)
 weakenBString (BNil g)     = BNil (Sy g)
 weakenBString (BCons c cs) = BCons c (weakenBString cs)
 
-
+-}

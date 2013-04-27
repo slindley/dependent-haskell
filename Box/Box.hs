@@ -1,5 +1,5 @@
 {-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeFamilies, TypeOperators,
-    RankNTypes, PolyKinds, ScopedTypeVariables #-}
+    RankNTypes, PolyKinds, ScopedTypeVariables, FlexibleInstances #-}
 
 module Box where
  
@@ -167,6 +167,9 @@ vchop (Sy m) n (x :> xs) = (x :> ys, zs) where (ys, zs) = vchop m n xs
 data Matrix :: * -> (Nat, Nat) -> * where
   Mat :: Vec y (Vec x a) -> Matrix a '(x, y)
 
+instance Show x => Show (Matrix x '(m, n)) where
+  show = show . (foldMap ((:[]) . foldMap (:[]))) . unMat
+
 unMat :: Matrix a '(x,y) -> Vec y (Vec x a)
 unMat (Mat m) = m
 
@@ -260,6 +263,74 @@ type Point x y = (Natty x, Natty y)
 
 type Region x y w h = (Point x y, Size w h)
 
+cropper :: Cut p => Region x y w h -> Size s t -> Box p '(s, t) -> Box p '(w, h)
+cropper ((x, y), (w, h)) (s, t) b =
+  fit (s /-/ x, t /-/ y) (w, h) (clip (s, t) (x, y) b)
+
+clip :: Cut p => Size w h -> Point x y -> Box p '(w, h) -> Box p '(w :- x, h :- y)
+clip (w, h) (x, y) b = clipV (w /-/ x, h) y (clipH (w, h) x b)
+
+clipH :: Cut p => Size w h -> Natty x -> Box p '(w, h) -> Box p '(w :- x, h)
+clipH (w, h) x b =
+  case cmp w x of
+    GTNat d -> snd (horCut x (Sy d) b)
+    _       -> Clear
+
+clipV :: Cut p => Size w h -> Natty y -> Box p '(w, h) -> Box p '(w, h :- y)
+clipV (w, h) y b =
+  case cmp h y of
+    GTNat d -> snd (verCut y (Sy d) b)
+    _       -> Clear
+
+fit :: Cut p => Size w1 h1 -> Size w2 h2 -> Box p '(w1, h1) -> Box p '(w2, h2)
+fit (w1, h1) (w2, h2) b = fitV h1 h2 (fitH w1 w2 b)
+
+fitH :: Cut p => Natty w1 -> Natty w2 -> Box p '(w1, h) -> Box p '(w2, h)
+fitH w1 w2 b =
+  case cmp w1 w2 of
+    LTNat d -> Hor w1 b (Sy d) Clear
+    EQNat   -> b
+    GTNat d -> fst (horCut w2 (Sy d) b)
+
+fitV :: Cut p => Natty h1 -> Natty h2 -> Box p '(w, h1) -> Box p '(w, h2)
+fitV h1 h2 b =
+  case cmp h1 h2 of
+    LTNat d -> Ver h1 b (Sy d) Clear
+    EQNat   -> b
+    GTNat d -> fst (verCut h2 (Sy d) b)
+
+
+
+{- Min -}
+type family Min (m :: Nat) (n :: Nat) :: Nat
+type instance Min Z     Z     = Z
+type instance Min Z     (S n) = Z
+type instance Min (S m) Z     = Z
+type instance Min (S m) (S n) = S (Min m n)
+
+minn :: Natty m -> Natty n -> Natty (Min m n)
+minn Zy     Zy     = Zy
+minn Zy     (Sy n) = Zy
+minn (Sy m) Zy     = Zy
+minn (Sy m) (Sy n) = Sy (minn m n)
+
+{- minus -}
+type family (m :: Nat) :- (n :: Nat) :: Nat
+type instance Z   :- n   = Z
+type instance S m :- Z   = S m
+type instance S m :- S n = (m :- n)
+
+(/-/) :: Natty m -> Natty n -> Natty (m :- n)
+Zy   /-/ n    = Zy
+Sy m /-/ Zy   = Sy m
+Sy m /-/ Sy n = m /-/ n
+
+
+
+{-- mess --}
+
+{-
+-- crop with known sizes
 cropBox :: Cut p => (Point x y, Size w h) -> Size r s -> Box p '(x :+ (w :+ r), y :+ (h :+ s)) -> Box p '(w, h)
 cropBox ((x, y), (w, h)) (r, s) b =
   let (_, bxwr)   = horCut x (w /+/ r) b in
@@ -273,69 +344,10 @@ cropBox' :: forall x y w h r s p.(NATTY r, NATTY s, Cut p) =>
 cropBox' region box = cropBox region ((natty, natty) :: Size r s) box
 
 
--- in fact we may even want to support negative coordinates...
-
--- actually what we want has a simpler type - bugger!
 -- this seems a rather ridiculous way of doing it...
-cropper :: Cut p => (Point x y, Size w h) -> Size s t -> Box p '(s, t) -> Box p '(w, h)
-cropper ((x, y), (w, h)) (s, t) b =
-  fill (minn w (s /-/ x), minn h (t /-/ y)) (w, h) (croppy ((x, y), (w, h)) (s, t) b)
-
--- here's a much cleaner way :-)
 cropper' :: Cut p => (Point x y, Size w h) -> Size s t -> Box p '(s, t) -> Box p '(w, h)
 cropper' ((x, y), (w, h)) (s, t) b =
-  fill (s /-/ x, t /-/ y) (w, h) (drop' (s, t) (x, y) b)
-
-drop' :: Cut p => Size w h -> Point x y -> Box p '(w, h) -> Box p '(w :- x, h :- y)
-drop' (w, h) (x, y) b = dropV (w /-/ x, h) y (dropH (w, h) x b)
-
-dropH :: Cut p => Size w h -> Natty x -> Box p '(w, h) -> Box p '(w :- x, h)
-dropH (w, h) x b =
-  case cmp w x of
-    GTNat d -> snd (horCut x (Sy d) b)
-    _       -> Clear
-
-dropV :: Cut p => Size w h -> Natty y -> Box p '(w, h) -> Box p '(w, h :- y)
-dropV (w, h) y b =
-  case cmp h y of
-    GTNat d -> snd (verCut y (Sy d) b)
-    _       -> Clear
-
-
--- cropH :: Cut p => Size w1 h -> Natty x -> Natty w2 -> Box p '(w1, h) -> Box '(w2, h)
--- cropH (w1, h) x w2 b =
---   case cmp x w1 of
---     LTNat d -> 
-
-fill :: Cut p => Size w1 h1 -> Size w2 h2 -> Box p '(w1, h1) -> Box p '(w2, h2)
-fill (w1, h1) (w2, h2) b = fillV h1 h2 (fillH w1 w2 b)
-
-fillH :: Cut p => Natty w1 -> Natty w2 -> Box p '(w1, h) -> Box p '(w2, h)
-fillH w1 w2 b =
-  case cmp w1 w2 of
-    LTNat d -> Hor w1 b (Sy d) Clear
-    EQNat   -> b
-    GTNat d -> fst (horCut w2 (Sy d) b)
-
-fillV :: Cut p => Natty h1 -> Natty h2 -> Box p '(w, h1) -> Box p '(w, h2)
-fillV h1 h2 b =
-  case cmp h1 h2 of
-    LTNat d -> Ver h1 b (Sy d) Clear
-    EQNat   -> b
-    GTNat d -> fst (verCut h2 (Sy d) b)
-
-
--- fill (w1, h1) (w2, h2) b =
---   case (cmp w1 w2, cmp h1 h2) of
---     (LTNat r, LTNat s) -> Ver h1 (Hor w1 b (Sy r) Clear) (Sy s) Clear
---     (LTNat r, EQNat)   -> Hor w1 b (Sy r) Clear
---     (LTNat r, GTNat s) -> fst (verCut h2 (Sy s) (Hor w1 b (Sy r) Clear))
---     (EQNat, LTNat s)   -> Ver h1 b (Sy s) Clear
---     (EQNat, EQNat)     -> b
---     (EQNat, GTNat s)   -> fst (verCut h2 (Sy s) b)
---     (GTNat r, LTNat s) -> Ver h1 (fst (horCut w2 (Sy r) b)) (Sy s) Clear
---     (GTNat r, EQNat)   -> fst (horCut w2 (Sy r) b)
---     (GTNat r, GTNat s) -> fst (verCut h2 (Sy s) (fst (horCut w2 (Sy r) b)))
+  fit (minn w (s /-/ x), minn h (t /-/ y)) (w, h) (croppy ((x, y), (w, h)) (s, t) b)
 
 -- this might be the cropping function we actually want
 croppy :: Cut p => (Point x y, Size w h) -> Size s t -> Box p '(s, t) -> Box p '(Min w (s :- x), Min h (t :- y))
@@ -380,27 +392,4 @@ minDiff Zy     (Sy y) t = t
 minDiff (Sy x) Zy     t = t
 minDiff (Sy x) (Sy y) t = minDiff x y t 
 
-
-{- Min -}
-type family Min (m :: Nat) (n :: Nat) :: Nat
-type instance Min Z     Z     = Z
-type instance Min Z     (S n) = Z
-type instance Min (S m) Z     = Z
-type instance Min (S m) (S n) = S (Min m n)
-
-minn :: Natty m -> Natty n -> Natty (Min m n)
-minn Zy     Zy     = Zy
-minn Zy     (Sy n) = Zy
-minn (Sy m) Zy     = Zy
-minn (Sy m) (Sy n) = Sy (minn m n)
-
-{- minus -}
-type family (m :: Nat) :- (n :: Nat) :: Nat
-type instance Z   :- n   = Z
-type instance S m :- Z   = S m
-type instance S m :- S n = (m :- n)
-
-(/-/) :: Natty m -> Natty n -> Natty (m :- n)
-Zy   /-/ n    = Zy
-Sy m /-/ Zy   = Sy m
-Sy m /-/ Sy n = m /-/ n
+-}
