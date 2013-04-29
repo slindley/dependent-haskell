@@ -65,7 +65,7 @@ boxOfStrings (s:ss) = case (boxOfString s, boxOfStrings ss) of
                         (WBox (x1, y1) b1, WBox (x2, y2) b2) ->
                              WBox
                                (x1 `maxn` x2, y1 /+/ y2)
-                               (joinV' (x1, y1) (x2, y2) b1 b2)
+                               (joinV (x1, y1) (x2, y2) b1 b2)
 
 whatAndWhere :: TextCursor -> (WrappedBox, (Int, Int))
 whatAndWhere (czz, cur, css) = (boxOfStrings strs, (x, y))

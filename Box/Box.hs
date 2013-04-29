@@ -228,9 +228,9 @@ maxSym (Sy x) (Sy y) t = maxSym x y t
 -}
 
 -- place boxes horizontally
-joinH' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
+joinH :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
             Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(x1 :+ x2, Max y1 y2)
-joinH' (x1, y1) (x2, y2) b1 b2 =
+joinH (x1, y1) (x2, y2) b1 b2 =
   case cmp y1 y2 of
     EQNat ->
        (Hor x1 b1 x2 b2)
@@ -238,14 +238,11 @@ joinH' (x1, y1) (x2, y2) b1 b2 =
       (Hor x1 (Ver y1 b1 (Sy n') (clear (x1, Sy n'))) x2 b2)
     GTNat n' ->
        (Hor x1 b1 x2 (Ver y2 b2 (Sy n') (clear (x2, Sy n'))))
-joinH :: (NATTY x1, NATTY y1, NATTY x2, NATTY y2) =>
-           Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(x1 :+ x2, Max y1 y2)
-joinH = joinH' (natty, natty) (natty, natty)
 
 -- place boxes vertically
-joinV' :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
+joinV :: (Natty x1, Natty y1) -> (Natty x2, Natty y2) ->
             Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(Max x1 x2, y1 :+ y2)
-joinV' (x1, y1) (x2, y2) b1 b2 =
+joinV (x1, y1) (x2, y2) b1 b2 =
   case cmp x1 x2 of
     EQNat    ->
        (Ver y1 b1 y2 b2)
@@ -253,9 +250,6 @@ joinV' (x1, y1) (x2, y2) b1 b2 =
       (Ver y1 (Hor x1 b1 (Sy n') (clear (Sy n', y1))) y2 b2)
     GTNat n' ->
        (Ver y1 b1 y2 (Hor x2 b2 (Sy n') (clear (Sy n', y2))))
-joinV :: (NATTY x1, NATTY y1, NATTY x2, NATTY y2) =>
-           Box p '(x1, y1) -> Box p '(x2, y2) -> Box p '(Max x1 x2, y1 :+ y2)
-joinV = joinV' (natty, natty) (natty, natty)
 
 {- cropping -}
 type Size w h = (Natty w, Natty h)
