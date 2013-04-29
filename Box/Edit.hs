@@ -66,6 +66,30 @@ onScreen (cx, cy) ((px, py), s@(sw, sh))
       | i <= j && j <= i + x = i   -- in range, no change
       | otherwise = max 0 (j - div x 2)
 
+-- if we did the following, and defined appropriate wrappers over the
+-- curses API then we could remove the calls to wrapPoint in the main
+-- loop and use type indexed nats everywhere
+{-
+type ScreenState' = (WrappedPoint, WrappedPoint)
+
+onScreen' :: WrappedPoint -> ScreenState' -> ScreenState'
+onScreen' (WPoint cx cy) (WPoint px py, WPoint sw sh) =
+  case (intoRange px cx sw, intoRange py cy sh) of
+    (WNat px', WNat py') -> (WPoint px' py', WPoint sw sh)
+    where
+      intoRange :: Natty i -> Natty j -> Natty x -> WrappedNat
+      intoRange i j x =
+        case (cmp i j, cmp j (i /+/ x)) of
+          (GTNat _, _) -> case div2 x of WNat d -> WNat (j /-/ d)
+          (_, GTNat _) -> case div2 x of WNat d -> WNat (j /-/ d)
+          _            -> WNat i  
+
+      div2 :: Natty n -> WrappedNat
+      div2 Zy          = WNat Zy
+      div2 (Sy Zy)     = WNat Zy
+      div2 (Sy (Sy n)) = case div2 n of WNat m -> WNat (Sy m)
+-}
+
 getEscapeKey :: [(String, Key)] -> IO (Maybe Key)
 getEscapeKey [] = return Nothing
 getEscapeKey sks = case lookup "" sks of
