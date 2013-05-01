@@ -44,7 +44,8 @@ instance Functor f => Applicative (FreeApp f) where
 necessary for type inference even though the second is never
 deconstructed.
 -}
-split :: FList f ts -> FList f ts' -> FList g (ts :++: ts') -> (FList g ts, FList g ts')
+split :: FList f ts -> FList f ts' ->
+           FList g (ts :++: ts') -> (FList g ts, FList g ts')
 split FNil      _    xs       = (FNil, xs)
 split (c :> cs) cs' (x :> xs) = (x :> ys, zs) where
   (ys, zs) = split cs cs' xs
