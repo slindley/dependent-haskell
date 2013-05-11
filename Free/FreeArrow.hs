@@ -12,34 +12,30 @@ effectful body, which generates the output value.
 Each effectful step has access to all of the previously generated
 values in the form of the environment.  -}
 
-{-# LANGUAGE DataKinds, RankNTypes, GADTs, TypeOperators, TypeFamilies #-}
+{-# LANGUAGE GADTs, KindSignatures #-}
 
 import Prelude hiding (id, (.))
 
 import Control.Category
 import Control.Arrow
 
-{- type lists as right-nested products -}
-type family Prod (ts :: [*]) :: *
-type instance Prod '[]       = ()
-type instance Prod (t ': ts) = (t, Prod ts)
-
 {- an effectful step of an arrow computation -}
-data Step f (ts :: [*]) b = forall a.Step (Prod ts -> a) (f a b)
+data Step f (ts :: *) b where
+  Step :: (ts -> a) -> f a b -> Step f ts b
 
 {- a list of effectful steps inputting ts and outputting ts' -}
-data AList (f :: * -> * -> *) (ts :: [*]) (ts' :: [*]) where
-  ANil ::                                         AList f ts '[]
-  (:>) :: Step f ts t -> AList f (t ': ts) ts' -> AList f ts (t ': ts')
+data AList (f :: * -> * -> *) (ts :: *) (ts' :: *) where
+  ANil ::                                        AList f ts ()
+  (:>) :: Step f ts t -> AList f (t , ts) ts' -> AList f ts (t , ts')
 
 {- transform the inputs of an arrow list -}
-mapA :: (Prod ts2 -> Prod ts1) -> AList f ts1 ts' -> AList f ts2 ts'
+mapA :: (ts2 -> ts1) -> AList f ts1 ts' -> AList f ts2 ts'
 mapA g ANil             = ANil
 mapA g (Step f b :> cs) = Step (f . g) b :> mapA (second g) cs
 
 {- the free arrow over a bifunctor -}
 data Free (f :: * -> * -> *) (a :: *) (b :: *) :: * where
-  Free :: AList f (a ': '[]) ts -> (Prod ts -> a -> b) -> Free f a b
+  Free :: AList f (a , ()) ts -> (ts -> a -> b) -> Free f a b
 
 class Bifunctor p where
   bimap :: (b -> a) -> (c -> d) -> p a c -> p b d
@@ -64,11 +60,11 @@ fcomp (Free (c :> cs) p) r =
   fcons c (fcomp (Free (squish cs) (\xs (x, y) -> p (x, xs) y)) r)
 
 {- squish the first two inputs of an arrow list into a single pair -}
-squish :: AList f (t ': t' ': ts) ts' -> AList f ((t, t') ': ts) ts'
+squish :: AList f (t , (t' , ts)) ts' -> AList f ((t, t') , ts) ts'
 squish = mapA (\((x, y), xs) -> (x, (y, xs)))
 
 {- cons a step onto a suitably squished free arrow -}
-fcons :: Step f (a ': '[]) t -> Free f (t, a) b -> Free f a b
+fcons :: Step f (a , ()) t -> Free f (t, a) b -> Free f a b
 fcons c (Free cs p) =
   Free (c :> mapA (\(x, (y, ())) -> ((x, y), ())) cs)
        (\(x, xs) a -> p xs (x, a))
