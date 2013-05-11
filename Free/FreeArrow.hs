@@ -12,27 +12,12 @@ effectful body, which generates the output value.
 Each effectful step has access to all of the previously generated
 values in the form of the environment.  -}
 
-{-# LANGUAGE
-    DataKinds, PolyKinds,
-    KindSignatures, 
-    RankNTypes, GADTs, TypeOperators, TypeFamilies,
-    UndecidableInstances
-  #-}
+{-# LANGUAGE DataKinds, RankNTypes, GADTs, TypeOperators, TypeFamilies #-}
 
 import Prelude hiding (id, (.))
 
 import Control.Category
 import Control.Arrow
-
-{- type list concatenation -}
-type family (ts :: [*]) :++: (ts' :: [*]) :: [*]
-type instance '[]       :++: ts' = ts'
-type instance (t ': ts) :++: ts' = t ': (ts :++: ts')
-
-{- reverse type list concatenation -}
-type family (ts :: [*])  :>++<: (ts' :: [*]) :: [*]
-type instance  '[]       :>++<: ts' = ts'
-type instance  (t ': ts) :>++<: ts' = ts :>++<: (t ': ts')
 
 {- type lists as right-nested products -}
 type family Prod (ts :: [*]) :: *
@@ -46,11 +31,6 @@ data Step f (ts :: [*]) b = forall a.Step (Prod ts -> a) (f a b)
 data AList (f :: * -> * -> *) (ts :: [*]) (ts' :: [*]) where
   ANil ::                                         AList f ts '[]
   (:>) :: Step f ts t -> AList f (t ': ts) ts' -> AList f ts (t ': ts')
-
-{- arrow list concatenation -}
-aconc :: AList f ts0 ts' -> AList f (ts' :>++<: ts0) ts'' -> AList f ts0 (ts' :++: ts'')
-aconc ANil      ds = ds
-aconc (c :> cs) ds = c :> aconc cs ds
 
 {- transform the inputs of an arrow list -}
 mapA :: (Prod ts2 -> Prod ts1) -> AList f ts1 ts' -> AList f ts2 ts'
