@@ -1,10 +1,13 @@
-{-# LANGUAGE DataKinds, PolyKinds, RankNTypes,
-    KindSignatures, GADTs, TypeOperators, TypeFamilies #-}
+{- Free applicative functor over a functor -}
+
+{-# LANGUAGE
+    DataKinds,
+    GADTs, TypeOperators, TypeFamilies #-}
 
 import Control.Applicative
 
 {-
-   Heterogeneous lists wrt a functor f:
+   heterogeneous lists wrt a functor f:
      
       FList f [a1,...,an] == [f a1,  ..., f ak]
 -}
@@ -12,11 +15,11 @@ data FList (f :: * -> *) (ts :: [*]) where
   FNil ::                      FList f '[]
   (:>) :: f a -> FList f ts -> FList f (a ': ts)
 
-{- Identity functor -}
+{- identity functor -}
 newtype Id a = Id a
 type IdFList = FList Id
 
-{- Type list concatenation -}
+{- type list concatenation -}
 type family (ts :: [*]) :++: (ts' :: [*]) :: [*]
 type instance '[]       :++: ts' = ts'
 type instance (t ': ts) :++: ts' = t ': (ts :++: ts')
@@ -26,19 +29,20 @@ type instance (t ': ts) :++: ts' = t ': (ts :++: ts')
 FNil      /++/ cs' = cs' 
 (c :> cs) /++/ cs' = c :> (cs /++/ cs')
 
-{- The free applicative functor -}
-data FreeApp f a = forall ts.FreeApp (FList f ts) (IdFList ts -> a)
+{- the free applicative functor -}
+data FreeApp f a where
+  FreeApp :: FList f ts -> (IdFList ts -> a) -> FreeApp f a
 
 instance Functor f => Functor (FreeApp f) where
   fmap g (FreeApp cs f) = FreeApp cs (g . f)
   
 instance Functor f => Applicative (FreeApp f) where
-  pure v                         = FreeApp FNil (const v)
+  pure v                         = FreeApp FNil (\FNil -> v)
   FreeApp cs f <*> FreeApp cs' g =
      FreeApp (cs /++/ cs')
        (\xs -> let (ys, zs) = split cs cs' xs in f ys (g zs))
 
-{- Split an FList into two parts.
+{- split an FList into two parts.
 
    The first two arguments direct where to split the list. Both are
 necessary for type inference even though the second is never
