@@ -1,13 +1,13 @@
-{-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeFamilies, TypeOperators,
-    RankNTypes, PolyKinds, ScopedTypeVariables, MultiParamTypeClasses #-}
+{-# LANGUAGE DataKinds, 
+    RankNTypes, GADTs #-}
 
 module CharBox where
 
-import Data.Monoid
 import Control.Applicative
 import Data.Foldable
-import Data.Traversable
 
+import Nat
+import Vec
 import Box
 
 type CharMatrix = Matrix Char
@@ -44,7 +44,7 @@ boxZ = emptyBox
 boxS :: Vec x Char -> CharBox '(x, S Z)
 boxS s = Stuff (Mat (pure s))
 
-one  = Sy Zy
+one  = SS SZ
 type One = S Z
 
 {- unused bounded stuff -}
@@ -58,7 +58,7 @@ data BString (n :: Nat) where
 
 bmax :: BString n -> Natty n
 bmax (BNil g)      = g
-bmax (BCons _ cs)  = Sy (bmax cs)
+bmax (BCons _ cs)  = SS (bmax cs)
 
 
 data Split (s :: Nat -> *) (t :: Nat -> *) (n :: Nat) where
@@ -86,7 +86,7 @@ boxOfBStrings V0        = Clear
 boxOfBStrings (s :> ss) = Ver one (boxOfBString s) (vlength ss) (boxOfBStrings ss)
 
 weakenBString :: BString n -> BString (S n) 
-weakenBString (BNil g)     = BNil (Sy g)
+weakenBString (BNil g)     = BNil (SS g)
 weakenBString (BCons c cs) = BCons c (weakenBString cs)
 
 -}

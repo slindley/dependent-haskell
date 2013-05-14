@@ -85,9 +85,9 @@ onScreen' (WPoint cx cy) (WPoint px py, WPoint sw sh) =
           _            -> WNat i  
 
       div2 :: Natty n -> WrappedNat
-      div2 SZ          = WNat SZ
-      div2 (SS SZ)     = WNat SZ
-      div2 (SS (SS n)) = case div2 n of WNat m -> WNat (SS m)
+      div2 Zy          = WNat Zy
+      div2 (Sy Zy)     = WNat Zy
+      div2 (Sy (Sy n)) = case div2 n of WNat m -> WNat (Sy m)
 -}
 
 getEscapeKey :: [(String, Key)] -> IO (Maybe Key)

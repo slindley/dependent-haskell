@@ -1,4 +1,4 @@
-{- Nats Using the singleton library
+{- Nats using the singleton library
 
      http://hackage.haskell.org/package/singletons
 -}

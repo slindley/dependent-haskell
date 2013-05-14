@@ -3,8 +3,6 @@
 
 module PlainCursor where
 
-import Nat
-import Vec
 import Box
 import CharBox
 
@@ -27,16 +25,16 @@ activate (i, xs) = inward i ([], (), xs) where
 
 
 data WrappedNat :: * where
-  WNat :: NATTY n => Natty n -> WrappedNat
+  WNat :: Natty n -> WrappedNat
 
 wrapNat :: Int -> WrappedNat
-wrapNat 0 = WNat SZ
+wrapNat 0 = WNat Zy
 wrapNat n = case wrapNat (n-1) of
-              WNat wn -> WNat (SS wn)
+              WNat wn -> WNat (Sy wn)
 
 intOfNat :: Natty n -> Int
-intOfNat SZ = 0
-intOfNat (SS n) = 1 + intOfNat n
+intOfNat Zy = 0
+intOfNat (Sy n) = 1 + intOfNat n
 
 data WrappedPoint :: * where
   WPoint :: Natty x -> Natty y -> WrappedPoint
@@ -62,7 +60,7 @@ boxOfString s = case vecOfList s of
                   WVec v -> WBox (vlength v, one) (boxS v)
 
 boxOfStrings :: [String] -> WrappedBox
-boxOfStrings []     = WBox (SZ, SZ) boxZ
+boxOfStrings []     = WBox (Zy, Zy) boxZ
 boxOfStrings (s:ss) = case (boxOfString s, boxOfStrings ss) of
                         (WBox (x1, y1) b1, WBox (x2, y2) b2) ->
                              WBox
