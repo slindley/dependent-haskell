@@ -1,13 +1,13 @@
-{-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeFamilies, TypeOperators,
-    RankNTypes, PolyKinds, ScopedTypeVariables, MultiParamTypeClasses #-}
+{-# LANGUAGE DataKinds, 
+    RankNTypes, GADTs #-}
 
 module CharBox where
 
-import Data.Monoid
 import Control.Applicative
 import Data.Foldable
-import Data.Traversable
 
+import Nat
+import Vec
 import Box
 
 type CharMatrix = Matrix Char

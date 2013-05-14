@@ -3,6 +3,8 @@
 
 module PlainCursor where
 
+import Nat
+import Vec
 import Box
 import CharBox
 
