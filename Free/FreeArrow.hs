@@ -47,7 +47,15 @@ type instance LProd (t ': ts) = (LProd ts, t)
 data Step f (ts :: [*]) b where
   Step :: (RProd ts -> a) -> f a b -> Step f ts b
 
-{- a list of effectful steps inputting ts and outputting ts' -}
+{-
+  a list of effectful steps inputting ts and outputting ts'
+
+      AList f ts [b1,...,bn] ==
+        [               (ts -> a1, f a1 b1),
+                  ((b1, ts) -> a2, f a2 b2),
+                                   ...     ,
+         ((bn, ..., b1, ts) -> an, f an bn)]
+-}
 data AList (f :: * -> * -> *) (ts :: [*]) (ts' :: [*]) where
   ANil ::                                         AList f ts '[]
   (:>) :: Step f ts t -> AList f (t ': ts) ts' -> AList f ts (t ': ts')
