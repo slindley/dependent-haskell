@@ -12,7 +12,7 @@ import System.Environment
 
 import Box
 import CharBox
-import PlainCursor
+import Cursor
 
 data Window = Window
 type WindowPtr = Ptr Window
