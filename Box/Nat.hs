@@ -18,7 +18,7 @@ data Nat = Z | S Nat
 $(genSingletons [''Nat])
 
 type Natty n = SNat n
-type NATTY = SingI
+type NATTY = SingRep
 
 natty :: NATTY n => Sing n
 natty = sing
