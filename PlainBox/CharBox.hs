@@ -19,5 +19,5 @@ renderCharBox (_, Hor b1 b2) =
   zipWith (++) (renderCharBox b1) (renderCharBox b2)
 
 instance Cut CharMatrix where
-  horCut m _ css = (map (take m) css, map (drop m) css)
-  verCut m _ css = (take m css, drop m css)
+  horCut m css = (map (take m) css, map (drop m) css)
+  verCut m css = (take m css, drop m css)
