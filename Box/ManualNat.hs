@@ -23,9 +23,9 @@ instance NATTY n => NATTY (S n) where
   natty = SS natty
 
 -- natter effectively converts an explicit Natty to an implicit NATTY
-natter :: Natty x -> (NATTY x => t) -> t
+natter :: Natty n -> (NATTY n => t) -> t
 natter SZ     t = t
-natter (SS x) t = natter x t
+natter (SS n) t = natter n t
 
 {- plus -}
 type family (m :: Nat) :+ (n :: Nat) :: Nat

@@ -17,9 +17,12 @@ data Vec :: Nat -> * -> * where
 
 vlength :: Vec n x -> Natty n
 vlength V0        = SZ
-vlength (x :> xs) =
-  let n = vlength xs in
-    natter n (SS n)
+vlength (x :> xs) = natter n (SS n) where n = vlength xs
+-- The extra constraints on singletons introduced by the singletons
+-- library require us to call natter to introduce the NATTY n type
+-- class constraint. Without these constraints we can write simply:
+--                                          
+--   vlength (x :> xs) = SS (vlength xs)
 
 instance Show x => Show (Vec n x) where
   show = show . foldMap (:[])
