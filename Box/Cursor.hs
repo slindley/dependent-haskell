@@ -8,27 +8,9 @@ import Vec
 import Box
 import CharBox
 
-type Cursor a m = ([a], m, [a])
-type StringCursor = Cursor Char ()
-
-type TextCursor = Cursor String StringCursor
-
-deactivate :: Cursor a () -> (Int, [a])
-deactivate c = outward 0 c where
-  outward i ([], (), xs)     = (i, xs)
-  outward i (x : xz, (), xs) = outward (i + 1) (xz, (), x : xs)
-
-
-activate :: (Int, [a]) -> Cursor a ()
-activate (i, xs) = inward i ([], (), xs) where
-  inward _ c@(_, (), [])     = c
-  inward 0 c                 = c
-  inward i (xz, (), x : xs)  = inward (i - 1) (x : xz, (), xs)
-
-
 data WrappedNat :: * where
   WNat :: NATTY n => Natty n -> WrappedNat
-
+  
 wrapNat :: Int -> WrappedNat
 wrapNat 0 = WNat SZ
 wrapNat n = case wrapNat (n-1) of
@@ -51,6 +33,24 @@ data WrappedBox :: * where
 
 data WrappedVec a :: * where
   WVec :: Vec n a -> WrappedVec a
+
+
+type Cursor a m = ([a], m, [a])
+type StringCursor = Cursor Char ()
+
+type TextCursor = Cursor String StringCursor
+
+deactivate :: Cursor a () -> (Int, [a])
+deactivate c = outward 0 c where
+  outward i ([], (), xs)     = (i, xs)
+  outward i (x : xz, (), xs) = outward (i + 1) (xz, (), x : xs)
+
+
+activate :: (Int, [a]) -> Cursor a ()
+activate (i, xs) = inward i ([], (), xs) where
+  inward _ c@(_, (), [])     = c
+  inward 0 c                 = c
+  inward i (xz, (), x : xs)  = inward (i - 1) (x : xz, (), xs)
 
 vecOfList :: [a] -> WrappedVec a
 vecOfList []     = WVec V0

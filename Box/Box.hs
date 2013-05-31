@@ -22,31 +22,47 @@ type s :-> t = forall i. s i -> t i
 ebox :: (p :-> Box q) -> Box p :-> Box q
 ebox f (Stuff b) = f b
 ebox f Clear = Clear
-ebox f (Hor x1 l x2 r) = Hor x1 (ebox f l) x2 (ebox f r)
-ebox f (Ver y1 t y2 b) = Ver y1 (ebox f t) y2 (ebox f b)
+ebox f (Hor x1 b1 x2 b2) = Hor x1 (ebox f b1) x2 (ebox f b2)
+ebox f (Ver y1 b1 y2 b2) = Ver y1 (ebox f b1) y2 (ebox f b2)
 
 class Cut (p :: (Nat, Nat) -> *) where
-  horCut :: Natty xl -> Natty xr -> p '(xl :+ xr, y) -> (p '(xl, y), p '(xr, y))
-  verCut :: Natty yt -> Natty yb -> p '(x, yt :+ yb) -> (p '(x, yt), p '(x, yb))
+  horCut :: Natty m -> Natty n -> p '(m :+ n, h) -> (p '(m, h), p '(n, h))
+  verCut :: Natty m -> Natty n -> p '(w, m :+ n) -> (p '(w, m), p '(w, n))
 
 instance Cut p => Cut (Box p) where
-  horCut xl xr (Stuff p) = (Stuff pl, Stuff pr) where (pl, pr) = horCut xl xr p
-  horCut xl xr Clear = (Clear, Clear)
-  horCut xl xr (Hor x1 b1 x2 b2) = case cmpCuts xl xr x1 x2 of
-    LTCuts z -> let (ll, lr) = horCut xl (SS z) b1 in (ll, Hor (SS z) lr x2 b2)
-    EQCuts   -> (b1, b2)
-    GTCuts z -> let (rl, rr) = horCut (SS z) xr b2 in (Hor x1 b1 (SS z) rl, rr)
-  horCut xl xr (Ver y1 tb y2 bb) = (Ver y1 tl y2 bl, Ver y1 tr y2 br)
-    where (tl, tr) = horCut xl xr tb ; (bl, br) = horCut xl xr bb
+  horCut m n (Stuff p) = (Stuff p1, Stuff p2)
+    where (p1, p2) = horCut m n p
+  horCut m n Clear = (Clear, Clear)
+  horCut m n (Hor x1 b1 x2 b2) = case cmpCuts m n x1 x2 of
+    LTCuts z ->  let (b11, b12) = horCut m (SS z) b1
+                 in (b11, Hor (SS z) b12 x2 b2)
+    EQCuts   ->  (b1, b2)
+    GTCuts z ->  let (b21, b22) = horCut (SS z) n b2
+                 in (Hor x1 b1 (SS z) b21, b22)
+  -- horCut m n (Hor x1 b1 x2 b2) = case cmp m x1 of
+  --   LTNat z ->  let (b11, b12) = horCut m (SS z) b1
+  --               in (b11, Hor (SS z) b12 x2 b2)
+  --   EQNat   ->  (b1, b2)
+  --   GTNat z ->  let (b21, b22) = horCut (SS z) n b2
+  --               in (Hor x1 b1 (SS z) b21, b22)  
+  horCut m n (Ver y1 b1 y2 b2) =
+    (Ver y1 b11 y2 b21, Ver y1 b12 y2 b22)
+    where (b11, b12) = horCut m n b1
+          (b21, b22) = horCut m n b2
 
-  verCut yl yr (Stuff p) = (Stuff pl, Stuff pr) where (pl, pr) = verCut yl yr p
-  verCut yl yr Clear = (Clear, Clear)
-  verCut yl yr (Ver y1 b1 y2 b2) = case cmpCuts yl yr y1 y2 of
-    LTCuts z -> let (tt, tb) = verCut yl (SS z) b1 in (tt, Ver (SS z) tb y2 b2)
-    EQCuts   -> (b1, b2)
-    GTCuts z -> let (bt, bb) = verCut (SS z) yr b2 in (Ver y1 b1 (SS z) bt, bb)
-  verCut yl yr (Hor x1 tb x2 bb) = (Hor x1 tl x2 bl, Hor x1 tr x2 br)
-    where (tl, tr) = verCut yl yr tb ; (bl, br) = verCut yl yr bb
+  verCut m n (Stuff p) = (Stuff p1, Stuff p2)
+    where (p1, p2) = verCut m n p
+  verCut m n Clear = (Clear, Clear)
+  verCut m n (Ver y1 b1 y2 b2) = case cmpCuts m n y1 y2 of
+    LTCuts z ->  let (b11, b12) = verCut m (SS z) b1
+                 in (b11, Ver (SS z) b12 y2 b2)
+    EQCuts   ->  (b1, b2)
+    GTCuts z ->  let (b21, b22) = verCut (SS z) n b2
+                 in (Ver y1 b1 (SS z) b21, b22)
+  verCut m n (Hor x1 b1 x2 b2) =
+    (Hor x1 b11 x2 b21, Hor x1 b12 x2 b22)
+    where (b11, b12) = verCut m n b1
+          (b21, b22) = verCut m n b2
 
 instance Cut p => Monoid (Box p xy) where
   mempty = Clear
