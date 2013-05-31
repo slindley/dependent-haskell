@@ -89,19 +89,19 @@ joinV b1@((x1, y1), _) b2@((x2, y2), _)
 
 {- cropping -}
 cropper :: Cut p => Region -> Box p -> Box p
-cropper ((x, y), (w, h)) b@((s, t), _) =
-  fit (w, h) (clip (s, t) (x, y) b)
+cropper ((x, y), (w, h)) b =
+  fit (w, h) (clip (x, y) b)
 
-clip :: Cut p => Size -> Point -> Box p -> Box p
-clip (w, h) (x, y) b = clipV (w-x, h) y (clipH (w, h) x b)
+clip :: Cut p => Point -> Box p -> Box p
+clip (x, y) b@((w, h), _) = clipV y (clipH x b)
 
-clipH :: Cut p => Size -> Int -> Box p -> Box p
-clipH (w, h) x b
+clipH :: Cut p => Int -> Box p -> Box p
+clipH x b@((w, h), _)
   | w > x = snd (horCut x b)
   | w <= x = ((x-w, h), Clear)
 
-clipV :: Cut p => Size -> Int -> Box p -> Box p
-clipV (w, h) y b
+clipV :: Cut p => Int -> Box p -> Box p
+clipV y b@((w, h), _)
   | h > y = snd (verCut y b)
   | h <= y = ((w, y-h), Clear)
 
