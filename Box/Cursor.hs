@@ -7,6 +7,7 @@ import Nat
 import Vec
 import Box
 import CharBox
+import Wrap
 
 type Cursor a m = ([a], m, [a])
 type StringCursor = Cursor Char ()
@@ -25,52 +26,8 @@ activate (i, xs) = inward i ([], (), xs) where
   inward 0 c                 = c
   inward i (xz, (), x : xs)  = inward (i - 1) (x : xz, (), xs)
 
-
-data WrappedNat :: * where
-  WNat :: NATTY n => Natty n -> WrappedNat
-
-wrapNat :: Int -> WrappedNat
-wrapNat 0 = WNat SZ
-wrapNat n = case wrapNat (n-1) of
-              WNat wn -> WNat (SS wn)
-
-intOfNat :: Natty n -> Int
-intOfNat SZ = 0
-intOfNat (SS n) = 1 + intOfNat n
-
-data WrappedPoint :: * where
-  WPoint :: Natty x -> Natty y -> WrappedPoint
-
-wrapPoint :: (Int, Int) -> WrappedPoint
-wrapPoint (x, y) =
-  case (wrapNat x, wrapNat y) of
-    (WNat x, WNat y) -> WPoint x y
-
-data WrappedBox :: * where
-  WBox :: Size w h -> CharBox '(w, h) -> WrappedBox
-
-data WrappedVec a :: * where
-  WVec :: Vec n a -> WrappedVec a
-
-vecOfList :: [a] -> WrappedVec a
-vecOfList []     = WVec V0
-vecOfList (x:xs) = case vecOfList xs of
-                     WVec v -> WVec (x :> v)
-
-boxOfString :: String -> WrappedBox
-boxOfString s = case vecOfList s of
-                  WVec v -> WBox (vlength v, one) (boxS v)
-
-boxOfStrings :: [String] -> WrappedBox
-boxOfStrings []     = WBox (SZ, SZ) boxZ
-boxOfStrings (s:ss) = case (boxOfString s, boxOfStrings ss) of
-                        (WBox (x1, y1) b1, WBox (x2, y2) b2) ->
-                             WBox
-                               (x1 `maxn` x2, y1 /+/ y2)
-                               (joinV (x1, y1) (x2, y2) b1 b2)
-
-whatAndWhere :: TextCursor -> (WrappedBox, (Int, Int))
-whatAndWhere (czz, cur, css) = (boxOfStrings strs, (x, y))
+whatAndWhere :: TextCursor -> (WCharBox, (Int, Int))
+whatAndWhere (czz, cur, css) = (charBoxOfStrings strs, (x, y))
   where
     (x, cs) = deactivate cur
     (y, strs) = deactivate (czz, (), cs : css)

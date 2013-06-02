@@ -12,6 +12,7 @@ import System.Environment
 
 import Box
 import CharBox
+import Wrap
 import Cursor
 
 data Window = Window
@@ -70,21 +71,21 @@ onScreen (cx, cy) ((px, py), s@(sw, sh))
 -- curses API then we could remove the calls to wrapPoint in the main
 -- loop and use type indexed nats everywhere
 {-
-type ScreenState' = (WrappedPoint, WrappedPoint)
+type ScreenState' = (WPoint, WPoint)
 
-onScreen' :: WrappedPoint -> ScreenState' -> ScreenState'
+onScreen' :: WPoint -> ScreenState' -> ScreenState'
 onScreen' (WPoint cx cy) (WPoint px py, WPoint sw sh) =
   case (intoRange px cx sw, intoRange py cy sh) of
     (WNat px', WNat py') -> (WPoint px' py', WPoint sw sh)
     where
-      intoRange :: Natty i -> Natty j -> Natty x -> WrappedNat
+      intoRange :: Natty i -> Natty j -> Natty x -> WNat
       intoRange i j x =
         case (cmp i j, cmp j (i /+/ x)) of
           (GTNat _, _) -> case div2 x of WNat d -> WNat (j /-/ d)
           (_, GTNat _) -> case div2 x of WNat d -> WNat (j /-/ d)
           _            -> WNat i  
 
-      div2 :: Natty n -> WrappedNat
+      div2 :: Natty n -> WNat
       div2 SZ          = WNat SZ
       div2 (SS SZ)     = WNat SZ
       div2 (SS (SS n)) = case div2 n of WNat m -> WNat (SS m)
@@ -124,7 +125,7 @@ layout s l = stringsOfCharMatrix (renderCharBox' s l)
 outer :: ScreenState -> TextCursor -> IO ()
 outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
   where
-  inner ps@(p, _) tc lc@(WBox (lw, lh) l, c@(cx, cy)) d = do
+  inner ps@(p, _) tc lc@(WCharBox (lw, lh) l, c@(cx, cy)) d = do
     refresh
     s' <- scrSize
     let ps'@((px, py), (sw, sh)) = onScreen c (p, s')
