@@ -20,29 +20,39 @@ class Cut a where
   verCut :: Int -> a -> (a, a)
 
 instance Cut a => Cut (Block a) where
-  horCut m (Stuff p) = (Stuff p1, Stuff p2) where (p1, p2) = horCut m p
+  horCut m (Stuff p) = (Stuff p1, Stuff p2)
+    where (p1, p2) = horCut m p
   horCut m Clear = (Clear, Clear)
-  horCut m (Hor ((x1, y1), b1) ((x2, y2), b2))
-    | m < x1  = let (b11, b12) = horCut m b1 in (b11, Hor ((x1-m, y1), b12) ((x2, y2), b2))
-    | m == x1 = (b1, b2)
-    | m > x1  = let (b21, b22) = horCut (m-x1) b2 in (Hor ((x1, y1), b1) ((m-x1, y2), b21), b22)
-  horCut m (Ver (xy1, b1) (xy2, b2)) = (Ver (xy1, b11) (xy2, b21), Ver (xy1, b12) (xy2, b22))
+  horCut m (Hor ((w1, h1), b1) ((w2, h2), b2))
+    | m < w1  =  let (b11, b12) = horCut m b1
+                 in (b11, Hor ((w1-m, h1), b12) ((w2, h2), b2))
+    | m == w1 =  (b1, b2)
+    | m > w1  =  let (b21, b22) = horCut (m-w1) b2
+                 in (Hor ((w1, h1), b1) ((m-w1, h2), b21), b22)
+  horCut m (Ver (wh1, b1) (wh2, b2)) =
+    (Ver (wh1, b11) (wh2, b21), Ver (wh1, b12) (wh2, b22))
     where (b11, b12) = horCut m b1
           (b21, b22) = horCut m b2
 
-  verCut m (Stuff p) = (Stuff p1, Stuff p2) where (p1, p2) = verCut m p
+  verCut m (Stuff p) = (Stuff p1, Stuff p2)
+    where (p1, p2) = verCut m p
   verCut m Clear = (Clear, Clear)
-  verCut m (Ver ((x1, y1), b1) ((x2, y2), b2))
-    | m < y1  = let (b11, b12) = verCut m b1 in (b11, Ver ((x1, y1-m), b12) ((x2, y2), b2))
-    | m == y1 = (b1, b2)
-    | m > y1  = let (b21, b22) = verCut (m-y1) b2 in (Ver ((x1, y1), b1) ((x2, m-y1), b21), b22)
-  verCut m (Hor (xy1, b1) (xy2, b2)) = (Hor (xy1, b11) (xy2, b21), Hor (xy1, b12) (xy2, b22))
+  verCut m (Ver ((w1, h1), b1) ((w2, h2), b2))
+    | m < h1  =  let (b11, b12) = verCut m b1
+                 in (b11, Ver ((w1, h1-m), b12) ((w2, h2), b2))
+    | m == h1 =  (b1, b2)
+    | m > h1  =  let (b21, b22) = verCut (m-h1) b2
+                 in (Ver ((w1, h1), b1) ((w2, m-h1), b21), b22)
+  verCut m (Hor (wh1, b1) (wh2, b2)) =
+    (Hor (wh1, b11) (wh2, b21), Hor (wh1, b12) (wh2, b22))
     where (b11, b12) = verCut m b1
           (b21, b22) = verCut m b2
 
 instance Cut a => Cut (Box a) where
-  horCut m ((w, h), b) = (((m, h), b1), ((w-m, h), b2)) where (b1, b2) = horCut m b
-  verCut m ((w, h), b) = (((w, m), b1), ((w, h-m), b2)) where (b1, b2) = verCut m b
+  horCut m ((w, h), b) = (((m, h), b1), ((w-m, h), b2))
+    where (b1, b2) = horCut m b
+  verCut m ((w, h), b) = (((w, m), b1), ((w, h-m), b2))
+    where (b1, b2) = verCut m b
 
 -- this doesn't really make sense
 -- it is only correct if the sizes of the boxes match up
@@ -51,41 +61,41 @@ instance Cut a => Monoid (Block a) where
   mappend b Clear = b
   mappend Clear b' = b'
   mappend b@(Stuff _) _ = b
-  mappend (Hor (xy1@(x1, _), b1) (xy2@(x2, _), b2)) b' = Hor (xy1, mappend b1 b1') (xy2, mappend b2 b2')
-    where (b1', b2') = horCut x1 b'
-  mappend (Ver (xy1@(_, y1), b1) (xy2@(_, y2), b2)) b' = Ver (xy1, mappend b1 b1') (xy2, mappend b2 b2')
-    where (b1', b2') = verCut y1 b'
+  mappend (Hor (wh1@(w1, _), b1) (wh2@(w2, _), b2)) b' = Hor (wh1, mappend b1 b1') (wh2, mappend b2 b2')
+    where (b1', b2') = horCut w1 b'
+  mappend (Ver (wh1@(_, h1), b1) (wh2@(_, h2), b2)) b' = Ver (wh1, mappend b1 b1') (wh2, mappend b2 b2')
+    where (b1', b2') = verCut h1 b'
 
 -- this makes even less sense
 instance Cut a => Monoid (Box a) where
   mempty = ((0, 0), Clear)
-  mappend ((0, 0), b1) (xy2, b2) = (xy2, mappend b1 b2)
-  mappend (xy1, b1)    (xy2, b2) = (xy1, mappend b1 b2)
+  mappend ((0, 0), b1) (wh2, b2) = (wh2, mappend b1 b2)
+  mappend (wh1, b1)    (wh2, b2) = (wh1, mappend b1 b2)
 
 clear :: Size -> Box a
-clear xy = (xy, Clear)
+clear wh = (wh, Clear)
 
 hGap :: Int -> Box a
-hGap x = clear (x, 0)
+hGap w = clear (w, 0)
 
 vGap :: Int -> Box a
-vGap y = clear (0, y)
+vGap h = clear (0, h)
 
 joinH :: Box a -> Box a -> Box a
-joinH b1@((x1, y1), _) b2@((x2, y2), _)
-  | y1 < y2
-  = ((x1 + x2, y2), Hor ((x1, y2), Ver b1 ((x1, y2 - y1), Clear)) b2)
-  | y1 == y2 = ((x1 + x2, y1), Hor b1 b2)
-  | y1 > y2
-  = ((x1 + x2, y1), Hor b1 ((x2, y1), Ver b2 ((x2, y1 - y2), Clear)))
+joinH b1@((w1, h1), _) b2@((w2, h2), _)
+  | h1 < h2
+  = ((w1 + w2, h2), Hor ((w1, h2), Ver b1 ((w1, h2 - h1), Clear)) b2)
+  | h1 == h2 = ((w1 + w2, h1), Hor b1 b2)
+  | h1 > h2
+  = ((w1 + w2, h1), Hor b1 ((w2, h1), Ver b2 ((w2, h1 - h2), Clear)))
 
 joinV :: Box a -> Box a -> Box a
-joinV b1@((x1, y1), _) b2@((x2, y2), _)
-  | x1 < x2
-  = ((x2, y1 + y2), Ver ((x2, y1), Hor b1 ((x2 - x1, y1), Clear)) b2)
-  | x1 == x2 = ((x1, y1 + y2), Ver b1 b2)
-  | x1 > x2
-  = ((x1, y1 + y2), Ver b1 ((x1, y2), Hor b2 ((x1 - x2, y2), Clear)))
+joinV b1@((w1, h1), _) b2@((w2, h2), _)
+  | w1 < w2
+  = ((w2, h1 + h2), Ver ((w2, h1), Hor b1 ((w2 - w1, h1), Clear)) b2)
+  | w1 == w2 = ((w1, h1 + h2), Ver b1 b2)
+  | w1 > w2
+  = ((w1, h1 + h2), Ver b1 ((w1, h2), Hor b2 ((w1 - w2, h2), Clear)))
 
 {- cropping -}
 cropper :: Cut p => Region -> Box p -> Box p

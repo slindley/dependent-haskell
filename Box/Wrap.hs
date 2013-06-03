@@ -45,7 +45,7 @@ charBoxOfString s = case vecOfList s of
 charBoxOfStrings :: [String] -> WCharBox
 charBoxOfStrings []     = WCharBox (SZ, SZ) boxZ
 charBoxOfStrings (s:ss) = case (charBoxOfString s, charBoxOfStrings ss) of
-  (WCharBox (x1, y1) b1, WCharBox (x2, y2) b2) ->
+  (WCharBox (w1, h1) b1, WCharBox (w2, h2) b2) ->
     WCharBox
-      (x1 `maxn` x2, y1 /+/ y2)
-      (joinV (x1, y1) (x2, y2) b1 b2)
+      (w1 `maxn` w2, h1 /+/ h2)
+      (joinV (w1, h1) (w2, h2) b1 b2)

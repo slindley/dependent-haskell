@@ -132,14 +132,14 @@ outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
         resetCursor
         case (wrapPoint (px, py), wrapPoint (sw, sh)) of
           (WPoint x y, WPoint w h) -> do
-            let cropped = cropper ((x, y), (w, h)) (lw, lh) l
+            let cropped = crop ((x, y), (w, h)) (lw, lh) l
             mapM_ putStr (layout (w, h) cropped)
       LineChanged -> do
         resetCursor
         down (cy - py)
         case (wrapPoint (px, cy), wrapPoint (sw, 1)) of
           (WPoint x y, WPoint w h) -> do
-            let cropped = cropper ((x, y), (w, h)) (lw, lh) l
+            let cropped = crop ((x, y), (w, h)) (lw, lh) l
             mapM_ putStr (layout (w, h) cropped)
       _ -> return ()
     if d' > NoChange then do

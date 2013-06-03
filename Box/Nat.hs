@@ -67,6 +67,19 @@ $(singletons [d|
 type Min m n = MinNat m n
 minn = sMinNat
 
+data Cmp'' = LTNat'' | EQNat'' | GTNat''
+cmp'' :: Natty x -> Natty y -> Cmp''
+cmp'' SZ     SZ     = EQNat''
+cmp'' SZ     (SS y) = LTNat''
+cmp'' (SS x) SZ     = GTNat''
+cmp'' (SS x) (SS y) = cmp'' x y
+
+data Cmp' :: Nat -> Nat -> * where
+  LTNat' :: Natty z -> Cmp' x (x :+ S z)
+  EQNat' :: Cmp' x x
+  GTNat' :: Natty z -> Cmp' (y :+ S z) y
+
+
 data Cmp :: Nat -> Nat -> * where
   LTNat :: (NATTY z, (x :+ S z) ~ y,          Max x y ~ y, (x :- y) ~ Z)   => Natty z -> Cmp x y
   EQNat :: (         x          ~ y,          Max x y ~ x, (x :- y) ~ Z)   =>            Cmp x y
@@ -85,6 +98,12 @@ data CmpCuts :: Nat -> Nat -> Nat -> Nat -> * where
   LTCuts :: NATTY b => Natty b -> CmpCuts a (S b :+ c) (a :+ S b) c
   EQCuts :: CmpCuts a b a b
   GTCuts :: NATTY b => Natty b -> CmpCuts (a :+ S b) c a (S b :+ c)
+
+data CmpCuts' :: Nat -> Nat -> Nat -> Nat -> * where
+  LTCuts' :: (b ~ (S z :+ d), c ~ (a :+ S z), NATTY z) => Natty z -> CmpCuts' a b c d
+  EQCuts' :: (a ~ c, b ~ d) =>                                   CmpCuts' a b c d
+  GTCuts' :: (a ~ (c :+ S z), d ~ (S z :+ b), NATTY z) => Natty z -> CmpCuts' a b c d
+
 
 cmpCuts :: ((a :+ b) ~ (c :+ d)) => Natty a -> Natty b -> Natty c -> Natty d -> CmpCuts a b c d
 cmpCuts SZ b SZ     d  = EQCuts
