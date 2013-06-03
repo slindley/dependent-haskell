@@ -13,6 +13,7 @@ import Data.Foldable
 import Nat
 import Vec
 
+{- dimensions -}
 data Dimension = Hor | Ver
   deriving (Show, Eq)
 
@@ -20,6 +21,7 @@ data SDimension :: Dimension -> * where
   SHor :: SDimension Hor
   SVer :: SDimension Ver
 
+{- composition -}
 -- Comp r d m
 --   describes how to compose in dimension d with
 --     r in dimension perp(d) fixed; and
@@ -27,6 +29,23 @@ data SDimension :: Dimension -> * where
 type family Comp (r :: Nat) (d :: Dimension) (m :: Nat) :: (Nat, Nat)
 type instance Comp r Hor m = '(m, r)
 type instance Comp r Ver m = '(r, m) 
+
+{- projection -}
+type family Proj1 (d :: Dimension) (s :: (Nat, Nat)) :: Nat
+type instance Proj1 Hor '(w, h) = w
+type instance Proj1 Ver '(w, h) = h
+
+type family Proj2 (d :: Dimension) (s :: (Nat, Nat)) :: Nat
+type instance Proj2 Hor '(w, h) = h
+type instance Proj2 Ver '(w, h) = w
+
+proj1 :: SDimension d -> Size w h -> Natty (Proj1 d '(w, h))
+proj1 SHor (w, h) = w
+proj1 SVer (w, h) = h
+
+proj2 :: SDimension d -> Size w h -> Natty (Proj2 d '(w, h))
+proj2 SHor (w, h) = h
+proj2 SVer (w, h) = w
 
 data Box :: ((Nat, Nat) -> *) -> (Nat, Nat) -> * where
   Stuff :: p wh -> Box p wh
@@ -83,6 +102,7 @@ instance Cut p => Cut (Box p) where
       (SVer, SHor) -> cutNeq SVer SHor m n w1 b1 w2 b2
       (SVer, SVer) -> cutEq r SVer m n w1 b1 w2 b2
 
+{- placing boxes -}
 join' ::
   (Comp h1 d w1 ~ Comp w1 d' h1,
    Comp h1 d w2 ~ Comp w2 d' h1,
@@ -111,128 +131,78 @@ joinD d (w1, h1) (w2, h2) b1 b2 =
     SHor -> join' SHor SVer w1 h1 w2 h2 b1 b2
     SVer -> join' SVer SHor w1 h1 w2 h2 b1 b2
 
+{- cropping -}
+type Size w h = (Natty w, Natty h)
+type Point x y = (Natty x, Natty y)
+type Region x y w h = (Point x y, Size w h)
 
--- instance Cut p => Monoid (Box p wh) where
---   mempty = Clear
---   mappend b Clear = b
---   mappend Clear b' = b'
---   mappend b@(Stuff _) _ = b
---   mappend (Hor w1 b1 w2 b2) b' = Hor w1 (mappend b1 b1') w2 (mappend b2 b2')
---     where (b1', b2') = horCut w1 w2 b'
---   mappend (Ver h1 b1 h2 b2) b' = Ver h1 (mappend b1 b1') h2 (mappend b2 b2')
---     where (b1', b2') = verCut h1 h2 b'
+clipD :: Cut p =>
+           SDimension d ->
+             Size w h -> Natty x ->
+               Box p (Comp (Proj2 d '(w, h)) d (Proj1 d '(w, h))) ->
+                 Box p (Comp (Proj2 d '(w, h)) d (Proj1 d '(w, h) :- x))
+clipD d s x b =
+  case cmp (proj1 d s) x of
+    GTNat z -> snd (cut (proj2 d s) d x (SS z) b)
+    _       -> Clear
 
--- data Matrix :: * -> (Nat, Nat) -> * where
---   Mat :: Vec y (Vec x a) -> Matrix a '(x, y)
+clip :: Cut p => Size w h -> Point x y -> Box p '(w, h) -> Box p '(w :- x, h :- y)
+clip (w, h) (x, y) b = clipD SVer (w /-/ x, h) y (clipD SHor (w, h) x b)
 
--- instance Show a => Show (Matrix a '(x, y)) where
---   show = show . (foldMap ((:[]) . foldMap (:[]))) . unMat
+fitD :: Cut p =>
+  Natty h ->
+    SDimension d ->
+      Natty w1 -> Natty w2 ->
+        Box p (Comp h d w1) -> Box p (Comp h d w2)
+fitD h d w1 w2 b =
+  case cmp w1 w2 of
+    LTNat z -> Jux h d w1 b (SS z) Clear
+    EQNat   -> b
+    GTNat z -> fst (cut h d w2 (SS z) b)
 
--- unMat :: Matrix a '(x,y) -> Vec y (Vec x a)
--- unMat (Mat m) = m
+fit :: Cut p => Size w1 h1 -> Size w2 h2 -> Box p '(w1, h1) -> Box p '(w2, h2)
+fit (w1, h1) (w2, h2) b = fitD w2 SVer h1 h2 (fitD h1 SHor w1 w2 b)
 
--- instance Cut (Matrix e) where
---   horCut m n (Mat ess) =
---     (Mat (fst <$> ps), Mat (snd <$> ps)) where
---       ps = vchop m n <$> ess
---   verCut m n (Mat ess) = (Mat tess, Mat bess) where
---     (tess, bess) = vchop m n ess 
+crop :: Cut p => Region x y w h -> Size s t -> Box p '(s, t) -> Box p '(w, h)
+crop ((x, y), (w, h)) (s, t) b =
+  fit (s /-/ x, t /-/ y) (w, h) (clip (s, t) (x, y) b)
 
--- {- smart constructors for clear boxes -}
--- clear :: (Natty w, Natty h) -> Box p '(w, h)
--- clear (x, y) = Clear
 
--- emptyBox :: Box p '(Z, Z)
--- emptyBox = Clear
+instance Cut p => Monoid (Box p wh) where
+  mempty = Clear
+  mappend b Clear = b
+  mappend Clear b' = b'
+  mappend b@(Stuff _) _ = b
+  mappend (Jux h d w1 b1 w2 b2) b' = Jux h d w1 (mappend b1 b1') w2 (mappend b2 b2')
+    where (b1', b2') = cut h d w1 w2 b'
 
--- hGap :: Natty w -> Box p '(w, Z)
--- hGap _ = Clear
+data Matrix :: * -> (Nat, Nat) -> * where
+  Mat :: Vec y (Vec x a) -> Matrix a '(x, y)
 
--- vGap :: Natty h -> Box p '(Z, h)
--- vGap _ = Clear
+instance Show a => Show (Matrix a '(x, y)) where
+  show = show . (foldMap ((:[]) . foldMap (:[]))) . unMat
 
--- {- placing boxes -}
+unMat :: Matrix a '(x,y) -> Vec y (Vec x a)
+unMat (Mat m) = m
 
--- {-
--- --- lemmas about max ---
+instance Cut (Matrix e) where
+  cut _ SHor m n (Mat ess) =
+    (Mat (fst <$> ps), Mat (snd <$> ps)) where
+      ps = vchop m n <$> ess
+  cut _ SVer m n (Mat ess) = (Mat tess, Mat bess) where
+    (tess, bess) = vchop m n ess
 
--- -- we wire this knowledge into the Cmp datatype
+{- smart constructors for clear boxes -}
+clear :: (Natty w, Natty h) -> Box p '(w, h)
+clear (x, y) = Clear
 
--- maxAddR :: forall x y z t.Natty x -> Natty y -> ((Max x (x :+ S y) ~ (x :+ S y)) => t) -> t
--- maxAddR SZ     y t = t
--- maxAddR (SS x) y t = maxAddR x y t
+emptyBox :: Box p '(Z, Z)
+emptyBox = Clear
 
--- maxAddL :: forall x y z t.Natty x -> Natty y -> ((Max (x :+ S y) x ~ (x :+ S y)) => t) -> t
--- maxAddL x y t = maxAddR x y (maxSym x (x /+/ SS y) t)
+hGap :: Natty w -> Box p '(w, Z)
+hGap _ = Clear
 
--- maxRefl :: forall x y t.Natty x -> ((Max x x ~ x) => t) -> t
--- maxRefl SZ     t = t
--- maxRefl (SS x) t = maxRefl x t
+vGap :: Natty h -> Box p '(Z, h)
+vGap _ = Clear
 
--- maxSym :: forall x y t.Natty x -> Natty y -> ((Max x y ~ Max y x) => t) -> t
--- maxSym SZ SZ         t = t
--- maxSym SZ (SS y)     t = t
--- maxSym (SS x) SZ     t = t
--- maxSym (SS x) (SS y) t = maxSym x y t
--- ------------------------
--- -}
 
--- -- place boxes horizontally
--- joinH :: (Natty w1, Natty h1) -> (Natty w2, Natty h2) ->
---             Box p '(w1, h1) -> Box p '(w2, h2) -> Box p '(w1 :+ w2, Max h1 h2)
--- joinH (w1, h1) (w2, h2) b1 b2 =
---   case cmp h1 h2 of
---     LTNat n -> Hor w1 (Ver h1 b1 (SS n) (clear (w1, SS n))) w2 b2
---     EQNat    -> Hor w1 b1 w2 b2
---     GTNat n -> Hor w1 b1 w2 (Ver h2 b2 (SS n) (clear (w2, SS n)))
-
--- -- place boxes vertically
--- joinV :: (Natty w1, Natty h1) -> (Natty w2, Natty h2) ->
---             Box p '(w1, h1) -> Box p '(w2, h2) -> Box p '(Max w1 w2, h1 :+ h2)
--- joinV (w1, h1) (w2, h2) b1 b2 =
---   case cmp w1 w2 of
---     LTNat n -> Ver h1 (Hor w1 b1 (SS n) (clear (SS n, h1))) h2 b2
---     EQNat   -> Ver h1 b1 h2 b2
---     GTNat n -> Ver h1 b1 h2 (Hor w2 b2 (SS n) (clear (SS n, h2)))
-
--- {- cropping -}
--- type Size w h = (Natty w, Natty h)
--- type Point x y = (Natty x, Natty y)
-
--- type Region x y w h = (Point x y, Size w h)
-
--- crop :: Cut p => Region x y w h -> Size s t -> Box p '(s, t) -> Box p '(w, h)
--- crop ((x, y), (w, h)) (s, t) b =
---   fit (s /-/ x, t /-/ y) (w, h) (clip (s, t) (x, y) b)
-
--- clip :: Cut p => Size w h -> Point x y -> Box p '(w, h) -> Box p '(w :- x, h :- y)
--- clip (w, h) (x, y) b = clipV (w /-/ x, h) y (clipH (w, h) x b)
-
--- clipH :: Cut p => Size w h -> Natty x -> Box p '(w, h) -> Box p '(w :- x, h)
--- clipH (w, h) x b =
---   case cmp w x of
---     GTNat d -> snd (horCut x (SS d) b)
---     _       -> Clear
-
--- clipV :: Cut p => Size w h -> Natty y -> Box p '(w, h) -> Box p '(w, h :- y)
--- clipV (w, h) y b =
---   case cmp h y of
---     GTNat d -> snd (verCut y (SS d) b)
---     _       -> Clear
-
--- fit :: Cut p => Size w1 h1 -> Size w2 h2 -> Box p '(w1, h1) -> Box p '(w2, h2)
--- fit (w1, h1) (w2, h2) b = fitV h1 h2 (fitH w1 w2 b)
-
--- fitH :: Cut p => Natty w1 -> Natty w2 -> Box p '(w1, h) -> Box p '(w2, h)
--- fitH w1 w2 b =
---   case cmp w1 w2 of
---     LTNat d -> Hor w1 b (SS d) Clear
---     EQNat   -> b
---     GTNat d -> fst (horCut w2 (SS d) b)
-
--- fitV :: Cut p => Natty h1 -> Natty h2 -> Box p '(w, h1) -> Box p '(w, h2)
--- fitV h1 h2 b =
---   case cmp h1 h2 of
---     LTNat d -> Ver h1 b (SS d) Clear
---     EQNat   -> b
---     GTNat d -> fst (verCut h2 (SS d) b)
