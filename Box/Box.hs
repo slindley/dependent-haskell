@@ -133,7 +133,7 @@ joinH :: (Natty w1, Natty h1) -> (Natty w2, Natty h2) ->
 joinH (w1, h1) (w2, h2) b1 b2 =
   case cmp h1 h2 of
     LTNat n -> Hor w1 (Ver h1 b1 (SS n) (clear (w1, SS n))) w2 b2
-    EQNat    -> Hor w1 b1 w2 b2
+    EQNat   -> Hor w1 b1 w2 b2
     GTNat n -> Hor w1 b1 w2 (Ver h2 b2 (SS n) (clear (w2, SS n)))
 
 -- place boxes vertically
