@@ -13,36 +13,6 @@ import Data.Foldable
 import Nat
 import Vec
 
-     
--- data Foo (z :: Nat) (m :: Nat) (s :: (Nat, Nat)) :: * where
---   Ho :: Foo z m '(m, z)
---   Ve :: Foo z m '(z, m)
-
--- data EBox :: ((Nat, Nat) -> *) -> (Nat, Nat) -> * where
---   EStuff :: p wh -> EBox p wh
---   EClear :: EBox p wh
---   EHor :: Natty w1 -> EBox p '(w1, h) -> Natty w2 -> EBox p '(w2, h) -> EBox p '(w1 :+ w2, h)
---   EVer :: Natty h1 -> EBox p '(w, h1) -> Natty h2 -> EBox p '(w, h2) -> EBox p '(w, h1 :+ h2)
-
--- class Foo (d :: Dimension) where
---   type Bar (d :: Dimension) (m :: Nat) (n :: Nat) :: (Nat, Nat)
---
--- instance Foo Hor where
---   type Bar Hor m n = '(m, n)
---
--- instance Foo Ver where
---   type Bar Ver m n = '(n, m)
-
--- data EqDim (d :: Dimension) (d' :: Dimension) :: * where
---   EqDim :: SDimension d -> EqDim d d
-
--- eqDim :: SDimension d -> SDimension d' -> Maybe (EqDim d d')
--- eqDim SHor SHor = Just (EqDim SHor)
--- eqDim SHor SVer = Nothing
--- eqDim SVer SHor = Nothing
--- eqDim SVer SVer = Just (EqDim SVer)
-
-
 data Dimension = Hor | Ver
   deriving (Show, Eq)
 
@@ -50,17 +20,21 @@ data SDimension :: Dimension -> * where
   SHor :: SDimension Hor
   SVer :: SDimension Ver
 
-type family Comp (z :: Nat) (d :: Dimension) (m :: Nat) :: (Nat, Nat)
-type instance Comp z Hor m = '(m, z)
-type instance Comp z Ver m = '(z, m) 
-
+-- Comp r d m
+--   describes how to compose in dimension d with
+--     r in dimension perp(d) fixed; and
+--     m in dimension d
+type family Comp (r :: Nat) (d :: Dimension) (m :: Nat) :: (Nat, Nat)
+type instance Comp r Hor m = '(m, r)
+type instance Comp r Ver m = '(r, m) 
 
 data Box :: ((Nat, Nat) -> *) -> (Nat, Nat) -> * where
   Stuff :: p wh -> Box p wh
   Clear :: Box p wh
-  Jux :: Natty z -> SDimension d ->
-         Natty m -> Box p (Comp z d m) ->
-         Natty n -> Box p (Comp z d n) -> Box p (Comp z d (m :+ n))
+  Jux :: Natty r -> SDimension d ->
+           Natty m -> Box p (Comp r d m) ->
+             Natty n -> Box p (Comp r d n) ->
+               Box p (Comp r d (m :+ n))
 --   Hor :: Natty w1 -> Box p '(w1, h) -> Natty w2 -> Box p '(w2, h) -> Box p '(w1 :+ w2, h)
 --   Ver :: Natty h1 -> Box p '(w, h1) -> Natty h2 -> Box p '(w, h2) -> Box p '(w, h1 :+ h2)
 
@@ -69,10 +43,13 @@ type s :-> t = forall i. s i -> t i
 ebox :: (p :-> Box q) -> Box p :-> Box q
 ebox f (Stuff c)             = f c
 ebox f Clear                 = Clear
-ebox f (Jux z d m1 b1 m2 b2) = Jux z d m1 (ebox f b1) m2 (ebox f b2)
+ebox f (Jux r d m1 b1 m2 b2) = Jux r d m1 (ebox f b1) m2 (ebox f b2)
 
 class Cut (p :: (Nat, Nat) -> *) where
-  cut :: Natty z -> SDimension d -> Natty m -> Natty n -> p (Comp z d (m :+ n)) -> (p (Comp z d m), p (Comp z d n))
+  cut :: Natty r -> SDimension d ->
+           Natty m -> Natty n ->
+             p (Comp r d (m :+ n)) ->
+               (p (Comp r d m), p (Comp r d n))
 
 -- equal dimensions
 cutEq :: (Cut p, (m :+ n) ~ (w1 :+ w2)) =>
@@ -105,7 +82,6 @@ instance Cut p => Cut (Box p) where
       (SHor, SVer) -> cutNeq SHor SVer m n w1 b1 w2 b2
       (SVer, SHor) -> cutNeq SVer SHor m n w1 b1 w2 b2
       (SVer, SVer) -> cutEq r SVer m n w1 b1 w2 b2
-
 
 join' ::
   (Comp h1 d w1 ~ Comp w1 d' h1,
@@ -163,8 +139,8 @@ joinD d (w1, h1) (w2, h2) b1 b2 =
 --     (tess, bess) = vchop m n ess 
 
 -- {- smart constructors for clear boxes -}
-clear :: (Natty w, Natty h) -> Box p '(w, h)
-clear (x, y) = Clear
+-- clear :: (Natty w, Natty h) -> Box p '(w, h)
+-- clear (x, y) = Clear
 
 -- emptyBox :: Box p '(Z, Z)
 -- emptyBox = Clear
