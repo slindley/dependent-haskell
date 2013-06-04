@@ -12,10 +12,8 @@ import System.Environment
 
 import Box
 import CharBox
+import Wrap
 import Cursor
-
-data Window = Window
-type WindowPtr = Ptr Window
 
 foreign import ccall
   initscr :: IO () 
@@ -49,16 +47,14 @@ putLn x = putStr x >> crlf
 
 type UPoint = (Int, Int)
 type USize = (Int, Int)
+type URegion = (UPoint, USize)
 
-type ScreenState = (UPoint, USize)
-  -- position in buffer of top left corner of screen, screen size
-
--- onScreen c ps
+-- onScreen c r
 --   c is where the cursor currently is
---   ps is where the viewport currently is
+--   r is where the viewport currently is
 --   the return value is an updated viewport
 --   containing c
-onScreen :: UPoint -> ScreenState -> ScreenState
+onScreen :: UPoint -> URegion -> URegion
 onScreen (cx, cy) ((px, py), s@(sw, sh))
   = (( intoRange px cx sw, intoRange py cy sh), s)
   where
@@ -70,21 +66,21 @@ onScreen (cx, cy) ((px, py), s@(sw, sh))
 -- curses API then we could remove the calls to wrapPoint in the main
 -- loop and use type indexed nats everywhere
 {-
-type ScreenState' = (WrappedPoint, WrappedPoint)
+type WRegion = (WPoint, WPoint)
 
-onScreen' :: WrappedPoint -> ScreenState' -> ScreenState'
+onScreen' :: WPoint -> WRegion -> WRegion
 onScreen' (WPoint cx cy) (WPoint px py, WPoint sw sh) =
   case (intoRange px cx sw, intoRange py cy sh) of
     (WNat px', WNat py') -> (WPoint px' py', WPoint sw sh)
     where
-      intoRange :: Natty i -> Natty j -> Natty x -> WrappedNat
+      intoRange :: Natty i -> Natty j -> Natty x -> WNat
       intoRange i j x =
         case (cmp i j, cmp j (i /+/ x)) of
           (GTNat _, _) -> case div2 x of WNat d -> WNat (j /-/ d)
           (_, GTNat _) -> case div2 x of WNat d -> WNat (j /-/ d)
           _            -> WNat i  
 
-      div2 :: Natty n -> WrappedNat
+      div2 :: Natty n -> WNat
       div2 SZ          = WNat SZ
       div2 (SS SZ)     = WNat SZ
       div2 (SS (SS n)) = case div2 n of WNat m -> WNat (SS m)
@@ -119,12 +115,12 @@ keyReady = do
       _ -> return $ Nothing
 
 layout :: Size w h -> CharBox '(w, h) -> [String]
-layout s l = stringsOfCharMatrix (renderCharBox' s l)
+layout s l = stringsOfCharMatrix (renderCharBox s l)
 
-outer :: ScreenState -> TextCursor -> IO ()
+outer :: URegion -> TextCursor -> IO ()
 outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
   where
-  inner ps@(p, _) tc lc@(WBox (lw, lh) l, c@(cx, cy)) d = do
+  inner ps@(p, _) tc lc@(WCharBox (lw, lh) l, c@(cx, cy)) d = do
     refresh
     s' <- scrSize
     let ps'@((px, py), (sw, sh)) = onScreen c (p, s')
@@ -136,14 +132,14 @@ outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
         resetCursor
         case (wrapPoint (px, py), wrapPoint (sw, sh)) of
           (WPoint x y, WPoint w h) -> do
-            let cropped = cropper ((x, y), (w, h)) (lw, lh) l
+            let cropped = crop ((x, y), (w, h)) (lw, lh) l
             mapM_ putStr (layout (w, h) cropped)
       LineChanged -> do
         resetCursor
         down (cy - py)
         case (wrapPoint (px, cy), wrapPoint (sw, 1)) of
           (WPoint x y, WPoint w h) -> do
-            let cropped = cropper ((x, y), (w, h)) (lw, lh) l
+            let cropped = crop ((x, y), (w, h)) (lw, lh) l
             mapM_ putStr (layout (w, h) cropped)
       _ -> return ()
     if d' > NoChange then do
@@ -172,24 +168,3 @@ main = do
   initscr
   outer ((0, 0), (-1, -1)) ([], ([], (), l), ls)
   endwin
-
---foreign import ccall unsafe "nomacro_getyx" 
---        nomacro_getyx :: Ptr Window -> Ptr CInt -> Ptr CInt -> IO ()
-
---standardScreen :: Window
---standardScreen = unsafePerformIO (peek stdscr)
-
---foreign import ccall "static &stdscr" 
---    stdscr :: Ptr Window
-
-
---getYX :: Ptr Window -> IO (Int, Int)
--- getYX w =
---     alloca $ \py ->                 -- allocate two ints on the stack
---         alloca $ \px -> do
---             nomacro_getyx w py px   -- writes current cursor coords
---             y <- peek py
---             x <- peek px
---             return (fromIntegral y, fromIntegral x)
-
-
