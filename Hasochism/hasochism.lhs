@@ -734,6 +734,20 @@ Now we can define clipping, fitting, and cropping.
 > crop ((x, y), (w, h)) (s, t) b =
 >   fit (s /-/ x, t /-/ y) (w, h) (clip (s, t) (x, y) b)
 
+A convenient feature of our cropping code is that type-level
+subtraction is confined to the |clip| function. This works because in
+the type of |fit| the output box is independent of the size of the
+input box.
+
+In an earlier version of the code we experimented with a cropping
+function of type:
+
+> Cut p => Region x y w h -> Size s t ->
+>   Box p PRIME(s, t) -> Box p PRIME(Min w (s :- x), Min h (t :- y))
+
+This proved considerably more difficult as we had to reason about
+interactions between subtraction, addition, and minimum.
+
 \subsection{Length-indexed vector types}
 
 For implementing our text editor we will use boxes in which the
@@ -894,8 +908,8 @@ We can wrap a list as a vector.
 >   WVec v -> WVec (x :> v)
 
 Given a string of length |w|, we can wrap it as a character box of
-size |PRIME(w, 1)|. Given a list of |h| strings of maximum length |w|,
-we can wrap it as a character box of size |PRIME(w, h)|.
+size |(w, 1)|. Given a list of |h| strings of maximum length |w|, we
+can wrap it as a character box of size |(w, h)|.
 
 > data WCharBox :: * where
 >   WCharBox :: Size w h -> CharBox PRIME(w, h) -> WCharBox
