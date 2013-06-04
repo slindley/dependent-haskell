@@ -871,9 +871,9 @@ SNat n|. We can now wrap an |Int| as a |WNat|.
 > wrapNat :: Int -> WNat
 > wrapNat  0  =  WNat SZ
 > wrapNat  n  =  case wrapNat (n-1) of
->                 WNat wn -> WNat (SS wn)
+>                  WNat wn -> WNat (SS wn)
 
-
+Similarly, we implement functionality for wrapping points.
 
 > data WPoint :: * where
 >   WPoint :: SNat x -> SNat y -> WPoint
@@ -882,26 +882,32 @@ SNat n|. We can now wrap an |Int| as a |WNat|.
 > wrapPoint (x, y) =
 >   case (wrapNat x, wrapNat y) of
 >     (WNat x, WNat y) -> WPoint x y
-> 
-> data WCharBox :: * where
->   WCharBox :: Size w h -> CharBox PRIME(w, h) -> WCharBox
-> 
+
+We can wrap a list as a vector.
+
 > data WrappedVec a :: * where
 >   WVec :: Vec n a -> WrappedVec a
-> 
-> vecOfList :: [a] -> WrappedVec a
-> vecOfList []      = WVec V0
-> vecOfList (x:xs)  = case vecOfList xs of
+>
+> wrapList :: [a] -> WrappedVec a
+> wrapList []      = WVec V0
+> wrapList (x:xs)  = case wrapList xs of
 >   WVec v -> WVec (x :> v)
-> 
-> charBoxOfString :: String -> WCharBox
-> charBoxOfString s = case vecOfList s of
+
+Given a string of length |w|, we can wrap it as a character box of
+size |PRIME(w, 1)|. Given a list of |h| strings of maximum length |w|,
+we can wrap it as a character box of size |PRIME(w, h)|.
+
+> data WCharBox :: * where
+>   WCharBox :: Size w h -> CharBox PRIME(w, h) -> WCharBox
+>
+> wrapString :: String -> WCharBox
+> wrapString s = case wrapList s of
 >   WVec v -> WCharBox (vlength v, one) (boxS v)
 
-> charBoxOfStrings :: [String] -> WCharBox
-> charBoxOfStrings []      = WCharBox (SZ, SZ) boxZ
-> charBoxOfStrings (s:ss)  =
->   case (charBoxOfString s, charBoxOfStrings ss) of
+> wrapStrings :: [String] -> WCharBox
+> wrapStrings []      = WCharBox (SZ, SZ) boxZ
+> wrapStrings (s:ss)  =
+>   case (wrapString s, wrapStrings ss) of
 >     (WCharBox (w1, h1) b1, WCharBox (w2, h2) b2) ->
 >       WCharBox
 >         (w1 `maxn` w2, h1 /+/ h2)
@@ -927,7 +933,7 @@ SNat n|. We can now wrap an |Int| as a |WNat|.
 >   inward i (xz, (), x : xs)  = inward (i - 1) (x : xz, (), xs)
 > 
 > whatAndWhere :: TextCursor -> (WCharBox, (Int, Int))
-> whatAndWhere (czz, cur, css) = (charBoxOfStrings strs, (x, y))
+> whatAndWhere (czz, cur, css) = (wrapStrings strs, (x, y))
 >   where
 >     (x, cs) = deactivate cur
 >     (y, strs) = deactivate (czz, (), cs : css)
