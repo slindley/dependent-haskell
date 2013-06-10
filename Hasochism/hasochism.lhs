@@ -8,6 +8,12 @@
 %include polycode.fmt
 %include forall.fmt
 
+\DeclareMathAlphabet{\mathkw}{OT1}{cmss}{bx}{n}
+%subst keyword a = "\mathkw{" a "}"
+%subst conid a = "\mathsf{" a "}"
+%format where = "\;\mathkw{where}"
+%format family = "\mathkw{family}"
+
 %format * = "\star\,"
 %format PRIME = "{}^{\prime}\!\!"
 %format PRIMEPRIME = "{}^{\prime\prime}\!\!"
