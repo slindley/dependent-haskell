@@ -95,6 +95,39 @@
 
 \section{Introduction}
 
+\section{$\Pi$ versus $\forall$ versus explicit $\forall$}
+
+%include natvec.lhs
+
+\section{Explicit $\Pi$ versus implicit $\Pi$}
+
+%include pies.lhs
+
+\section{The NATTY-in-Natty question}
+
+%include vlength.lhs
+
+\section{Classes-as-relations --- silence is golden}
+
+%include merge-sort.lhs
+
+\section{Evidence is data and proof}
+
+%include evidence.lhs
+
+\section{Box library (first-attempt)}
+
+%include box-one.lhs
+
+\section{Box library (second-attempt)}
+
+%include box-two.lhs
+
+\section{Conclusion}
+
+\newpage
+
+[OLD stuff]
 
 \section{Boxes}
 
