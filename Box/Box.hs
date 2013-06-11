@@ -84,9 +84,9 @@ unMat (Mat m) = m
 instance Cut (Matrix e) where
   horCut m n (Mat ess) =
     (Mat (fst <$> ps), Mat (snd <$> ps)) where
-      ps = vchop m n <$> ess
+      ps = vchop m <$> ess
   verCut m n (Mat ess) = (Mat tess, Mat bess) where
-    (tess, bess) = vchop m n ess 
+    (tess, bess) = vchop m ess 
 
 {- smart constructors for clear boxes -}
 clear :: (Natty w, Natty h) -> Box p '(w, h)
