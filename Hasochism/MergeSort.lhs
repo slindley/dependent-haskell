@@ -4,14 +4,12 @@
 >     DataKinds, FlexibleInstances, RankNTypes, FlexibleContexts #-}
 
 > module MergeSort where
+> import NatVec
 
 %endif
 
 The following is a stunt, but it's quite a safe stunt so do try it at home. It uses some of the entertaining new toys to bake order invariants into mergeSort.
 
-I'll have natural numbers, just to keep things simple.
-
-> data Nat = Z | S Nat deriving (Show, Eq, Ord)
 
 But I'll define <= in type class Prolog, so the typechecker can try to figure order out implicitly.
 
@@ -24,12 +22,6 @@ In order to sort numbers, I need to know that any two numbers can be ordered one
 > data OWOTO :: Nat -> Nat -> * where
 >   LE :: LeN x y => OWOTO x y
 >   GE :: LeN y x => OWOTO x y
-
-We'd like to know that every two numbers are indeed orderable, provided we have a runtime representation of them. These days, we get that by building the singleton family for Nat. Natty n is the type of runtime copies of n.
-
-> data Natty :: Nat -> * where
->   Zy :: Natty Z
->   Sy :: Natty n -> Natty (S n)
 
 Testing which way around the numbers are is quite a lot like the usual Boolean version, except with evidence. The step case requires unpacking and repacking because the types change. Instance inference is good for the logic involved.
 
