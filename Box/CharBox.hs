@@ -16,7 +16,7 @@ type CharBox wh = Box CharMatrix wh
 matrixChar :: Char -> (Natty w, Natty h) -> CharMatrix '(w, h)
 matrixChar c (w, h) = Mat (vcopies h (vcopies w c))
                       -- alternatively we could do the presumably less efficient:
-                      --   natter x (natter y (Mat (pure (pure c))))
+                      --   natter w (natter h (Mat (pure (pure c))))
 
 renderCharBox :: Size w h -> CharBox '(w, h) -> CharMatrix '(w, h)
 renderCharBox _      (Stuff css)     = css
