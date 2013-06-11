@@ -1,5 +1,5 @@
 {-# LANGUAGE
-    DataKinds, KindSignatures,
+    DataKinds, PolyKinds, KindSignatures,
     RankNTypes, GADTs, TypeOperators #-}
 
 module Vec where
@@ -53,6 +53,19 @@ vappend :: Vec m x -> Vec n x -> Vec (m :+ n) x
 vappend V0        ys = ys
 vappend (x :> xs) ys = x :> vappend xs ys
 
-vchop :: Natty m -> Natty n -> Vec (m :+ n) x -> (Vec m x, Vec n x)
-vchop SZ n xs = (V0, xs)
-vchop (SS m) n (x :> xs) = (x :> ys, zs) where (ys, zs) = vchop m n xs
+vchop :: Natty m -> Vec (m :+ n) x -> (Vec m x, Vec n x)
+vchop SZ     xs        = (V0, xs)
+vchop (SS m) (x :> xs) = (x :> ys, zs) where (ys, zs) = vchop m xs
+
+{- Recent versions of GHC (>= 7.6.2) don't require an 
+   extra argument to vchop for n.
+
+   However, for the vprefix function (below) we do need to provide an
+argument for n.  -}
+
+data Proxy (a :: k) = Proxy
+
+vprefix :: Natty m -> Proxy n -> Vec (m :+ n) x -> Vec m x
+vprefix SZ     _ xs        = V0
+vprefix (SS m) n (x :> xs) = x :> vprefix m n xs
+

@@ -144,7 +144,7 @@ check them, but also to drive the generation of invisible boilerplate.
 
 \section{The NATTY-in-Natty question}
 
-%include vlength.lhs
+%include NATTYInNatty.lhs
 
 \section{Classes-as-relations --- silence is golden}
 
