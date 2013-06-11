@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, 
+{-# LANGUAGE DataKinds, TypeOperators,
     RankNTypes, GADTs #-}
 
 module CharBox where
@@ -12,6 +12,12 @@ import Box
 
 type CharMatrix = Matrix Char
 type CharBox wh = Box CharMatrix wh
+
+-- The call to |natter| here is necessary if Natty does not include a
+-- |NATTY| constraint, but can be ommitted if it does.
+idMatrix :: Natty n -> Matrix Int '(n, n)
+idMatrix (SS n) = natter n (Mat ((1 :> pure 0) :> ((0 :>) <$> (unMat (idMatrix n)))))
+idMatrix SZ     = Mat V0
 
 matrixChar :: Char -> (Natty w, Natty h) -> CharMatrix '(w, h)
 matrixChar c (w, h) = Mat (vcopies h (vcopies w c))

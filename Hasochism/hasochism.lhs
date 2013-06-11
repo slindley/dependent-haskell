@@ -14,8 +14,11 @@
 %format where = "\;\mathkw{where}"
 %format family = "\mathkw{family}"
 
-%format * = "\star\,"
+%% TODO: get rid of PRIME - use PAIR
+
+%format * = "\star"
 %format PRIME = "{}^{\prime}\!\!"
+%format PRIMEE = "{}^{\prime}"
 %format PRIMEPRIME = "{}^{\prime\prime}\!\!"
 
 %format :+ = ":\!\!+\,"
@@ -27,6 +30,7 @@
 %format <$> = "<\!\!\mathord{\$}\!\!>"
 %format <*> = "<\!\!\mathord{\star}\!\!>"
 
+%format (Pair (x) (y)) = PRIMEE(x, y)
 
 %format x1 = "x_1"
 %format x2 = "x_2"
@@ -40,8 +44,8 @@
 %format h1 = "h_1"
 %format h2 = "h_2"
 
-%format wh1 = "\mathit{wh}_1"
-%format wh2 = "\mathit{wh}_2"
+%format wh1 = wh "_1"
+%format wh2 = wh "_2"
 
 
 %format b1 = "b_1"
@@ -53,6 +57,8 @@
 
 %format EXISTS = "\exists\!"
 %format DOT = "\!\!.\!\!"
+
+\newcommand{\F}{\mathsf}
 
 \renewcommand{\hscodestyle}{\small}
 
@@ -490,10 +496,10 @@ that only well-formed boxes can be constructed.
 > data Box :: ((Nat, Nat) -> *) -> (Nat, Nat) -> * where
 >   Stuff :: p wh -> Box p wh
 >   Clear :: Box p wh
->   Hor ::  SNat w1 -> Box p PRIME(w1, h) ->
->           SNat w2 -> Box p PRIME(w2, h) -> Box p PRIME(w1 :+ w2, h)
->   Ver ::  SNat h1 -> Box p PRIME(w, h1) ->
->           SNat h2 -> Box p PRIME(w, h2) -> Box p PRIME(w, h1 :+ h2)
+>   Hor ::  SNat w1 -> Box p (Pair w1 h) ->
+>           SNat w2 -> Box p (Pair w2 h) -> Box p (Pair (w1 :+ w2) h)
+>   Ver ::  SNat h1 -> Box p (Pair w h1) ->
+>           SNat h2 -> Box p (Pair w h2) -> Box p (Pair w (h1 :+ h2))
 
 When composing boxes horizontally, we add together their widths, at
 the level of types. The widths of the boxes are stored as
