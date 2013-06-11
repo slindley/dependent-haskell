@@ -95,6 +95,45 @@
 
 \section{Introduction}
 
+In the design of Standard ML, Milner and his colleagues achieved a remarkable
+alignment of distinctions:
+\[\begin{array}{||l||||r||l||}
+\hline
+\textrm{syntactic category}  & \textbf{terms}      &     \textbf{types} \\
+\textrm{phase distinction}   & \textbf{dynamic}    &    \textbf{static} \\
+\textrm{inference}           & \textbf{explicit}   &  \textbf{implicit} \\
+\textrm{abstraction}         & \textbf{simple}     & \textbf{dependent} \\
+\hline
+\end{array}\]
+
+The things you write are the things you run, namely terms, for which
+abstraction (with an explicit $\lambda$) is simply typed---the bound
+variable does not occur in the return type of the function. The things
+which you leave to be inferred, namely polymorphic type schemes, exist
+only at compile time and allow (outermost) dependent abstraction over
+types, with implicit application at usage sites instantiating the
+bound variables.
+
+An unintended consequence of Milner's achievement is that we sometimes
+blur the distinctions between these distinctions. We find it hard to
+push them out of alignment because we lose sight of the very
+possibility of doing so. For example, some have voiced objections to
+the prospect of terms in types on the grounds that efficient
+compilation relies on erasure to the dynamic fragment of the
+language. However, renegotiating the term/type distinction need not
+destroy the dynamic/static distinction, as shown by the Coq's
+venerable program extraction algorithm, erasing types and proofs from
+dependently typed constructions.
+
+Meanwhile, Haskell's type classes demonstrate the value of dynamic
+components which are none the less implicit---instance
+dictionaries. Indeed, type inference seems a timid virtue once you
+glimpse the prospect of \emph{program} inference, yet some are made
+nervous by the prospect of unwritten programs being run. Similarly,
+Haskell's combination of higher kinds and constraints means that
+sometimes static types must be given explicitly, in order not only to
+check them, but also to drive the generation of invisible boilerplate.
+
 \section{$\Pi$ versus $\forall$ versus explicit $\forall$}
 
 %include natvec.lhs
