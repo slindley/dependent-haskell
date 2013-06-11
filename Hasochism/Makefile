@@ -1,6 +1,6 @@
 all: hasochism.pdf
 
-hasochism.tex: hasochism.lhs
+hasochism.tex: hasochism.lhs MergeSort.lhs
 	if [ -f "hasochism.tex" ]; then chmod +w hasochism.tex; fi
 	lhs2TeX -o hasochism.tex hasochism.lhs
 	chmod -w hasochism.tex

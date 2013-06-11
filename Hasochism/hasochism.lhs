@@ -148,7 +148,7 @@ check them, but also to drive the generation of invisible boilerplate.
 
 \section{Classes-as-relations --- silence is golden}
 
-%include merge-sort.lhs
+%include MergeSort.lhs
 
 \section{Evidence is data and proof}
 
