@@ -40,19 +40,26 @@ instance Functor f => Applicative (FreeApp f) where
   pure v                         = FreeApp FNil (\FNil -> v)
   FreeApp cs f <*> FreeApp cs' g =
      FreeApp (cs /++/ cs')
-       (\xs -> let (ys, zs) = split cs cs' xs in f ys (g zs))
+       (\xs -> let (ys, zs) = split cs xs in f ys (g zs))
 
 {- split an FList into two parts.
-
-   The first two arguments direct where to split the list. Both are
-necessary for type inference even though the second is never
-deconstructed.
+   The first argument directs where to split the list.
 -}
-split :: FList f ts -> FList f ts' ->
+split :: FList f ts ->
            FList g (ts :++: ts') -> (FList g ts, FList g ts')
-split FNil      _    xs       = (FNil, xs)
-split (c :> cs) cs' (x :> xs) = (x :> ys, zs) where
-  (ys, zs) = split cs cs' xs
+split FNil      xs        = (FNil, xs)
+split (c :> cs) (x :> xs) = (x :> ys, zs) where
+  (ys, zs) = split cs xs
+
+{- In older versions of GHC (< 7.6.2, I think), it was necessary to
+add an additional argument to split in order to aid type inference.
+
+  split :: FList f ts -> FList f ts' ->
+             FList g (ts :++: ts') -> (FList g ts, FList g ts')
+  split FNil      _    xs       = (FNil, xs)
+  split (c :> cs) cs' (x :> xs) = (x :> ys, zs) where
+    (ys, zs) = split cs cs' xs
+-}
 
 {- The free alternative applicative functor -}
 newtype FreeAlt f a = FreeAlt [FreeApp f a]
