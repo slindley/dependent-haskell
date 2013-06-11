@@ -136,7 +136,7 @@ check them, but also to drive the generation of invisible boilerplate.
 
 \section{$\Pi$ versus $\forall$ versus explicit $\forall$}
 
-%include natvec.lhs
+%include NatVec.lhs
 
 \section{Explicit $\Pi$ versus implicit $\Pi$}
 
