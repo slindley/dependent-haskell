@@ -109,6 +109,26 @@
 
 %endif
 
+%% function definitions
+
+%format natter = "\F{natter}"
+%format natty = "\F{natty}"
+%format vcopies = "\F{vcopies}"
+%format vapp = "\F{vapp}"
+%format pure = "\F{pure}"
+%format traverse = "\F{traverse}"
+
+%format fmap = "\F{fmap}"
+%format fmapDefault = "\F{fmapDefault}"
+%format foldMap = "\F{foldMap}"
+
+%format unMat = "\F{unMat}"
+
+%format vlength = "\F{vlength}"
+%format idMatrix = "\F{idMatrix}"
+
+%% duplicated thingies
+
 %format NattyD = Natty
 %format ZyD = Zy
 %format SyD = Sy
@@ -144,11 +164,6 @@ the successor case.
 > data NattyC :: Nat -> * where
 >   ZyC :: NattyC Z
 >   SyC :: NATTYC n => NattyC n -> NattyC (S n)
-
-%if False
-
-
-%endif
 
 Each choice has advantages and disadvantages.
 
