@@ -5,6 +5,8 @@
 >     TypeOperators, TypeFamilies #-}
 
 > module NatVec where
+>
+> type Pair (x :: Nat) (y :: Nat) = '(x, y)
 
 %endif
 

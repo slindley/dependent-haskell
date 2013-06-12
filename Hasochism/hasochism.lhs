@@ -170,13 +170,15 @@ check them, but also to drive the generation of invisible boilerplate.
 
 %include Evidence.lhs
 
-\section{Box library (first-attempt)}
+\section{Painful boxes}
 
 %include BoxPain.lhs
 
-\section{Box library (second-attempt)}
+\section{Pleasurable boxes}
 
 %include BoxPleasure.lhs
+
+\section{An editor}
 
 \section{Conclusion}
 

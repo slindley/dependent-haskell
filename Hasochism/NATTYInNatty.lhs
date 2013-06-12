@@ -8,8 +8,6 @@
 > import Data.Traversable
 > import Data.Foldable
 
-> type Pair (x :: Nat) (y :: Nat) = '(x, y)
-
 %% natural numbers
 
 > data Nat = Z | S Nat
@@ -206,9 +204,8 @@ Let us write a function to construct an identity matrix of size
 bring the appropriate typing constraint into scope.
 
 > idMatrix :: Natty n -> Matrix Int (Pair n n)
-> idMatrix (Sy n)  =
->   natter n (Mat ((1 :> pure 0) :> ((0 :>) <$>
->     (unMat (idMatrix n)))))
+> idMatrix (Sy n)  = natter n $
+>   Mat ((1 :> pure 0) :> ((0 :>) <$> unMat (idMatrix n)))
 > idMatrix Zy      = Mat V0
 
 %$
@@ -218,8 +215,7 @@ because the required constraint is already in scope.
 
 > idMatrixC :: NattyC n -> MatrixC Int (Pair n n)
 > idMatrixC (SyC n)  = 
->   MatC ((1 :>> pure 0) :>> ((0 :>>) <$>
->     (unMatC (idMatrixC n))))
+>   MatC ((1 :>> pure 0) :>> ((0 :>>) <$> unMatC (idMatrixC n)))
 > idMatrixC ZyC      = MatC V0C
 
 %$
