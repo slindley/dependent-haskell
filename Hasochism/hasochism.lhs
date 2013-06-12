@@ -77,7 +77,7 @@
 %% \preprintfooter{short description of paper}   % 'preprint' option specified.
 
 \title{Hasochism}
-%\subtitle{Subtitle Text, if any}
+\subtitle{The Pleasure and Pain of Dependently Typed Haskell Programming}
 
 \authorinfo{Sam Lindley}
            {University of Strathclyde}
@@ -89,6 +89,16 @@
 \maketitle
 
 \begin{abstract}
+Haskell's type system has outgrown its Hindley-Milner roots to the extent that it
+now stretches to the basics of dependently typed programming. In this paper, we
+collate and classify techniques for programming with dependent types in Haskell,
+and contribute some new ones. In particular, through extended examples ---
+merge sort and rectangular tilings --- we show how to exploit Haskell's constraint
+solver as a theorem prover, delivering code which, as Agda programmers, we envy.
+We explore the compromises involved in simulating variations on the theme of the
+dependent function space in an attempt to help programmers put dependent
+types to work, and to inform the evolving language design both of Haskell and of
+dependently typed languages more broadly.
 \end{abstract}
 
 %% \category{CR-number}{subcategory}{third-level}
