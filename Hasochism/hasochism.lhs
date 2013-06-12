@@ -158,7 +158,7 @@ check them, but also to drive the generation of invisible boilerplate.
 
 \section{Evidence is data and proof}
 
-%include evidence.lhs
+%include Evidence.lhs
 
 \section{Box library (first-attempt)}
 
