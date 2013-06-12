@@ -15,9 +15,7 @@
 >
 > import NatVec
 >
-> data Proxy (a :: k) = Proxy
->
-> poxy :: a -> Proxy a
+> poxy :: f a -> Proxy a
 > poxy _ = Proxy
 >
 > vprefix :: Natty m -> Proxy n -> Vec (m :+ n) x -> Vec m x
@@ -73,9 +71,16 @@ proof object:
 >   EQNat   -> EQNat
 >   GTNat z -> GTNat z
 
+Procrustes is a character from Greek mythology who fits his victims
+into an iron bed either by stretching their limbs or by chopping them
+off. The |procrustes| function fits a vector of length |m| into a
+vector of length |n|, by padding or trimming as necessary.
 
-> procrustees :: Natty m -> Natty n -> a -> Vec m a -> Vec n a
-> procrustees m n x xs = case cmp m n of
->   LTNat z -> vappend xs (vcopies (Sy z) x)
+> procrustes :: a -> Natty m -> Natty n -> Vec m a -> Vec n a
+> procrustes p m n xs = case cmp m n of
+>   LTNat z -> vappend xs (vcopies (Sy z) p)
 >   EQNat   -> xs
->   GTNat z -> vprefix m (poxy (Sy z)) xs 
+>   GTNat z -> vprefix n (poxy (Sy z)) xs 
+
+In both the less-than and greater-than cases we compute explicitly
+with the evidence |z| provided by the |Cmp| data type.
