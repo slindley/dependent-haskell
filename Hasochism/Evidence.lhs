@@ -5,6 +5,12 @@
 %format EQNatN = EQNat
 %format GTNatN = GTNat
 
+%format poxy = "\F{poxy}"
+%format vprefix = "\F{vprefix}"
+%format vcopies = "\F{vcopies}"
+%format procrustes = "\F{procrustes}"
+%format cmp = "\F{cmp}"
+
 %if False
 
 > {-# LANGUAGE GADTs,
@@ -51,7 +57,7 @@ singleton representation of |z| as a witness.
 
 > data Cmp :: Nat -> Nat -> * where
 >   LTNat :: Natty z -> Cmp m (m :+ S z)
->   EQNat :: Cmp n n
+>   EQNat :: Cmp m m
 >   GTNat :: Natty z -> Cmp (n :+ S z) n
 
 Note that in more conventional dependently typed programming languages
