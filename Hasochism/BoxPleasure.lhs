@@ -96,12 +96,9 @@ datatype with suitable type equalities. For our basic |Cmp| data type,
 this yields:
 
 > data CmpEx :: Nat -> Nat -> * where
->   LTNatEx :: ((m :+ S z)  ~ n        )  =>
->     Natty z ->  CmpEx m n
->   EQNatEx :: (m           ~ n        )  =>
->                 CmpEx m n
->   GTNatEx :: (m           ~ (n :+ S z)) => 
->     Natty z ->  CmpEx m n
+>   LTNatEx :: ((m :+ S z) ~ n)  => Natty z ->  CmpEx m n
+>   EQNatEx :: (m ~ n)           =>             CmpEx m n
+>   GTNatEx :: (m ~ (n :+ S z))  => Natty z ->  CmpEx m n
 
 Now the fun starts. As well as the equations that define the proof
 object, we can incorporate other equations that encapsulate further
@@ -109,11 +106,11 @@ knowledge implied by the result of the comparison. For now we add
 equations for computing the maximum of |m| and |n| in each case.
 
 > data CmpMax :: Nat -> Nat -> * where
->   LTNatMax :: ((m :+ S z)  ~ n,           Max m n ~ n)  =>
+>   LTNatMax :: ((m :+ S z) ~ n,  Max m n ~ n)  =>
 >     Natty z ->  CmpMax m n
->   EQNatMax :: (m           ~ n,           Max m n ~ m)  =>
+>   EQNatMax :: (m ~ n,           Max m n ~ m)  =>
 >                 CmpMax m n
->   GTNatMax :: (m           ~ (n :+ S z),  Max m n ~ m)  =>
+>   GTNatMax :: (m ~ (n :+ S z),  Max m n ~ m)  =>
 >     Natty z ->  CmpMax m n
 
 Having added these straightforward equalities, our definition of
@@ -270,14 +267,11 @@ In order to account for the subtraction in the result, we need to
 augment our |Cmp| data type to include the necessary equations.
 
 > data Cmp :: Nat -> Nat -> * where
->   LTNat ::
->     ((m :+ S z)   ~ n,           Max m n ~ n,  (m :- n) ~ Z)    =>
+>   LTNat :: ((m :+ S z) ~ n,  Max m n ~ n,  (m :- n) ~ Z)    =>
 >       Natty z ->  Cmp m n
->   EQNat ::
->     (m            ~ n,           Max m n ~ m,  (m :- n) ~ Z)    =>
->                  Cmp m n
->   GTNat ::
->     (m            ~ (n :+ S z),  Max m n ~ m,  (m :- n) ~ S z)  =>
+>   EQNat :: (m ~ n,           Max m n ~ m,  (m :- n) ~ Z)    =>
+>                   Cmp m n
+>   GTNat :: (m ~ (n :+ S z),  Max m n ~ m,  (m :- n) ~ S z)  =>
 >       Natty z ->  Cmp m n
 
 To clip in both dimensions, we first clip horizontally, and then clip
