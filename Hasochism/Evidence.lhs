@@ -5,8 +5,6 @@
 %format EQNatN = EQNat
 %format GTNatN = GTNat
 
-%format poxy = "\F{poxy}"
-%format vprefix = "\F{vprefix}"
 %format vcopies = "\F{vcopies}"
 %format procrustes = "\F{procrustes}"
 %format cmp = "\F{cmp}"
@@ -21,13 +19,6 @@
 >
 > import NatVec
 >
-> poxy :: f a -> Proxy a
-> poxy _ = Proxy
->
-> vprefix :: Natty m -> Proxy n -> Vec (m :+ n) x -> Vec m x
-> vprefix Zy     _ xs        = V0
-> vprefix (Sy m) n (x :> xs) = x :> vprefix m n xs
-> 
 > vcopies :: forall n x.Natty n -> x -> Vec n x
 > vcopies Zy x = V0
 > vcopies (Sy n) x = x :> vcopies n x   
@@ -86,7 +77,7 @@ vector of length |n|, by padding or trimming as necessary.
 > procrustes p m n xs = case cmp m n of
 >   LTNat z -> vappend xs (vcopies (Sy z) p)
 >   EQNat   -> xs
->   GTNat z -> vprefix n (poxy (Sy z)) xs 
+>   GTNat z -> vtake n (proxy (Sy z)) xs 
 
 In both the less-than and greater-than cases we compute explicitly
 with the evidence |z| provided by the |Cmp| data type.
