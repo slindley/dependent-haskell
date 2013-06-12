@@ -58,11 +58,11 @@ argument to the |LTNat| and |GTNat| constructors.
 We can now write a comparison function that constructs a suitable
 proof object:
 
-> cmp :: Natty x -> Natty y -> Cmp x y
+> cmp :: Natty m -> Natty n -> Cmp m n
 > cmp Zy      Zy      = EQNat
-> cmp Zy      (Sy y)  = LTNat y
-> cmp (Sy x)  Zy      = GTNat x
-> cmp (Sy x)  (Sy y)  = case cmp x y of
+> cmp Zy      (Sy n)  = LTNat n
+> cmp (Sy m)  Zy      = GTNat m
+> cmp (Sy m)  (Sy n)  = case cmp m n of
 >   LTNat z  ->  LTNat z
 >   EQNat    ->  EQNat
 >   GTNat z  ->  GTNat z

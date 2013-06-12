@@ -25,6 +25,16 @@
 
 %format maxn = "\F{maxn}"
 
+%format cmp = "\F{cmp}"
+
+%format joinH = "\F{joinH}"
+%format joinV = "\F{joinV}"
+
+%format maxLT = "\F{maxLT}"
+%format maxEQ = "\F{maxEQ}"
+%format maxGT = "\F{maxGT}"
+
+
 In this section we introduce our main example, an algebra for building
 size-indexed rectangular tilings, which we call simply \emph{boxes}.
 
