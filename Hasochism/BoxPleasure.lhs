@@ -146,6 +146,8 @@ The |joinV| function is defined similarly.
 
 %endif
 
+\subsection{Cutting}
+
 For cutting up boxes, and two-dimensional entities in general, we
 introduce a type class |Cut|.
 
@@ -240,6 +242,8 @@ composition of two sub-boxes, we must identify which sub-box the cut
 occurs in, and recurse appropriately. Note that we rely on being able
 to cut underlying content. The definition of vertical box cutting is
 similar.
+
+\subsection{Cropping}
 
 We now proceed to define cropping in terms of cutting.
 

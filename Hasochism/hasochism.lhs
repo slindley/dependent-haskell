@@ -64,6 +64,7 @@
 
 \usepackage{amsmath}
 \usepackage{xspace}
+\usepackage{url}
 
 \newcommand{\singletons}{\textsf{singletons}\xspace}
 
@@ -179,6 +180,8 @@ check them, but also to drive the generation of invisible boilerplate.
 %include BoxPleasure.lhs
 
 \section{An editor}
+
+%include Editor.lhs
 
 \section{Conclusion}
 
