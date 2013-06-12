@@ -32,28 +32,28 @@
 
 %format (Pair (x) (y)) = PRIMEE(x, y)
 
-%format x1 = "x_1"
-%format x2 = "x_2"
+%format x1 = x "_1"
+%format x2 = x "_2"
 
-%format y1 = "y_1"
-%format y2 = "y_2"
+%format y1 = y "_1"
+%format y2 = y "_2"
 
-%format w1 = "w_1"
-%format w2 = "w_2"
+%format w1 = w "_1"
+%format w2 = w "_2"
 
-%format h1 = "h_1"
-%format h2 = "h_2"
+%format h1 = h "_1"
+%format h2 = h "_2"
 
 %format wh1 = wh "_1"
 %format wh2 = wh "_2"
 
 
-%format b1 = "b_1"
-%format b2 = "b_2"
-%format b11 = "b_{11}"
-%format b12 = "b_{12}"
-%format b21 = "b_{21}"
-%format b22 = "b_{22}"
+%format b1 = b "_1"
+%format b2 = b "_2"
+%format b11 = b "_{11}"
+%format b12 = b "_{12}"
+%format b21 = b "_{21}"
+%format b22 = b "_{22}"
 
 %format EXISTS = "\exists\!"
 %format DOT = "\!\!.\!\!"
