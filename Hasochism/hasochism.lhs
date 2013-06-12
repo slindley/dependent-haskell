@@ -172,11 +172,11 @@ check them, but also to drive the generation of invisible boilerplate.
 
 \section{Box library (first-attempt)}
 
-%include box-one.lhs
+%include BoxPain.lhs
 
 \section{Box library (second-attempt)}
 
-%include box-two.lhs
+%include BoxPleasure.lhs
 
 \section{Conclusion}
 
