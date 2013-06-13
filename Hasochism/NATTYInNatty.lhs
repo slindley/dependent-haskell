@@ -4,61 +4,13 @@
 >     DataKinds, FlexibleInstances, RankNTypes, FlexibleContexts #-}
 
 > module NATTYInNatty where
+>
 > import Control.Applicative
 > import Data.Traversable
 > import Data.Foldable
-
-%% natural numbers
-
-> data Nat = Z | S Nat
-> 
-> data Natty :: Nat -> * where
->   Zy :: Natty Z
->   Sy :: Natty n -> Natty (S n)
-> 
-> class NATTY (n :: Nat) where
->   natty :: Natty n
-> 
-> instance NATTY Z where
->   natty = Zy
-> 
-> instance NATTY n => NATTY (S n) where
->   natty = Sy natty
-> 
-> natter :: Natty n -> (NATTY n => t) -> t
-> natter Zy     t = t
-> natter (Sy n) t = natter n t
-
-%% vectors
-
-> data Vec :: Nat -> * -> * where
->   V0   ::                 Vec Z x
->   (:>) :: x -> Vec n x -> Vec (S n) x
-> 
-> vcopies :: forall n x.Natty n -> x -> Vec n x
-> vcopies Zy x = V0
-> vcopies (Sy n) x = x :> vcopies n x   
-> 
-> vapp :: forall n s t.Vec n (s -> t) -> Vec n s -> Vec n t
-> vapp V0 V0 = V0
-> vapp (f :> fs) (s :> ss) = f s :> vapp fs ss
-> 
-> instance NATTY n => Applicative (Vec n) where
->   pure = vcopies natty where
->   (<*>) = vapp where
-> 
-> instance Traversable (Vec n) where
->   traverse f V0 = pure V0
->   traverse f (x :> xs) = (:>) <$> f x <*> traverse f xs
-
-%$
-
-> instance Functor (Vec n) where
->   fmap = fmapDefault
-> 
-> instance Foldable (Vec n) where
->   foldMap = foldMapDefault
-
+>
+> import NatVec
+> import Pies
 
 %% natural numbers again
 
@@ -108,17 +60,6 @@
 %endif
 
 %% function definitions
-
-%format natter = "\F{natter}"
-%format natty = "\F{natty}"
-%format vcopies = "\F{vcopies}"
-%format vapp = "\F{vapp}"
-%format pure = "\F{pure}"
-%format traverse = "\F{traverse}"
-
-%format fmap = "\F{fmap}"
-%format fmapDefault = "\F{fmapDefault}"
-%format foldMap = "\F{foldMap}"
 
 %format unMat = "\F{unMat}"
 

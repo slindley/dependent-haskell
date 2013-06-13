@@ -18,10 +18,7 @@
 > module Evidence where
 >
 > import NatVec
->
-> vcopies :: forall n x.Natty n -> x -> Vec n x
-> vcopies Zy x = V0
-> vcopies (Sy n) x = x :> vcopies n x   
+> import Pies
 
 %endif
 

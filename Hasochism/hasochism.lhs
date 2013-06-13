@@ -34,6 +34,7 @@
 
 %format x1 = x "_1"
 %format x2 = x "_2"
+%format xn = x "_n"
 
 %format y1 = y "_1"
 %format y2 = y "_2"
@@ -58,9 +59,14 @@
 %format EXISTS = "\exists\!"
 %format DOT = "\!\!.\!\!"
 
+%format show = "\F{show}"
+
 \newcommand{\F}{\mathsf}
 
 \renewcommand{\hscodestyle}{\small}
+
+\newcommand\todo[1]{\textbf{TODO: }{#1}}
+
 
 \usepackage{amsmath}
 \usepackage{xspace}
@@ -151,6 +157,9 @@ Haskell's combination of higher kinds and constraints means that
 sometimes static types must be given explicitly, in order not only to
 check them, but also to drive the generation of invisible boilerplate.
 
+\todo{mention promotion~\cite{YorgeyWCJVM12}}
+
+\todo{Conor to work in motivations / contributions}
 
 Motivations:
 \begin{itemize}
@@ -186,7 +195,7 @@ The rest of the paper is structured as follows...
 
 \section{Explicit $\Pi$ versus implicit $\Pi$}
 
-%include pies.lhs
+%include Pies.lhs
 
 \section{The NATTY-in-Natty question}
 

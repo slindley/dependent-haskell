@@ -8,6 +8,12 @@
 
 %endif
 
+%format owoto = "\F{owoto}"
+%format merge = "\F{merge}"
+%format deal = "\F{deal}"
+%format sort = "\F{sort}"
+%format ni = "\F{ni}"
+
 The following is a stunt, but it's quite a safe stunt so do try it at home. It uses some of the entertaining new toys to bake order invariants into mergeSort.
 
 
@@ -63,6 +69,9 @@ We can write merge for ordered lists just the same way we would if they were ord
 The branches of the case analysis extend what is already known from the inputs with just enough ordering information to satisfy the requirements for the results. Instance inference acts as a basic theorem prover: fortunately (or rather, with a bit of practice) the proof obligations are easy enough.
 
 Let's seal the deal. We need to construct runtime witnesses for numbers in order to sort them this way.
+
+\todo{use existential kit to do |NATTY| --- need a different name
+anyway as |NATTY| is already taken}
 
 > data NATTY :: * where
 >   Nat :: Natty n -> NATTY
