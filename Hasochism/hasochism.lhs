@@ -326,9 +326,9 @@ To keep the definitions total we assert that $0 - n = 0$ for all $n$.
 
 \paragraph*{The \singletons library}
 
-Using Eisenberg and Weirich's \singletons
-library~\cite{singletons} we can automatically generate the |SNat| and
-|NATTY| type class from the |Nat| data type.
+Using Eisenberg and Weirich's \singletons library~\cite{EisenbergW12}
+we can automatically generate the |SNat| and |NATTY| type class from
+the |Nat| data type.
 
 > data Nat = Z | S Nat
 > 

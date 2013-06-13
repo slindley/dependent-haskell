@@ -189,7 +189,7 @@ structure over an undindexed list of strings. The current position and
 size of the screen is represented as two pairs of integers. On a
 change to the buffer, the inner loop proceeds as follows.
 \begin{itemize}
-\item Wrap the current screen position and size as an singleton region
+\item Wrap the current screen position and size as a singleton region
   using |wrapRegion|.
 \item Unravel the zipper structure to reveal the underlying structure
   of the buffer as a list of strings.
@@ -197,6 +197,12 @@ change to the buffer, the inner loop proceeds as follows.
   indexed |CharBox|.
 \item Crop the |CharBox| according to the wrapped singleton region.
   size.
-\item Render the result as a list of strings.
+\item Render the result as a list of strings using
+  |stringsOfCharMatrix . renderCharBox|.
 \end{itemize}
+
+We take advantage of dependent types to ensure that cropping yields
+boxes of the correct size. The rest of the editor does not use
+dependent types. The wrapping functions convert non-dependent data
+into equivalent dependent data. Rendering does the opposite.
 

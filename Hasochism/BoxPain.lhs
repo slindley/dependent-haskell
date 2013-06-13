@@ -83,7 +83,7 @@ Unfortunately, this code does not type check, because GHC has no way
 of knowing that the height of the resulting box is the maximum of the
 heights of the component boxes.
 
-\subsection{Painful join}
+\subsection{Pain}
 
 One approach to resolving this issue is to encode lemmas, given by
 parameterised equations, as Haskell functions.

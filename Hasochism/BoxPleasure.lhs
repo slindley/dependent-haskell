@@ -87,7 +87,7 @@
 %% >   EQNat  :: (Max m m ~ m)                    =>              Cmp m m
 %% >   GTNat  :: (Max (n :+ S z) n ~ (n :+ S z))  => Natty z  ->  Cmp (n :+ S z) n
 
-\subsection{Pleasurable join}
+\subsection{Pleasure}
 
 In order to avoid explicit calls to lemmas we would like to obtain the
 type equations we need for free as part of the proof object. As a
