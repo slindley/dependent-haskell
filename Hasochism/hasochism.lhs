@@ -151,6 +151,35 @@ Haskell's combination of higher kinds and constraints means that
 sometimes static types must be given explicitly, in order not only to
 check them, but also to drive the generation of invisible boilerplate.
 
+
+Motivations:
+\begin{itemize}
+\item For everyone. Dependent types. More precise types $\Rightarrow$ stronger
+  static guaranteees $\Rightarrow$ more reliable programs.
+
+\item For Haskell programmers. Explore techniques for practical
+  dependently typed Haskell programming.
+
+\item For compiler implementors. Identify improvements in light of
+  hasochism.
+\end{itemize}
+
+Contributions:
+
+\begin{itemize}
+\item Comparison between Agda-style dependently typed programming and
+  dependently typed programming in Haskell
+
+\item Practical techniques for dependently typed programming in
+  Haskell
+
+\item MergeSort example
+
+\item An algebra of size-indexed boxes including editor example
+\end{itemize}
+
+The rest of the paper is structured as follows...
+
 \section{$\Pi$ versus $\forall$ versus explicit $\forall$}
 
 %include NatVec.lhs
