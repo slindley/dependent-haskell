@@ -193,6 +193,10 @@ The rest of the paper is structured as follows...
 
 %include NatVec.lhs
 
+\section{Existentials}
+
+%include Existentials.lhs
+
 \section{Explicit $\Pi$ versus implicit $\Pi$}
 
 %include Pies.lhs

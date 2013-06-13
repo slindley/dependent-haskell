@@ -1,6 +1,7 @@
 all: hasochism.pdf
 
-hasochism.tex: hasochism.lhs NatVec.lhs Pies.lhs NATTYInNatty.lhs \
+hasochism.tex: hasochism.lhs \
+        NatVec.lhs Existentials.lhs Pies.lhs NATTYInNatty.lhs \
         MergeSort.lhs \
         Evidence.lhs BoxPain.lhs BoxPleasure.lhs Editor.lhs
 	if [ -f "hasochism.tex" ]; then chmod +w hasochism.tex; fi
