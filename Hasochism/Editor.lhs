@@ -177,6 +177,10 @@ character box of size |(w, h)|.
 >         (joinV (w1, h1) (w2, h2) b1 b2)
 
 
+\subsection{Cursors}
+
+...
+
 \subsection{The inner loop}
 
 We give a brief overview of the editor's inner loop. The full code is
