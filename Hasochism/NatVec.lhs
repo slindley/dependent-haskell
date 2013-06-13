@@ -6,7 +6,7 @@
 
 > module NatVec where
 >
-> type Pair (x :: Nat) (y :: Nat) = '(x, y)
+> type Pair (x :: j) (y :: k) = '(x, y)
 
 %endif
 
