@@ -179,8 +179,8 @@ character box of size |(w, h)|.
 
 \subsection{The inner loop}
 
-We give a brief overview of the part of the editor's inner loop. The
-full code is available at:
+We give a brief overview of the editor's inner loop. The full code is
+available at:
 
   \url{https://github.com/slindley/dependent-haskell/tree/master/Box}
 
@@ -189,13 +189,13 @@ structure over an undindexed list of strings. The current position and
 size of the screen is represented as two pairs of integers. On a
 change to the buffer, the inner loop proceeds as follows.
 \begin{itemize}
-\item Wrap the current screen position and size as an indexed region
+\item Wrap the current screen position and size as an singleton region
   using |wrapRegion|.
 \item Unravel the zipper structure to reveal the underlying structure
   of the buffer as a list of strings.
 \item Use |wrapStrings| to wrap the list of strings as a suitably
   indexed |CharBox|.
-\item Crop the |CharBox| according to the wrapped screen position and
+\item Crop the |CharBox| according to the wrapped singleton region.
   size.
 \item Render the result as a list of strings.
 \end{itemize}
