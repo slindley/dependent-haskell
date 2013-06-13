@@ -138,8 +138,8 @@ possibility of doing so. For example, some have voiced objections to
 the prospect of terms in types on the grounds that efficient
 compilation relies on erasure to the dynamic fragment of the
 language. However, renegotiating the term/type distinction need not
-destroy the dynamic/static distinction, as shown by the Coq's
-venerable program extraction algorithm, erasing types and proofs from
+destroy the dynamic/static distinction, as shown by Coq's venerable
+program extraction algorithm, erasing types and proofs from
 dependently typed constructions.
 
 Meanwhile, Haskell's type classes demonstrate the value of dynamic

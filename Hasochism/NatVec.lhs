@@ -55,15 +55,15 @@ one can formulate `propositional equality' types, whose inhabitants
 constitute evidence for equations. Values can be transported between
 provably equal types by explicit appeal to such evidence.
 
-In Haskell's kernel type equality is entirely syntactic. The above is
+In Haskell's kernel, type equality is entirely syntactic. The above is
 a collection of axioms for Haskell's propositional equality, and every
 program which relies on computation must be elaborated in terms of
 explicit appeal to evidence. The translation from the surface language
 to the kernel attempts to generate this evidence by a powerful but
 inscrutable constraint solving heuristic. Experience suggests that the
-solver computes aggressively, regardless of whether type level programs
-are totally recursive, so we may confidently type vector concatenation
-in terms of addition.
+solver computes aggressively, regardless of whether type level
+programs are totally recursive, so we may confidently type vector
+concatenation in terms of addition.
 
 %format vappend = "\F{vappend}"
 
@@ -151,11 +151,12 @@ NatVec.lhs:120:44:
 \end{verbatim}
 }
 
+\noindent
 amounts to the fact that it is not clear how to instantiate |n| in the
 recursive call. It takes sophisticated reasoning about addition to
 realise that |(m :+)| is injective. To GHC, it is just an unknown
 axiomatised function. The problem did not arise for |vchop|, because
-relaying the suffix, |zs|, from the recursive output to the result is
+relaying the suffix, |zs|, from the recursive output to the result
 makes clear that the same |n| is needed in both places. This |n| is
 not needed at run time, but without it there is no way to see that the
 program makes sense.
@@ -168,13 +169,13 @@ made explicit. One way to manifest them is via `proxy types', e.g.,
 > data Proxy :: kappa -> * where
 >   Proxy :: Proxy i
 
-As you can see, the only dynamic information in |Proxy i| is definedness,
-which there is never the need to check. Kind polymorphism allows us to
-declare the proxy type once for all. The only point of a proxy is to
-point out that it has the same type at its binding and its usage sites.
-Although it is compulsory to instantiate quantifiers by inference,
-proxies let us rig the guessing game so that GHC can win it. We repair
-the definition of |vtake| thus:
+As you can see, the only dynamic information in |Proxy i| is
+definedness, which there is never the need to check. Kind polymorphism
+allows us to declare the proxy type once and for all. The only point
+of a proxy is to point out that it has the same type at its binding
+and its usage sites.  Although it is compulsory to instantiate
+quantifiers by inference, proxies let us rig the guessing game so that
+GHC can win it. We repair the definition of |vtake| thus:
 
 > vtake :: Natty m -> Proxy n -> Vec (m :+ n) x -> Vec m x
 > vtake Zy      n  xs         =  V0
