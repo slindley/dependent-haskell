@@ -46,12 +46,15 @@ size-indexed rectangular tilings, which we call simply \emph{boxes}.
 >   Ver    ::  Natty h1 -> Box p (Pair w h1) ->
 >              Natty h2 -> Box p (Pair w h2) -> Box p (Pair w (h1 :+ h2))
 
-A box |b| with underlying content of size-indexed type |p| and size
-|wh| has type |Box p wh|.  Boxes are constructed from underlying
-content (|Stuff|), clear boxes (|Clear|), and horizontal (|Hor|) and
-vertical (|Ver|) composition.
+A box |b| of with content of size-indexed type |p| and size |wh| has
+type |Box p wh|. Boxes are constructed from content (|Stuff|), clear
+boxes (|Clear|), and horizontal (|Hor|) and vertical (|Ver|)
+composition.
 %
-Given suitable instantiations for the underlying content, boxes can be used as the building blocks for arbitrary graphical user interfaces. In Section~\ref{sec:editor} we instantiate the underlying content to the type of character matrices, which we use to implement a text editor.
+Given suitable instantiations for the content, boxes can be used as
+the building blocks for arbitrary graphical user interfaces. In
+Section~\ref{sec:editor} we instantiate content to the type of
+character matrices, which we use to implement a text editor.
 
 A natural operation to define is the one that joins two boxes
 together, horizontally or vertically, adding appropriate padding if
@@ -71,13 +74,16 @@ We might try to write a definition for |joinH| as follows:
 <   case cmp h1 h2 of
 <     LTNat n  ->
 <       Hor w1 (Ver h1 b1 (Sy n) Clear) w2 b2
-<     EQNat    -> Hor w1 b1 w2 b2
+<     EQNat    ->
+<       Hor w1 b1 w2 b2
 <     GTNat n  ->
 <       Hor w1 b1 w2 (Ver h2 b2 (Sy n) Clear)
 
 Unfortunately, this code does not type check, because GHC has no way
 of knowing that the height of the resulting box is the maximum of the
 heights of the component boxes.
+
+\subsection{Painful join}
 
 One approach to resolving this issue is to encode lemmas, given by
 parameterised equations, as Haskell functions.
@@ -125,4 +131,5 @@ Using this pattern, it is now possible to use GHC as a theorem
 prover. As GHC does not provide anything in the way of direct support
 for theorem proving (along the lines of tactics in Coq, say), we would
 like to avoid the pain of explicit theorem proving as much as
-possible. Thus, we choose to change tack and switch to an alternative approach.
+possible. Thus, we choose to change tack and switch to an alternative
+approach.

@@ -200,15 +200,14 @@ The rest of the paper is structured as follows...
 
 %include Evidence.lhs
 
-\section{Painful boxes}
+\section{Boxes}
 
 %include BoxPain.lhs
-
-\section{Pleasurable boxes}
 
 %include BoxPleasure.lhs
 
 \section{An editor}
+\label{sec:editor}
 
 %include Editor.lhs
 

@@ -87,6 +87,8 @@
 %% >   EQNat  :: (Max m m ~ m)                    =>              Cmp m m
 %% >   GTNat  :: (Max (n :+ S z) n ~ (n :+ S z))  => Natty z  ->  Cmp (n :+ S z) n
 
+\subsection{Pleasurable join}
+
 In order to avoid explicit calls to lemmas we would like to obtain the
 type equations we need for free as part of the proof object. As a
 first step, we observe that this is essentially what we are already
@@ -167,10 +169,10 @@ similar.
 In order to handle the case in which we horizontally cut the
 horizontal composition of two boxes, we need to perform a special kind
 of comparison. In general, we wish to compare natural numbers $a$ and
-$c$ in the presence of the equation $a + b = c + d$, and capture the
-constraints on $a$, $b$, $c$, and $d$ that are implied by the result
-of the comparison. For instance, if $a \leq c$ then there must exist
-some number $z$, such that $b = (z + 1) + d$ and $c = a + (z + 1)$.
+$c$ given the equation $a + b = c + d$, and capture the constraints on
+$a$, $b$, $c$, and $d$ implied by the result of the comparison. For
+instance, if $a \leq c$ then there must exist some number $z$, such
+that $b = (z + 1) + d$ and $c = a + (z + 1)$.
 
 We encode proof objects for cut comparisons using the following data
 type.
@@ -238,17 +240,16 @@ Now we define cuts for boxes.
 %endif
 
 The interesting case occurs when horizontally cutting the horizontal
-composition of two sub-boxes, we must identify which sub-box the cut
+composition of two sub-boxes. We must identify which sub-box the cut
 occurs in, and recurse appropriately. Note that we rely on being able
-to cut underlying content. The definition of vertical box cutting is
-similar.
+to cut content. The definition of vertical box cutting is similar.
 
 \subsection{Cropping}
 
-We now proceed to define cropping in terms of cutting.
+We define cropping in terms of cutting.
 
-A point identifies a position inside a box, where |(Zy, Zy)| represents
-the top-left corner, and we count top-to-bottom, left-to-right.
+A point identifies a position inside a box, where |(Zy, Zy)|
+represents the top-left corner, counting top-to-bottom, left-to-right.
 
 > type Point x y = (Natty x, Natty y)
 
@@ -268,7 +269,7 @@ point. The type signature of |clip| is:
 >   Box p (Pair w h) -> Box p (Pair (w :- x) (h :- y))
 
 In order to account for the subtraction in the result, we need to
-augment our |Cmp| data type to include the necessary equations.
+augment the |Cmp| data type to include the necessary equations.
 
 > data Cmp :: Nat -> Nat -> * where
 >   LTNat :: ((m :+ S z) ~ n,  Max m n ~ n,  (m :- n) ~ Z)    =>
@@ -295,8 +296,8 @@ verically.
 >   GTNat d  -> snd (verCut y (Sy d) b)
 >   _        -> Clear
 
-Fitting pads or cuts a box to the given size. Similary, to fit in
-both dimensions, we first clip horizontally, and then fit veritcally.
+Fitting pads or cuts a box to the given size. To fit in both
+dimensions, we first fit horizontally, and then fit veritcally.
 
 > fit :: Cut p => Size w1 h1 -> Size w2 h2 ->
 >   Box p (Pair w1 h1) -> Box p (Pair w2 h2)
@@ -317,7 +318,8 @@ both dimensions, we first clip horizontally, and then fit veritcally.
 >   GTNat d  -> fst (verCut h2 (Sy d) b)
 
 Note that |fitH| and |fitV| do essentially the same thing as the
-|procustes| function, but on boxes rather than vectors.
+|procustes| function, but on boxes rather than vectors, and always
+using |Clear| boxes for padding.
 
 To crop a box to a region, we simply clip then fit.
 
@@ -337,6 +339,6 @@ function of type:
 < Cut p => Region x y w h -> Size s t ->
 <   Box p (Pair s t) -> Box p (Pair (Min w (s :- x)) (Min h (t :- y)))
 
-This proved considerably more difficult as we had to reason about
-interactions between subtraction, addition, and minimum.
-
+This proved considerably more difficult to use as we had to reason
+about interactions between subtraction, addition, and
+minimum. Moreover, the less-refined type is often sufficient.
