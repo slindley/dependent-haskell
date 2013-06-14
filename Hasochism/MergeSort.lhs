@@ -39,14 +39,17 @@ If we wanted to \emph{close} this type class, we could use module
 abstraction method of Kiselyov and
 Shan~\cite{Kiselyov07position:lightweight} which uses a non-exported
 superclass. We leave this elaboration to the interested reader.
+This |LeN| class has no methods, but it might make sense to deliver
+at least the explicit evidence of ordering in the corresponding GADT,
+just as the |NATTY| class method delivers |Natty| evidence.
 
 In order to sort numbers, we need to know that any two numbers can be
 ordered one way or the other. Let us say what it means for two numbers
 to be so orderable.
 
 > data OWOTO :: Nat -> Nat -> * where
->   LE :: LeN x y => OWOTO x y
->   GE :: LeN y x => OWOTO x y
+>   LE  :: LeN x y  => OWOTO x y
+>   GE  :: LeN y x  => OWOTO x y
 
 Testing which way around the numbers are is quite a lot like the usual
 Boolean version, except with evidence. The step case requires
@@ -58,8 +61,8 @@ goals from the information revealed by testing.
 > owoto Zy      n       = LE
 > owoto (Sy m)  Zy      = GE
 > owoto (Sy m)  (Sy n)  = case owoto m n of
->   LE -> LE
->   GE -> GE
+>   LE  ->  LE
+>   GE  ->  GE
 
 Now we know how to put numbers in order, let us see how to make
 ordered lists. The plan is to describe what it is to be in order
@@ -84,20 +87,20 @@ And here are ordered lists of numbers: an |OList l u| is a sequence
 imposes |x| as the lower bound on the tail.
 
 > data OList :: Bound Nat -> Bound Nat -> * where
->   ONil :: LeB l u => OList l u
->   (:<) :: forall l x u. LeB l (Val x) =>
->           Natty x -> OList (Val x) u -> OList l u
+>   ONil  ::  LeB l u => OList l u
+>   (:<)  ::  forall l x u. LeB l (Val x) =>
+>             Natty x -> OList (Val x) u -> OList l u
 
 We can write merge for ordered lists just the same way we would if
 they were ordinary. The key invariant is that if both lists share the
 same bounds, so does their merge.
 
 > merge :: OList l u -> OList l u -> OList l u
-> merge ONil lu = lu
-> merge lu ONil = lu
-> merge (x :< xu) (y :< yu) = case owoto x y of
->   LE  -> x :< merge xu (y :< yu)
->   GE  -> y :< merge (x :< xu) yu
+> merge  ONil       lu         = lu
+> merge  lu         ONil       = lu
+> merge  (x :< xu)  (y :< yu)  = case owoto x y of
+>   LE  ->  x  :< merge xu (y :< yu)
+>   GE  ->  y  :< merge (x :< xu) yu
 
 The branches of the case analysis extend what is already known from
 the inputs with just enough ordering information to satisfy the
@@ -124,8 +127,8 @@ of term level natural numbers.
 > wrapNat  Z      =  Ex Zy
 > wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
 
-You can see that this translation gives us the |WNat| that corresponds
-to the |Nat| it is given, but that property is sadly, not enforced by
+You can see that |wrapNat| delivers the |WNat| corresponding
+to the |Nat| it receives, but that property is sadly, not enforced by
 type. However, once we have |WNat|s, we can build merge-sort in the usual
 divide-and-conquer way.
 
