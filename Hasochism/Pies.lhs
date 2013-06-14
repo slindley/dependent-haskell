@@ -145,6 +145,13 @@ in the paper),
 > data Matrix :: * -> (Nat, Nat) -> * where
 >   Mat :: {unMat :: Vec h (Vec w a)} -> Matrix a (Pair w h)
 
+%if False
+
+> instance Show x => Show (Matrix x (Pair w h)) where
+>   show = show . (foldMap ((:[]) . foldMap (:[]))) . unMat
+
+%endif
+
 we get transposition cheaply, provided we know the width.
 
 %format xpose = "\F{transpose}"
