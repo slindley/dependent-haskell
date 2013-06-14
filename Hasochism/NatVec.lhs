@@ -10,7 +10,8 @@
 
 %endif
 
-The |DataKinds| extension has the impact of duplicating an ordinary data type, such as
+Haskell's |DataKinds| extension~\cite{YorgeyWCJVM12} has the impact of
+duplicating an ordinary data type, such as
 
 > data Nat = Z | S Nat deriving (Show, Eq, Ord)
 
@@ -213,8 +214,8 @@ static types but have no impact on run time execution and thus
 erasable. Most dependently typed languages, with ATS~\cite{CuiDX05}
 being a notable exception, do not offer such a quantifier, which seems
 to us something of an oversight. Coq's program
-extraction~\cite{coq-program-extraction} and Brady's compilation
-method~\cite{brady-compilation} both erase components whose types show
+extraction~\cite{Paulin89a} and Brady's compilation
+method~\cite{brady-thesis} both erase components whose types show
 that they cannot be needed in computation, but they do not allow us to
 make the promise that ordinary data in types like |Nat| will not be
 needed at run time.
@@ -242,13 +243,11 @@ an |n|-vector of arguments.
 > varity  x  V0         =  x
 > varity  f  (x :> xs)  =  varity (f x) xs
 
-\todo{Brady's detagging citation (is this the same as the one above)?}
-
 Here, pattern matching on the vector delivers sufficient information
 about its length to unfold the |Arity| computation. Once again, Agda
 would allow |n| to remain implicit in source code, but insist on
 retaining |n| at run time. Meanwhile, Brady's `detagging'
-optimization~\cite{brady-detagging} would retain |n| but remove the
+optimization~\cite{BradyMM03} would retain |n| but remove the
 constructor tag from the representation of vectors, compiling the
 above match on the vector to match instead on |n| then project from
 the vector.
