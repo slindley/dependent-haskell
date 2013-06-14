@@ -28,6 +28,12 @@
 %format <$> = "<\!\!\mathord{\$}\!\!>"
 %format <*> = "<\!\!\mathord{\star}\!\!>"
 
+%format :**: = ":\!\!*\!*\!\!:"
+%format :&&: = ":\!\!\&\!\&\!\!:"
+
+%format :*: = ":\!\!*\!\!:"
+%format :&: = ":\!\!\&\!\!:"
+
 %format (Pair (x) (y)) = Prime(x, y)
 
 %format x1 = x "_1"

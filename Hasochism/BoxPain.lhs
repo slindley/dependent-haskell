@@ -9,8 +9,6 @@
 > import NatVec
 > import Evidence
 >
-> type Size w h = (Natty w, Natty h)
-> 
 > type family Max (m :: Nat) (n :: Nat) :: Nat
 > type instance Max Z     n     = n
 > type instance Max (S m) Z     = S m
@@ -21,6 +19,14 @@
 > maxn (Sy m) Zy     = Sy m
 > maxn (Sy m) (Sy n) = Sy (maxn m n)
 
+> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
+>   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
+
+> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
+>   (:&:) :: p k -> q k -> (p :*: q) k
+
+> type Size = Natty :**: Natty
+ 
 %endif
 
 %format maxn = "\F{maxn}"
@@ -61,7 +67,7 @@ together, horizontally or vertically, adding appropriate padding if
 the sizes do not match up. Let us consider the horizontal version
 |joinH|. Its type signature is:
 
-> joinH ::  Size w1 h1 -> Size w2 h2 ->
+> joinH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (w1 :+ w2) (Max h1 h2))
 
@@ -70,7 +76,7 @@ sizes, as it must compute on the sizes.
 
 We might try to write a definition for |joinH| as follows:
 
-< joinH (w1, h1) (w2, h2) b1 b2 =
+< joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 <   case cmp h1 h2 of
 <     LTNat n  ->
 <       Hor w1 (Ver h1 b1 (Sy n) Clear) w2 b2
@@ -100,7 +106,7 @@ equation to hold.
 
 For |joinH|, we need one lemma for each case of the comparison:
 
-> joinH (w1, h1) (w2, h2) b1 b2 =
+> joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp h1 h2 of
 >     LTNat z  -> maxLT h1 z $
 >       Hor w1 (Ver h1 b1 (Sy z) Clear) w2 b2

@@ -8,7 +8,14 @@
 >
 > import NatVec
 >
-> type Size w h = (Natty w, Natty h)
+
+> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
+>   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
+
+> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
+>   (:&:) :: p k -> q k -> (p :*: q) k
+
+> type Size = Natty :**: Natty
 > 
 > type family Max (m :: Nat) (n :: Nat) :: Nat
 > type instance Max Z     n     = n
@@ -118,10 +125,10 @@ equations for computing the maximum of |m| and |n| in each case.
 Having added these straightforward equalities, our definition of
 |joinH| now type checks without the need to explicitly invoke any lemmas. 
 
-> joinH ::  Size w1 h1 -> Size w2 h2 ->
+> joinH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (w1 :+ w2) (Max h1 h2))
-> joinH (w1, h1) (w2, h2) b1 b2 =
+> joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp h1 h2 of
 >     LTNat z  ->
 >       Hor w1 (Ver h1 b1 (Sy z) Clear) w2 b2
@@ -134,10 +141,10 @@ The |joinV| function is defined similarly.
 
 %if False
 
-> joinV ::  Size w1 h1 -> Size w2 h2 ->
+> joinV ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (Max w1 w2) (h1 :+ h2))
-> joinV (w1, h1) (w2, h2) b1 b2 =
+> joinV (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp w1 w2 of
 >     LTNat n  ->
 >       Ver h1 (Hor w1 b1 (Sy n) Clear) h2 b2
@@ -262,13 +269,13 @@ We define cropping in terms of cutting.
 A point identifies a position inside a box, where |(Zy, Zy)|
 represents the top-left corner, counting top-to-bottom, left-to-right.
 
-> type Point x y = (Natty x, Natty y)
+> type Point = Natty :**: Natty
 
 A region identifies a rectangular area inside a box by a pair of the
 point representing the top-left corner of the region, and the size of
 the region.
 
-> type Region x y w h = (Point x y, Size w h)
+> type Region = Point :**: Size
 
 We can \emph{crop} a box to a region. We decompose cropping into two
 parts, \emph{clipping} and \emph{fitting}.
@@ -276,7 +283,7 @@ parts, \emph{clipping} and \emph{fitting}.
 Clipping discards everything to the left and above the specified
 point. The type signature of |clip| is:
 
-> clip :: Cut p => Size w h -> Point x y ->
+> clip :: Cut p => Size (Pair w h) -> Point (Pair x y) ->
 >   Box p (Pair w h) -> Box p (Pair (w :- x) (h :- y))
 
 In order to account for the subtraction in the result, we need to
@@ -293,26 +300,26 @@ augment the |Cmp| data type to include the necessary equations.
 To clip in both dimensions, we first clip horizontally, and then clip
 verically.
 
-> clip (w, h) (x, y) b = clipV (w /-/ x, h) y (clipH (w, h) x b)
+> clip (w :&&: h) (x :&&: y) b = clipV (w /-/ x :&&: h) y (clipH (w :&&: h) x b)
 > 
-> clipH :: Cut p => Size w h -> Natty x ->
+> clipH :: Cut p => Size (Pair w h) -> Natty x ->
 >   Box p (Pair w h) -> Box p (Pair (w :- x) h)
-> clipH (w, h) x b = case cmp w x of
+> clipH (w :&&: h) x b = case cmp w x of
 >   GTNat d  -> snd (horCut x (Sy d) b)
 >   _        -> Clear
 > 
-> clipV :: Cut p => Size w h -> Natty y ->
+> clipV :: Cut p => Size (Pair w h) -> Natty y ->
 >   Box p (Pair w h) -> Box p (Pair w (h :- y))
-> clipV (w, h) y b = case cmp h y of
+> clipV (w :&&: h) y b = case cmp h y of
 >   GTNat d  -> snd (verCut y (Sy d) b)
 >   _        -> Clear
 
 Fitting pads or cuts a box to the given size. To fit in both
 dimensions, we first fit horizontally, and then fit veritcally.
 
-> fit :: Cut p => Size w1 h1 -> Size w2 h2 ->
+> fit :: Cut p => Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >   Box p (Pair w1 h1) -> Box p (Pair w2 h2)
-> fit (w1, h1) (w2, h2) b = fitV h1 h2 (fitH w1 w2 b)
+> fit (w1 :&&: h1) (w2 :&&: h2) b = fitV h1 h2 (fitH w1 w2 b)
 > 
 > fitH :: Cut p => Natty w1 -> Natty w2 ->
 >   Box p (Pair w1 h) -> Box p (Pair w2 h)
@@ -334,10 +341,10 @@ using |Clear| boxes for padding.
 
 To crop a box to a region, we simply clip then fit.
 
-> crop :: Cut p => Region x y w h -> Size s t ->
+> crop :: Cut p => Region (Pair (Pair x y) (Pair w h)) -> Size (Pair s t) ->
 >   Box p (Pair s t) -> Box p (Pair w h)
-> crop ((x, y), (w, h)) (s, t) b =
->   fit (s /-/ x, t /-/ y) (w, h) (clip (s, t) (x, y) b)
+> crop ((x :&&: y) :&&: (w :&&: h)) (s :&&: t) b =
+>   fit ((s /-/ x) :&&: (t /-/ y)) (w :&&: h) (clip (s :&&: t) (x :&&: y) b)
 
 A convenient feature of our cropping code is that type-level
 subtraction is confined to the |clip| function. This works because in
@@ -347,7 +354,7 @@ input box.
 In an earlier version of the code we experimented with a cropping
 function of type:
 
-< Cut p => Region x y w h -> Size s t ->
+< Cut p => Region x y w h -> Size (Pair s t) ->
 <   Box p (Pair s t) -> Box p (Pair (Min w (s :- x)) (Min h (t :- y)))
 
 This proved considerably more difficult to use as we had to reason
