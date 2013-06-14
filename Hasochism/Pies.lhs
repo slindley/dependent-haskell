@@ -97,7 +97,7 @@ of the length.
 
 We note that simply defining |(<*>)| by pattern matching in place
 
-< instance NATTY n => Applicative (Vec n) where -- BAD
+< instance NATTY n => Applicative (Vec n) where -- |BAD|
 <   pure   = vcopies natty
 <   V0         <*> V0         = V0
 <   (f :> fs)  <*> (s :> ss)  = f s :> (fs <*> ss)

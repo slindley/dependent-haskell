@@ -117,6 +117,7 @@ dependently typed languages more broadly.
 %% keyword1, keyword2
 
 \section{Introduction}
+\label{sec:intro}
 
 In the design of Standard ML, Milner and his colleagues achieved a remarkable
 alignment of distinctions:
@@ -145,8 +146,8 @@ the prospect of terms in types on the grounds that efficient
 compilation relies on erasure to the dynamic fragment of the
 language. However, renegotiating the term/type distinction need not
 destroy the dynamic/static distinction, as shown by Coq's venerable
-program extraction algorithm, erasing types and proofs from
-dependently typed constructions.
+program extraction algorithm~\cite{coq-extraction}, erasing types and
+proofs from dependently typed constructions.
 
 Meanwhile, Haskell's type classes demonstrate the value of dynamic
 components which are none the less implicit---instance
@@ -157,7 +158,13 @@ Haskell's combination of higher kinds and constraints means that
 sometimes static types must be given explicitly, in order not only to
 check them, but also to drive the generation of invisible boilerplate.
 
+
 \todo{mention promotion~\cite{YorgeyWCJVM12}}
+
+\todo{cite SHE~\cite{she} and \singletons library~\cite{EisenbergW12}}
+
+\todo{mention ``The right kind of generic programming''
+  \cite{Magalhaes12}}
 
 \todo{Conor to work in motivations / contributions}
 
@@ -190,10 +197,14 @@ Contributions:
 The rest of the paper is structured as follows...
 
 \section{A Variety of Quantifiers}
-
+\label{sec:natvec}
 %include NatVec.lhs
 
 \section{Explicit and Implicit $\Pi$-Types}
+\label{sec:pies}
+
+\todo{Cite ``Applicative programming with effects''~\cite{McbrideP08}
+  somewhere in this section.}
 
 %include Pies.lhs
 
@@ -206,14 +217,17 @@ The rest of the paper is structured as follows...
 %include Existentials.lhs
 
 \section{Classes-as-relations --- silence is golden}
+\label{sec:merge-sort}
 
 %include MergeSort.lhs
 
 \section{Evidence is data and proof}
+\label{sec:evidence}
 
 %include Evidence.lhs
 
 \section{Boxes}
+\label{sec:boxes}
 
 %include BoxPain.lhs
 
@@ -225,6 +239,7 @@ The rest of the paper is structured as follows...
 %include Editor.lhs
 
 \section{Conclusion}
+\label{sec:conclusion}
 
 The best thing about banging your head off a brick wall is \emph{stopping}.
 
