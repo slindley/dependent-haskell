@@ -31,12 +31,10 @@
 %format foldMapDefault = "\F{foldMapDefault}"
 %format foldMap = "\F{foldMap}"
 
-\todo{fill in citation for Pollack}
-
 We have already seen that singletons like |Natty| simulate a dependent
 dynamic explicit quantifier, corresponding to the explicit $\Pi$-type
 of type theory: Agda's $(x\!:\!S)\to T$. Implementations of type
-theory, following Pollack's lead~\cite{pollack}, often support a
+theory, following Pollack's lead~\cite{Pollack90}, often support a
 dependent dynamic \emph{implicit} quantifier, the $\{x\!:\!S\}\to T$
 of Agda, allowing type constraints to induce the synthesis of useful
 information. The method is Milner's---substitution arising from
@@ -180,6 +178,7 @@ captures the notion of `corresponding positions'.
 %format vhead = "\F{vhead}"
 %format vtail = "\F{vtail}"
 %format diagonal = "\F{diag}"
+%format return = "\F{return}"
 
 > vtail :: Vec (S n) x -> Vec n x
 > vtail (_ :> xs)  = xs
