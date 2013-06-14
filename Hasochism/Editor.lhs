@@ -217,10 +217,37 @@ instead of using |Flip| we define an auxiliary |newtype| as follows:
 > wrapLenVec (x:xs)  = case wrapLenVec xs of
 >   Ex (LenVec (n, v)) -> Ex (LenVec (Sy n, x :> v))
 
-> newtype SizeCharBox w h =
->   SizeCharBox {unSizeCharBox :: (Size w h, CharBox (Pair w h))}
+< newtype SizeCharBox w h =
+<   SizeCharBox {unSizeCharBox :: (Size w h, CharBox (Pair w h))}
 
 Oops... this isn't going to work with |Ex| because |SizeCharBox| takes two arguments.
+
+> data SillySize (wh :: (Nat, Nat)) where
+>   SillySize :: Natty w -> Natty h -> SillySize (Pair w h)
+
+> newtype SizeCharBox wh =
+>   SizeCharBox {unSizeCharBox :: (SillySize wh, CharBox wh)}
+
+> type WCB = Ex SizeCharBox
+
+> wrapString' :: String -> WCB
+> wrapString' s = case wrapLenVec s of
+>   Ex (LenVec (n, v)) ->
+>     Ex (SizeCharBox (SillySize n (Sy Zy), Stuff (Mat (pure v))))
+
+> wrapStrings' :: [String] -> WCB
+> wrapStrings' []      = Ex (SizeCharBox (SillySize Zy Zy, Clear))
+> wrapStrings' (s:ss)  =
+>   case (wrapString' s, wrapStrings' ss) of
+>     (  Ex (SizeCharBox (SillySize w1 h1, b1)),
+>        Ex (SizeCharBox (SillySize w2 h2, b2))) ->
+>          Ex (SizeCharBox (  SillySize (w1 `maxn` w2) (h1 /+/ h2),
+>                             joinV (w1, h1) (w2, h2) b1 b2))
+
+
+
+[old text]
+
 
 %% > data WrappedVec a :: * where
 %% >   WVec :: Vec n a -> WrappedVec a

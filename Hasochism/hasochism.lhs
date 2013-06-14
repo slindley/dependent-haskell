@@ -201,9 +201,9 @@ The rest of the paper is structured as follows...
 
 %include NatVec.lhs
 
-\section{Existentials}
+%% \section{Existentials}
 
-%include Existentials.lhs
+%% %include Existentials.lhs
 
 \section{Explicit $\Pi$ versus implicit $\Pi$}
 \label{sec:pies}
