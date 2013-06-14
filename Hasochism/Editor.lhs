@@ -19,66 +19,26 @@
 > import System.Environment
 >
 > import NatVec
+> import Pies
 > import BoxPleasure
 
 > (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
 > Zy   /+/ n    = n
 > Sy m /+/ n   = Sy (m /+/ n)
 
-> class NATTY (n :: Nat) where
->   natty :: Natty n
-> 
-> instance NATTY Z where
->   natty = Zy
-> 
-> instance NATTY n => NATTY (S n) where
->   natty = Sy natty
-> 
-> natter :: Natty n -> (NATTY n => t) -> t
-> natter Zy     t = t
-> natter (Sy n) t = natter n t
-
-> vlength :: Vec n x -> Natty n
-> vlength V0        = Zy
-> vlength (x :> xs) = Sy (vlength xs)
-
-> vcopies :: forall n x.Natty n -> x -> Vec n x
-> vcopies Zy x = V0
-> vcopies (Sy n) x = x :> vcopies n x   
-> 
-> vapp :: forall n s t.Vec n (s -> t) -> Vec n s -> Vec n t
-> vapp V0 V0 = V0
-> vapp (f :> fs) (s :> ss) = f s :> vapp fs ss
- 
-> instance NATTY n => Applicative (Vec n) where
->   pure = vcopies natty where
->   (<*>) = vapp where
-> 
-> instance Traversable (Vec n) where
->   traverse f V0 = pure V0
->   traverse f (x :> xs) = (:>) <$> f x <*> traverse f xs
-
-%$
-
-> instance Functor (Vec n) where
->   fmap = fmapDefault
-> 
-> instance Foldable (Vec n) where
->   foldMap = foldMapDefault
-
-
-> data Matrix :: * -> (Nat, Nat) -> * where
->   Mat :: Vec h (Vec w a) -> Matrix a (Pair w h)
->
-> unMat :: Matrix a (Pair w h) -> Vec h (Vec w a)
-> unMat (Mat vs) = vs
-
 %endif
+
+We outline the design of a basic text editor, which represents the
+text buffer as a box. Using this representation guarantees that
+manipulations such as cropping the buffer to generate screen output
+only generate well-form boxes a given size. We will also need to
+handle dynamic values coming from the outside world. We convert these
+to equivalent size-indexed values using existentials, building on the
+|Ex| of Section~\ref{sec:merge-sort}.
 
 \subsection{Character matrix boxes}
 
-We implement a text editor using a character matrix box to represent
-the text buffer.
+Concretely, we use a character matrix box to represent a text buffer.
 
 > type CharMatrix = Matrix Char
 > type CharBox wh = Box CharMatrix wh

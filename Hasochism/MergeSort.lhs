@@ -106,8 +106,6 @@ type for existentially quantifying over singletons.
 > wrapNat  Z      =  Ex Zy
 > wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
 
-\todo{Relate |Ex| to \singletons library equivalent, if it exists.}
-
 We need to trust that this translation gives us the |WNat| that
 corresponds to the |Nat| we want to sort. This interplay between
 |Nat|, |Natty| and |WNat| is a bit frustrating, but that is what it
