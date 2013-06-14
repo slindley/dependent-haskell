@@ -5,7 +5,7 @@
 >     TypeOperators, TypeFamilies #-}
 
 > module NatVec where
->
+
 > type Pair (x :: j) (y :: k) = '(x, y)
 
 %endif
@@ -252,3 +252,12 @@ whenever the singleton construction is possible. However, we have noted
 that whilst Haskell struggles to simulate $\Pi$ with |forall|, the reverse
 is the case in type theory. What is needed, on both sides, is a more
 systematic treatment of the varieties of quantification.
+
+%if False
+
+> infixr 4 :>
+> instance Show x => Show (Vec n x) where
+>   show V0 = "V0"
+>   show (x :> xs) = show x ++ " :> " ++ show xs
+
+%endif

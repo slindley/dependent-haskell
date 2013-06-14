@@ -189,21 +189,21 @@ Contributions:
 
 The rest of the paper is structured as follows...
 
-\section{$\Pi$ versus $\forall$ versus explicit $\forall$}
+\section{A Variety of Quantifiers}
 
 %include NatVec.lhs
+
+\section{Explicit and Implicit $\Pi$-Types}
+
+%include Pies.lhs
+
+\subsection{The NATTY-in-Natty Question}
+
+%include NATTYInNatty.lhs
 
 \section{Existentials}
 
 %include Existentials.lhs
-
-\section{Explicit $\Pi$ versus implicit $\Pi$}
-
-%include Pies.lhs
-
-\section{The NATTY-in-Natty question}
-
-%include NATTYInNatty.lhs
 
 \section{Classes-as-relations --- silence is golden}
 
@@ -225,6 +225,8 @@ The rest of the paper is structured as follows...
 %include Editor.lhs
 
 \section{Conclusion}
+
+The best thing about banging your head off a brick wall is \emph{stopping}.
 
 \newpage
 
