@@ -117,6 +117,7 @@ dependently typed languages more broadly.
 %% keyword1, keyword2
 
 \section{Introduction}
+\label{sec:intro}
 
 In the design of Standard ML, Milner and his colleagues achieved a remarkable
 alignment of distinctions:
@@ -196,6 +197,7 @@ Contributions:
 The rest of the paper is structured as follows...
 
 \section{$\Pi$ versus $\forall$ versus explicit $\forall$}
+\label{sec:natvec}
 
 %include NatVec.lhs
 
@@ -204,6 +206,7 @@ The rest of the paper is structured as follows...
 %include Existentials.lhs
 
 \section{Explicit $\Pi$ versus implicit $\Pi$}
+\label{sec:pies}
 
 \todo{Cite ``Applicative programming with effects''~\cite{McbrideP08}
   somewhere in this section.}
@@ -215,14 +218,17 @@ The rest of the paper is structured as follows...
 %include NATTYInNatty.lhs
 
 \section{Classes-as-relations --- silence is golden}
+\label{sec:merge-sort}
 
 %include MergeSort.lhs
 
 \section{Evidence is data and proof}
+\label{sec:evidence}
 
 %include Evidence.lhs
 
 \section{Boxes}
+\label{sec:boxes}
 
 %include BoxPain.lhs
 
@@ -234,6 +240,7 @@ The rest of the paper is structured as follows...
 %include Editor.lhs
 
 \section{Conclusion}
+\label{sec:conclusion}
 
 \newpage
 

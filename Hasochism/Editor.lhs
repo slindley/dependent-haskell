@@ -121,45 +121,114 @@ instantiate the |Cut| type class for matrices.
 
 %$
 
-\subsection{$\Sigma$ types}
+\subsection{Existentials}
 
-Sometimes, it is necessary to convert unindexed values to equivalent
-type-indexed values. For instance, we may receive a natural number at
-run-time represented as an |Int|, and wish to convert it to an
-|Natty|. Of course, we cannot statically specify the index on the
-returned |Natty|, but we can quantify over it, essentially defining a
-$\Sigma$ type.
+%format wrapNat = "\F{wrapNat}"
+%format wrapPair = "\F{wrapPair}"
+%format wrapInt = "\F{wrapInt}"
+%format wrapSize = "\F{wrapSize}"
+%format wrapPoint = "\F{wrapPoint}"
+%format wrapRegion = "\F{wrapRegion}"
+%format wrapVec = "\F{wrapVec}"
+%format wrapLenVec = "\F{wrapLenVec}"
+%format wrapString = "\F{wrapString}"
+%format wrapStrings = "\F{wrapStrings}"
 
-> data WNat :: * where
->   WNat :: Natty n -> WNat
+%format intToNat = "\F{intToNat}"
+%format unFlip = "\F{unFlip}"
+%format unLenVec = "\F{unLenVec}"
+%format unSizeCharBox = "\F{unSizeCharBox}"
 
-The |WNat| data type amounts to a Haskell encoding of the type
-$\Sigma$|(n : Nat) DOT n|. We can now wrap an |Int| as a |WNat|.
+%format :**: = ":\!\!*\!*\!\!:"
+%format :&&: = ":\!\!\&\!\&\!\!:"
 
-> wrapNat :: Int -> WNat
-> wrapNat  0  =  WNat Zy
-> wrapNat  n  =  case wrapNat (n-1) of
->                  WNat wn -> WNat (Sy wn)
+%if False
 
-Similarly, we implement functionality for wrapping points.
+> data Ex (p :: k -> *) where
+>   Ex :: p i -> Ex p
 
-> data WPoint :: * where
->   WPoint :: Natty x -> Natty y -> WPoint
-> 
-> wrapPoint :: (Int, Int) -> WPoint
-> wrapPoint (x, y) =
->   case (wrapNat x, wrapNat y) of
->     (WNat x, WNat y) -> WPoint x y
+> type WNat = Ex Natty
 
-We can wrap a list as a vector.
+> wrapNat :: Nat -> WNat
+> wrapNat  Z      =  Ex Zy
+> wrapNat  (S m)  =  case wrapNat m of
+>                    Ex n -> Ex (Sy n)
 
-> data WrappedVec a :: * where
->   WVec :: Vec n a -> WrappedVec a
+%endif
+
+In Section~\ref{sec:merge-sort} we introduced existentially quantified
+singletons as a means for taking dynamic values and converting them
+into equivalent singletons.
+
+We now present combinators for more interesting existentials. For the
+editor we will need to generate a region, that is, a pair of pairs of
+singleton naturals from a pair of pairs of natural numbers.
+
+> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
+>   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
 >
-> wrapList :: [a] -> WrappedVec a
-> wrapList []      = WVec V0
-> wrapList (x:xs)  = case wrapList xs of
->   WVec v -> WVec (x :> v)
+> wrapPair :: (a -> Ex p) ->
+>             (b -> Ex q) ->
+>               (a, b) -> Ex (p :**: q)
+> wrapPair w1 w2 (x1, x2) =
+>   case (w1 x1, w2 x2) of
+>     (Ex v1, Ex v2) -> Ex (v1 :&&: v2)
+
+The type |p :**: q| allows us to construct the type of pairs of |p|
+and |q| singletons. The |wrapPair| function wraps a pair of dynamic
+objects in a suitable existential package.
+
+> type WPoint = Ex (Natty :**: Natty)
+> type WSize = Ex (Natty :**: Natty)
+> type WRegion = Ex ((Natty :**: Natty) :**: (Natty :**: Natty))
+
+> intToNat :: Int -> Nat
+> intToNat 0 = Z
+> intToNat n = S (intToNat (n-1))
+
+> wrapInt = wrapNat . intToNat
+> wrapPoint  = wrapPair wrapInt wrapInt
+> wrapSize   = wrapPair wrapInt wrapInt
+> wrapRegion = wrapPair wrapPoint wrapSize
+
+We might wish to wrap vectors, but the |Vec| type takes the length
+index first, so we cannot us it as is with |Ex|. Thus we can define
+and use a |Flip| combinator, which reverses the arguments of a two
+argument type-operator.
+
+> newtype Flip f a b = Flip {unFlip :: f b a}
+
+> type WVec a = Ex (Flip Vec a)
+
+> wrapVec :: [a] -> WVec a
+> wrapVec []      = Ex (Flip V0)
+> wrapVec (x:xs)  = case wrapVec xs of
+>   Ex (Flip v) -> Ex (Flip (x :> v))
+
+In fact, we will need to wrap a vector up along with its length, so
+instead of using |Flip| we define an auxiliary |newtype| as follows:
+
+> newtype LenVec a n = LenVec {unLenVec :: (Natty n, Vec n a)}
+
+> type WLenVec a = Ex (LenVec a)
+
+> wrapLenVec :: [a] -> WLenVec a
+> wrapLenVec []      = Ex (LenVec (Zy, V0))
+> wrapLenVec (x:xs)  = case wrapLenVec xs of
+>   Ex (LenVec (n, v)) -> Ex (LenVec (Sy n, x :> v))
+
+> newtype SizeCharBox w h =
+>   SizeCharBox {unSizeCharBox :: (Size w h, CharBox (Pair w h))}
+
+Oops... this isn't going to work with |Ex| because |SizeCharBox| takes two arguments.
+
+%% > data WrappedVec a :: * where
+%% >   WVec :: Vec n a -> WrappedVec a
+%% >
+%% > wrapList :: [a] -> WrappedVec a
+%% > wrapList []      = WVec V0
+%% > wrapList (x:xs)  = case wrapList xs of
+%% >   WVec v -> WVec (x :> v)
 
 Given a string of length |w|, we can wrap it as a character box of
 size |(w, 1)|.
@@ -168,9 +237,9 @@ size |(w, 1)|.
 >   WCharBox :: Size w h -> CharBox (Pair w h) -> WCharBox
 >
 > wrapString :: String -> WCharBox
-> wrapString s = case wrapList s of
->   WVec v ->
->     WCharBox (vlength v, Sy Zy) (Stuff (Mat (pure v)))
+> wrapString s = case wrapLenVec s of
+>   Ex (LenVec (n, v)) ->
+>     WCharBox (n, Sy Zy) (Stuff (Mat (pure v)))
 
 Given a list of |h| strings of maximum length |w|, we can wrap it as a
 character box of size |(w, h)|.
@@ -404,15 +473,15 @@ into equivalent dependent data. Rendering does the opposite.
 >       LotsChanged -> do
 >         clearScreen
 >         resetCursor
->         case (wrapPoint (px, py), wrapPoint (sw, sh)) of
->           (WPoint x y, WPoint w h) -> do
+>         case wrapRegion ps' of
+>           Ex ((x :&&: y) :&&: (w :&&: h)) -> do
 >             let cropped = crop ((x, y), (w, h)) (lw, lh) l
 >             mapM_ putStr (layout (w, h) cropped)
 >       LineChanged -> do
 >         resetCursor
 >         down (cy - py)
->         case (wrapPoint (px, cy), wrapPoint (sw, 1)) of
->           (WPoint x y, WPoint w h) -> do
+>         case wrapRegion ((px, cy), (sw, 1)) of
+>           Ex ((x :&&: y) :&&: (w :&&: h)) -> do
 >             let cropped = crop ((x, y), (w, h)) (lw, lh) l
 >             mapM_ putStr (layout (w, h) cropped)
 >       _ -> return ()
