@@ -201,9 +201,6 @@ The rest of the paper is structured as follows...
 \section{Explicit and Implicit $\Pi$-Types}
 \label{sec:pies}
 
-\todo{Cite ``Applicative programming with effects''~\cite{McbrideP08}
-  somewhere in this section.}
-
 %include Pies.lhs
 
 \subsection{The NATTY-in-Natty Question}

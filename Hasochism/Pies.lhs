@@ -77,8 +77,8 @@ figure them out, but we are entitled to ask whether the additional
 cost of defining singleton classes as well as singleton types is worth
 the benefit. However, there is a situation where we have no choice but
 to work implicitly: we cannot abstract an |instance| over a singleton
-type, but we can constrain it. For example, the |Applicative| instance
-for vectors requires a |NATTY| constraint.
+type, but we can constrain it. For example, the |Applicative|
+instance~\cite{McbrideP08} for vectors requires a |NATTY| constraint.
 
 > instance NATTY n => Applicative (Vec n) where
 >   pure   = vcopies natty
