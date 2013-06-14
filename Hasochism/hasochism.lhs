@@ -221,7 +221,7 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 
 %include MergeSort.lhs
 
-\section{Evidence is data and proof}
+\section{Evidence Combining Data with Proof}
 \label{sec:evidence}
 
 %include Evidence.lhs

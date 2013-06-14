@@ -142,11 +142,11 @@ divide-and-conquer way.
 > sort xs   = merge (sort ys) (sort zs) where (ys, zs) = deal xs
 
 The need to work with |WNat| is a little clunky, compared to the
-version one might write in Agda where |Nat| serves for |Nat| and its
-promotion, |Natty|, |NATTY| and |WNat|, but Agda does not have the
-proof search capacity of Haskell's constraint solver, and so requires
-the theorem proving to be more explicit. There is certainly room for
-improvement in both settings.
+version one might write in Agda where one |Nat| type serves for |Nat|
+and its promotion, |Natty|, |NATTY| and |WNat|, but Agda does not have
+the proof search capacity of Haskell's constraint solver, and so
+requires the theorem proving to be more explicit. There is certainly
+room for improvement in both settings.
 
 
 
