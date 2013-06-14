@@ -22,7 +22,7 @@
 %home. It uses some of the entertaining new toys to bake order
 %invariants into merge sort.
 
-We turn now to a slightly larger example---a development of merge sort
+We turn now to a slightly larger example---a development of merge-sort
 which guarantees by type alone to produce outputs in order. The significant
 thing about this construction is what is missing from it: explicit proofs.
 By coding the necessary logic using type classes, we harness instance
@@ -50,8 +50,9 @@ to be so orderable.
 
 Testing which way around the numbers are is quite a lot like the usual
 Boolean version, except with evidence. The step case requires
-unpacking and repacking because the types change. Instance inference
-is good for the logic involved.
+unpacking and repacking because the constructors are used at different
+types. However, instance inference is sufficient to deduce the logical
+goals from the information revealed by testing.
 
 > owoto :: forall m n. Natty m -> Natty n -> OWOTO m n
 > owoto Zy      n       = LE
@@ -62,14 +63,14 @@ is good for the logic involved.
 
 Now we know how to put numbers in order, let us see how to make
 ordered lists. The plan is to describe what it is to be in order
-between loose bounds. Of course, we do not want to exclude any
-elements from being sortable, so the type of bounds extends the
-element type with bottom and top elements.
+between \emph{loose bounds}~\cite{McBride00:case-talk}. Of course, we
+do not want to exclude any elements from being sortable, so the type
+of bounds extends the element type with bottom and top elements.
 
 > data Bound x = Bot | Val x | Top deriving (Show, Eq, Ord)
 
-We extend the notion of $\leq$ accordingly, so the typechecker can do
-bound checking.
+We extend the notion of $\leq$ accordingly, so that instance inference
+can manage bound checking.
 
 > class LeB (a :: Bound Nat)(b :: Bound Nat) where
 > instance              LeB Bot      b         where
@@ -104,37 +105,49 @@ requirements for the results. Instance inference acts as a basic
 theorem prover: fortunately (or rather, with a bit of practice) the
 proof obligations are easy enough.
 
-Let us seal the deal. We need to construct runtime witnesses for
-numbers in order to sort them this way. We do so via a general data
-type for existentially quantifying over singletons.
+Now that we can combine ordered lists of singleton numbers, we shall need to
+construct singletons for the numbers we intend to sort. We do so via a
+general data type for existential quantification.
 
 > data Ex (p :: k -> *) where
 >   Ex :: p i -> Ex p
 
+A `wrapped |Nat|' is then a |Natty| singleton for any type-level number.
+
 > type WNat = Ex Natty
+
+We can translate a |Nat| to its wrapped version by writing what is,
+morally, another obfuscated identity function between our two types
+of term level natural numbers.
 
 > wrapNat :: Nat -> WNat
 > wrapNat  Z      =  Ex Zy
 > wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
 
-We need to trust that this translation gives us the |WNat| that
-corresponds to the |Nat| we want to sort. This interplay between
-|Nat|, |Natty| and |WNat| is a bit frustrating, but that is what it
-takes in Haskell just now. Once we have got that, we can build sort in
-the usual divide-and-conquer way.
+You can see that this translation gives us the |WNat| that corresponds
+to the |Nat| it is given, but that property is sadly, not enforced by
+type. However, once we have |WNat|s, we can build merge-sort in the usual
+divide-and-conquer way.
 
 > deal :: [x] -> ([x], [x])
 > deal []        = ([], [])
 > deal (x : xs)  = (x : zs, ys) where (ys, zs) = deal xs
 
 > sort :: [Nat] -> OList Bot Top
-> sort []  = ONil
-> sort [n] = case wrapNat n of Ex n -> n :< ONil
-> sort xs = merge (sort ys) (sort zs) where (ys, zs) = deal xs
+> sort []   = ONil
+> sort [n]  = case wrapNat n of Ex n -> n :< ONil
+> sort xs   = merge (sort ys) (sort zs) where (ys, zs) = deal xs
 
-We are often surprised by how many programs that make sense to us can
-make just as much sense to a typechecker.
+The need to work with |WNat| is a little clunky, compared to the
+version one might write in Agda where |Nat| serves for |Nat| and its
+promotion, |Natty|, |NATTY| and |WNat|, but Agda does not have the
+proof search capacity of Haskell's constraint solver, and so requires
+the theorem proving to be more explicit. There is certainly room for
+improvement in both settings.
 
+
+
+%if False
 \todo{Hide the following code?}
 
 [Here's some spare kit I built to see what was happening.
@@ -152,3 +165,4 @@ make just as much sense to a typechecker.
 > ni x = S (ni (x - 1))
 
 And nothing was hidden.]
+%endif

@@ -216,7 +216,7 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 
 %% %include Existentials.lhs
 
-\section{Classes-as-relations --- silence is golden}
+\section{An Ordered Silence}
 \label{sec:merge-sort}
 
 %include MergeSort.lhs
