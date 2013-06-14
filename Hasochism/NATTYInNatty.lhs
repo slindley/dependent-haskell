@@ -22,10 +22,6 @@
 > 
 > instance NATTYC n => NATTYC (S n) where
 >   nattyC = SyC nattyC
-> 
-> natterC :: NattyC n -> (NATTYC n => t) -> t
-> natterC ZyC     t = t
-> natterC (SyC n) t = natterC n t
 
 %% vectors again
 
@@ -98,37 +94,34 @@ as follows.
 >   SyD :: NattyD n -> NattyD (S n)
 
 Another possible design choice is to insert a |NATTY| constraint in
-the successor case.
+the successor case, effectively storing two copies of the predecessor.
+This is the choice taken by Eisenberg and Weirich in the Singletons
+library~\cite{EisenbergW12}.
 
 > data NattyC :: Nat -> * where
 >   ZyC :: NattyC Z
 >   SyC :: NATTYC n => NattyC n -> NattyC (S n)
 
-Each choice has advantages and disadvantages.
+Each choice has advantages and disadvantages. The unconstrained version
+clearly makes for easier construction of singletons, whilst the constrained
+version makes for more powerful elimination.
 
 Without the |NATTY| constraint on |Sy|, we can write a function to
 compute the length of a vector as follows:
 
 > vlength :: Vec n x -> Natty n
-> vlength V0        = Zy
-> vlength (x :> xs) = Sy (vlength xs)
+> vlength V0         = Zy
+> vlength (x :> xs)  = Sy (vlength xs)
 
-Conversely, with the |NATTY| constraint on |Sy|, we must write:
+However, with the |NATTY| constraint on |Sy|, the construction
+becomes more complex, and we must write:
 
 > vlengthC :: VecC n x -> NattyC n
-> vlengthC V0C        = ZyC
-> vlengthC (x :>> xs) = natterC n (SyC n) where n = vlengthC xs
+> vlengthC V0C         = ZyC
+> vlengthC (x :>> xs)  = natterC n (SyC n) where n = vlengthC xs
 
 in order to bring the appropriate |NATTY| constraint into scope for
 the inductive case.
-
-Let us define a matrix as a vertical vector of horizontal vectors.
-
-> data Matrix :: * -> (Nat, Nat) -> * where
->   Mat :: Vec h (Vec w a) -> Matrix a (Pair w h)
->
-> unMat :: Matrix a (Pair w h) -> Vec h (Vec w a)
-> unMat (Mat vs) = vs
 
 %if False
 
@@ -141,8 +134,9 @@ Let us define a matrix as a vertical vector of horizontal vectors.
 %endif
 
 Let us write a function to construct an identity matrix of size
-|n|. Without the |NATTY| constraint on |Sy|, we must use |natter| to
-bring the appropriate typing constraint into scope.
+|n|. Here, we are eliminating a singleton. Without the |NATTY| constraint
+on |Sy|, we must use |natter| to
+enable the use of the relevant |Applicative| structure.
 
 > idMatrix :: Natty n -> Matrix Int (Pair n n)
 > idMatrix (Sy n)  = natter n $
@@ -151,8 +145,9 @@ bring the appropriate typing constraint into scope.
 
 %$
 
-Conversely, with the |NATTY| constraint on |Sy|, we can omit |natter|,
-because the required constraint is already in scope.
+However, with the |NATTY| constraint on |Sy|, we can omit |natter|,
+because the required constraint is brought into scope by pattern
+matching.
 
 > idMatrixC :: NattyC n -> MatrixC Int (Pair n n)
 > idMatrixC (SyC n)  = 
@@ -161,9 +156,27 @@ because the required constraint is already in scope.
 
 %$
 
-For writing |vlength| it is most convenient to omit the |NATTY|
-constraint from the successor constructor.
-%
-For writing |idMatrix|, it is most convenient to attach the |NATTY|
-constraint to the successor constructor.
+For contructions like |vlength| it is most convenient to omit the
+|NATTY| constraint from the successor constructor.  For eliminations
+like |idMatrix|, it is most convenient to attach the |NATTY|
+constraint to the successor constructor. It is hard to predict which
+polarity is more likely to dominate, but the issue with elimination
+happens only when we have the explicit witness but need the implicit
+one.
 
+There is also a time/space trade-off, as including the constraint
+effectively requires storing the same information twice at each node,
+but allows for an implementation of |natter| by one step of case analysis,
+rather than a full recursion.
+
+%format natterC = natter
+
+> natterC :: NattyC n -> (NATTYC n => t) -> t
+> natterC ZyC      t  = t
+> natterC (SyC n)  t  = t
+
+SHE has vacillated between the two: the first implementation did not
+add the constraint; a tricky example provoked us to add it, but it broke
+too much code, so we reverted the change. Our experience suggests that
+omitting the constraint is more convenient more of the time. We should,
+however, prefer to omit the entire construction.
