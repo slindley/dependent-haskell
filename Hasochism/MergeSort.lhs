@@ -14,22 +14,29 @@
 %format sort = "\F{sort}"
 %format ni = "\F{ni}"
 
-The following is a stunt, but it's quite a safe stunt so do try it at home. It uses some of the entertaining new toys to bake order invariants into mergeSort.
+The following is a stunt, but quite a safe stunt so do try it at
+home. It uses some of the entertaining new toys to bake order
+invariants into merge sort.
 
-
-But I'll define <= in type class Prolog, so the typechecker can try to figure order out implicitly.
+We define $\leq$ in type class Prolog, so the typechecker can try to
+figure order out implicitly.
 
 > class LeN (m :: Nat) (n :: Nat) where
 > instance             LeN Z n where
 > instance LeN m n =>  LeN (S m) (S n) where
 
-In order to sort numbers, I need to know that any two numbers can be ordered one way or the other. Let's say what it means for two numbers to be so orderable.
+In order to sort numbers, we need to know that any two numbers can be
+ordered one way or the other. Let us say what it means for two numbers
+to be so orderable.
 
 > data OWOTO :: Nat -> Nat -> * where
 >   LE :: LeN x y => OWOTO x y
 >   GE :: LeN y x => OWOTO x y
 
-Testing which way around the numbers are is quite a lot like the usual Boolean version, except with evidence. The step case requires unpacking and repacking because the types change. Instance inference is good for the logic involved.
+Testing which way around the numbers are is quite a lot like the usual
+Boolean version, except with evidence. The step case requires
+unpacking and repacking because the types change. Instance inference
+is good for the logic involved.
 
 > owoto :: forall m n. Natty m -> Natty n -> OWOTO m n
 > owoto Zy      n       = LE
@@ -38,11 +45,16 @@ Testing which way around the numbers are is quite a lot like the usual Boolean v
 >   LE -> LE
 >   GE -> GE
 
-Now we know how to put numbers in order, let's see how to make ordered lists. The plan is to describe what it is to be in order between loose bounds. Of course, we don't want to exclude any elements from being sortable, so the type of bounds extends the element type with bottom and top elements.
+Now we know how to put numbers in order, let us see how to make
+ordered lists. The plan is to describe what it is to be in order
+between loose bounds. Of course, we do not want to exclude any
+elements from being sortable, so the type of bounds extends the
+element type with bottom and top elements.
 
 > data Bound x = Bot | Val x | Top deriving (Show, Eq, Ord)
 
-I extend the notion of <= accordingly, so the typechecker can do bound checking.
+We extend the notion of $\leq$ accordingly, so the typechecker can do
+bound checking.
 
 > class LeB (a :: Bound Nat)(b :: Bound Nat) where
 > instance              LeB Bot      b         where
@@ -50,14 +62,19 @@ I extend the notion of <= accordingly, so the typechecker can do bound checking.
 > instance              LeB (Val x)  Top       where
 > instance              LeB Top      Top       where
 
-And here are ordered lists of numbers: an OList l u is a sequence x1 :< x2 :< ... :< xn :< ONil such that l <= x1 <= x2 <= ... <= xn <= u. The x :< checks that x is above the lower bound, then imposes x as the lower bound on the tail.
+And here are ordered lists of numbers: an |OList l u| is a sequence
+|x1 :< x2 :< ... :< xn :< ONil| such that |l <= x1 <= x2 <= ... <= xn
+<= u|. The |x :<| checks that |x| is above the lower bound, then
+imposes |x| as the lower bound on the tail.
 
 > data OList :: Bound Nat -> Bound Nat -> * where
 >   ONil :: LeB l u => OList l u
 >   (:<) :: forall l x u. LeB l (Val x) =>
 >           Natty x -> OList (Val x) u -> OList l u
 
-We can write merge for ordered lists just the same way we would if they were ordinary. The key invariant is that if both lists share the same bounds, so does their merge.
+We can write merge for ordered lists just the same way we would if
+they were ordinary. The key invariant is that if both lists share the
+same bounds, so does their merge.
 
 > merge :: OList l u -> OList l u -> OList l u
 > merge ONil lu = lu
@@ -66,9 +83,14 @@ We can write merge for ordered lists just the same way we would if they were ord
 >   LE  -> x :< merge xu (y :< yu)
 >   GE  -> y :< merge (x :< xu) yu
 
-The branches of the case analysis extend what is already known from the inputs with just enough ordering information to satisfy the requirements for the results. Instance inference acts as a basic theorem prover: fortunately (or rather, with a bit of practice) the proof obligations are easy enough.
+The branches of the case analysis extend what is already known from
+the inputs with just enough ordering information to satisfy the
+requirements for the results. Instance inference acts as a basic
+theorem prover: fortunately (or rather, with a bit of practice) the
+proof obligations are easy enough.
 
-Let's seal the deal. We need to construct runtime witnesses for numbers in order to sort them this way.
+Let us seal the deal. We need to construct runtime witnesses for
+numbers in order to sort them this way.
 
 \todo{use existential kit to do |NATTY| --- need a different name
 anyway as |NATTY| is already taken}
@@ -80,7 +102,11 @@ anyway as |NATTY| is already taken}
 > natty Z = Nat Zy
 > natty (S n) = case natty n of Nat n -> Nat (Sy n)
 
-We need to trust that this translation gives us the NATTY that corresponds to the Nat we want to sort. This interplay between Nat, Natty and NATTY is a bit frustrating, but that's what it takes in Haskell just now. Once we've got that, we can build sort in the usual divide-and-conquer way.
+We need to trust that this translation gives us the NATTY that
+corresponds to the Nat we want to sort. This interplay between Nat,
+Natty and NATTY is a bit frustrating, but that's what it takes in
+Haskell just now. Once we've got that, we can build sort in the usual
+divide-and-conquer way.
 
 > deal :: [x] -> ([x], [x])
 > deal []        = ([], [])
@@ -91,7 +117,8 @@ We need to trust that this translation gives us the NATTY that corresponds to th
 > sort [n] = case natty n of Nat n -> n :< ONil
 > sort xs = merge (sort ys) (sort zs) where (ys, zs) = deal xs
 
-I'm often surprised by how many programs that make sense to us can make just as much sense to a typechecker.
+We are often surprised by how many programs that make sense to us can
+make just as much sense to a typechecker.
 
 [Here's some spare kit I built to see what was happening.
 
