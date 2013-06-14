@@ -196,16 +196,11 @@ Contributions:
 
 The rest of the paper is structured as follows...
 
-\section{$\Pi$ versus $\forall$ versus explicit $\forall$}
+\section{A Variety of Quantifiers}
 \label{sec:natvec}
-
 %include NatVec.lhs
 
-%% \section{Existentials}
-
-%% %include Existentials.lhs
-
-\section{Explicit $\Pi$ versus implicit $\Pi$}
+\section{Explicit and Implicit $\Pi$-Types}
 \label{sec:pies}
 
 \todo{Cite ``Applicative programming with effects''~\cite{McbrideP08}
@@ -213,9 +208,13 @@ The rest of the paper is structured as follows...
 
 %include Pies.lhs
 
-\section{The NATTY-in-Natty question}
+\subsection{The NATTY-in-Natty Question}
 
 %include NATTYInNatty.lhs
+
+\section{Existentials}
+
+%include Existentials.lhs
 
 \section{Classes-as-relations --- silence is golden}
 \label{sec:merge-sort}
@@ -241,6 +240,8 @@ The rest of the paper is structured as follows...
 
 \section{Conclusion}
 \label{sec:conclusion}
+
+The best thing about banging your head off a brick wall is \emph{stopping}.
 
 \newpage
 
