@@ -179,6 +179,8 @@ character box of size |(w, h)|.
 
 \subsection{Cursors}
 
+Zippers~\cite{Huet97}.
+
 ...
 
 \subsection{The inner loop}

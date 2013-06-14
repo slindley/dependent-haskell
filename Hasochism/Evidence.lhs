@@ -64,6 +64,9 @@ proof object:
 >   EQNat    ->  EQNat
 >   GTNat z  ->  GTNat z
 
+\todo{Cite ``a view from the left''~\cite{McBrideM04} somewhere around
+  here?}
+
 Procrustes is a character from Greek mythology who fit his victims
 into an iron bed either by stretching their limbs or by chopping them
 off. The |procrustes| function fits a vector of length |m| into a

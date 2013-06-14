@@ -55,15 +55,16 @@ one can formulate `propositional equality' types, whose inhabitants
 constitute evidence for equations. Values can be transported between
 provably equal types by explicit appeal to such evidence.
 
-In Haskell's kernel, type equality is entirely syntactic. The above is
-a collection of axioms for Haskell's propositional equality, and every
-program which relies on computation must be elaborated in terms of
-explicit appeal to evidence. The translation from the surface language
-to the kernel attempts to generate this evidence by a powerful but
-inscrutable constraint solving heuristic. Experience suggests that the
-solver computes aggressively, regardless of whether type level
-programs are totally recursive, so we may confidently type vector
-concatenation in terms of addition.
+In Haskell's kernel, type equality is entirely
+syntactic~\cite{SulzmannCJD07}. The above is a collection of axioms
+for Haskell's propositional equality, and every program which relies
+on computation must be elaborated in terms of explicit appeal to
+evidence. The translation from the surface language to the kernel
+attempts to generate this evidence by a powerful but inscrutable
+constraint solving heuristic. Experience suggests that the solver
+computes aggressively, regardless of whether type level programs are
+totally recursive, so we may confidently type vector concatenation in
+terms of addition.
 
 %format vappend = "\F{vappend}"
 
@@ -204,14 +205,19 @@ proxy with
 > proxy :: f i -> Proxy i
 > proxy _ = Proxy
 
-The |vtake| example shows that Haskell's |forall|quantifier supports abstraction
-over data which play a relevant and computational role in static types but have
-no impact on run time execution and thus erasable. Most dependently typed
-languages, with ATS being a notable exception, do not offer such a quantifier,
-which seems to us something of an oversight. Coq's program extraction and Brady's
-compilation method both erase components whose types show that they cannot be
-needed in computation, but they do not allow us to make the promise that ordinary
-data in types like |Nat| will not be needed at run time.
+\todo{fill in citations}
+
+The |vtake| example shows that Haskell's |forall|quantifier supports
+abstraction over data which play a relevant and computational role in
+static types but have no impact on run time execution and thus
+erasable. Most dependently typed languages, with ATS~\cite{CuiDX05}
+being a notable exception, do not offer such a quantifier, which seems
+to us something of an oversight. Coq's program
+extraction~\cite{coq-program-extraction} and Brady's compilation
+method~\cite{brady-compilation} both erase components whose types show
+that they cannot be needed in computation, but they do not allow us to
+make the promise that ordinary data in types like |Nat| will not be
+needed at run time.
 
 Meanwhile, Agda has an `irrelevant' quantifier, abstracting over data
 which will even be ignored by the definitional equality of the type
@@ -236,13 +242,16 @@ an |n|-vector of arguments.
 > varity  x  V0         =  x
 > varity  f  (x :> xs)  =  varity (f x) xs
 
-Here, pattern matching on the vector delivers sufficient information about
-its length to unfold the |Arity| computation. Once again, Agda would allow
-|n| to remain implicit in source code, but insist
-on retaining |n| at run time. Meanwhile, Brady's `detagging' optimization
-would retain |n| but remove the constructor tag from the representation of
-vectors, compiling the above match on the vector to match instead on
-|n| then project from the vector.
+\todo{Brady's detagging citation (is this the same as the one above)?}
+
+Here, pattern matching on the vector delivers sufficient information
+about its length to unfold the |Arity| computation. Once again, Agda
+would allow |n| to remain implicit in source code, but insist on
+retaining |n| at run time. Meanwhile, Brady's `detagging'
+optimization~\cite{brady-detagging} would retain |n| but remove the
+constructor tag from the representation of vectors, compiling the
+above match on the vector to match instead on |n| then project from
+the vector.
 
 To sum up, we have distinguished Haskell's dependent static implicit
 |forall|quantifier from the dependent dynamic explicit $\Pi$-types of

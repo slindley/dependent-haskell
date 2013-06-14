@@ -145,8 +145,8 @@ the prospect of terms in types on the grounds that efficient
 compilation relies on erasure to the dynamic fragment of the
 language. However, renegotiating the term/type distinction need not
 destroy the dynamic/static distinction, as shown by Coq's venerable
-program extraction algorithm, erasing types and proofs from
-dependently typed constructions.
+program extraction algorithm~\cite{coq-extraction}, erasing types and
+proofs from dependently typed constructions.
 
 Meanwhile, Haskell's type classes demonstrate the value of dynamic
 components which are none the less implicit---instance
@@ -157,7 +157,13 @@ Haskell's combination of higher kinds and constraints means that
 sometimes static types must be given explicitly, in order not only to
 check them, but also to drive the generation of invisible boilerplate.
 
+
 \todo{mention promotion~\cite{YorgeyWCJVM12}}
+
+\todo{cite SHE~\cite{she} and \singletons library~\cite{EisenbergW12}}
+
+\todo{mention ``The right kind of generic programming''
+  \cite{Magalhaes12}}
 
 \todo{Conor to work in motivations / contributions}
 
@@ -198,6 +204,9 @@ The rest of the paper is structured as follows...
 %include Existentials.lhs
 
 \section{Explicit $\Pi$ versus implicit $\Pi$}
+
+\todo{Cite ``Applicative programming with effects''~\cite{McbrideP08}
+  somewhere in this section.}
 
 %include Pies.lhs
 
