@@ -12,7 +12,11 @@
 %format merge = "\F{merge}"
 %format deal = "\F{deal}"
 %format sort = "\F{sort}"
+
+%format wrapNat = "\F{wrapNat}"
+
 %format ni = "\F{ni}"
+
 
 The following is a stunt, but quite a safe stunt so do try it at
 home. It uses some of the entertaining new toys to bake order
@@ -90,23 +94,25 @@ theorem prover: fortunately (or rather, with a bit of practice) the
 proof obligations are easy enough.
 
 Let us seal the deal. We need to construct runtime witnesses for
-numbers in order to sort them this way.
+numbers in order to sort them this way. We do so via a general data
+type for existentially quantifying over singletons.
 
-\todo{use existential kit to do |NATTY| --- need a different name
-anyway as |NATTY| is already taken}
+> data Ex (p :: k -> *) where
+>   Ex :: p i -> Ex p
 
-> data NATTY :: * where
->   Nat :: Natty n -> NATTY
+> type WNat = Ex Natty
 
-> natty :: Nat -> NATTY
-> natty Z = Nat Zy
-> natty (S n) = case natty n of Nat n -> Nat (Sy n)
+> wrapNat :: Nat -> WNat
+> wrapNat  Z      =  Ex Zy
+> wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
 
-We need to trust that this translation gives us the NATTY that
-corresponds to the Nat we want to sort. This interplay between Nat,
-Natty and NATTY is a bit frustrating, but that's what it takes in
-Haskell just now. Once we've got that, we can build sort in the usual
-divide-and-conquer way.
+\todo{Relate |Ex| to \singletons library equivalent, if it exists.}
+
+We need to trust that this translation gives us the |WNat| that
+corresponds to the |Nat| we want to sort. This interplay between
+|Nat|, |Natty| and |WNat| is a bit frustrating, but that is what it
+takes in Haskell just now. Once we have got that, we can build sort in
+the usual divide-and-conquer way.
 
 > deal :: [x] -> ([x], [x])
 > deal []        = ([], [])
@@ -114,11 +120,13 @@ divide-and-conquer way.
 
 > sort :: [Nat] -> OList Bot Top
 > sort []  = ONil
-> sort [n] = case natty n of Nat n -> n :< ONil
+> sort [n] = case wrapNat n of Ex n -> n :< ONil
 > sort xs = merge (sort ys) (sort zs) where (ys, zs) = deal xs
 
 We are often surprised by how many programs that make sense to us can
 make just as much sense to a typechecker.
+
+\todo{Hide the following code?}
 
 [Here's some spare kit I built to see what was happening.
 
