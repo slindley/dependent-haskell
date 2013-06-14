@@ -6,9 +6,17 @@
 
 > module Editor where
 >
+> import Prelude hiding (mapM_)
+>
 > import Control.Applicative
 > import Data.Traversable
 > import Data.Foldable
+>
+> import Foreign
+> import Foreign.C (CInt(..))
+> import ANSIEscapes
+> import System.IO
+> import System.Environment
 >
 > import NatVec
 > import BoxPleasure
@@ -181,7 +189,98 @@ character box of size |(w, h)|.
 
 Zippers~\cite{Huet97}.
 
-...
+> type Cursor a m = ([a], m, [a])
+> type StringCursor = Cursor Char ()
+> 
+> type TextCursor = Cursor String StringCursor
+> 
+> deactivate :: Cursor a () -> (Int, [a])
+> deactivate c = outward 0 c where
+>   outward i ([], (), xs)     = (i, xs)
+>   outward i (x : xz, (), xs) = outward (i + 1) (xz, (), x : xs)
+> 
+> activate :: (Int, [a]) -> Cursor a ()
+> activate (i, xs) = inward i ([], (), xs) where
+>   inward _ c@(_, (), [])     = c
+>   inward 0 c                 = c
+>   inward i (xz, (), x : xs)  = inward (i - 1) (x : xz, (), xs)
+> 
+> whatAndWhere :: TextCursor -> (WCharBox, (Int, Int))
+> whatAndWhere (czz, cur, css) = (wrapStrings strs, (x, y))
+>   where
+>     (x, cs) = deactivate cur
+>     (y, strs) = deactivate (czz, (), cs : css)
+
+%if False
+
+> data ArrowDir = UpArrow | DownArrow | LeftArrow | RightArrow
+> data Modifier = Normal | Shift | Control
+> 
+> data Key
+>   = CharKey Char                -- an ordinary printable character
+>   | ArrowKey Modifier ArrowDir  -- an arrow key
+>   | Return
+>   | Backspace
+>   | Delete
+>   | Quit
+> 
+> directions :: [(Char, ArrowDir)]
+> directions = [('A', UpArrow), ('B', DownArrow),
+>               ('C', RightArrow), ('D', LeftArrow)]
+> 
+> escapeKeys :: [(String, Key)]
+> escapeKeys =
+>   [([c], ArrowKey Normal d) | (c, d) <- directions] ++
+>   [("1;2" ++ [c], ArrowKey Shift d) | (c, d) <- directions] ++
+>   [("1;5" ++ [c], ArrowKey Control d) | (c, d) <- directions] ++
+>   [("3~", Delete)]
+> 
+> data Damage
+>   = NoChange       -- nothing at all happened
+>   | PointChanged   -- we moved the cursor but kept the text
+>   | LineChanged    -- we changed text only on the current line
+>   | LotsChanged    -- we changed text off the current line
+>   deriving (Show, Eq, Ord)
+ 
+%% > {--------------------------------------------------------------------------}
+%% > {- Given a Key and an initial TextCursor, either reject the keystroke or  -}
+%% > {- return a modified cursor, with an overestimate of the damage we've     -}
+%% > {- done.                                                                  -}
+%% > {--------------------------------------------------------------------------}
+%% > 
+
+> handleKey :: Key -> TextCursor -> Maybe (Damage, TextCursor)
+> handleKey (CharKey c) (sz, (cz, (), cs), ss) =
+>   Just (LineChanged, (sz, (c : cz, (), cs), ss))
+> handleKey (ArrowKey Normal LeftArrow) (sz, (c : cz, (), cs), ss) =
+>   Just (PointChanged, (sz, (cz, (), c : cs), ss))
+> handleKey (ArrowKey Normal RightArrow) (sz, (cz, (), c : cs), ss) =
+>   Just (PointChanged, (sz, (c : cz, (), cs), ss))
+> handleKey (ArrowKey Normal UpArrow) (sUp : sz, pos, ss) =
+>   Just (PointChanged, (sz, activate (i, sUp), s : ss))
+>     where
+>       (i, s) = deactivate pos
+> handleKey (ArrowKey Normal DownArrow) (sz, pos, sDown : ss) =
+>   Just (PointChanged, (s : sz, activate (i, sDown), ss))
+>     where
+>       (i, s) = deactivate pos
+> handleKey Return (sz, (cz, (), cs), ss) =
+>   Just (LotsChanged, (prefix : sz, ([], (), cs), ss))
+>   where
+>     (_, prefix) = deactivate (cz, (), [])
+> handleKey Delete (sz, (cz, (), c : cs), ss) =
+>   Just (LineChanged, (sz, (cz, (), cs), ss))
+> handleKey Backspace (sz, (c : cz, (), cs), ss) =
+>   Just (LineChanged, (sz, (cz, (), cs), ss))
+> handleKey Delete (sz, (cz, (), []), s : ss) =
+>   Just (LotsChanged, (sz, (cz, (), s), ss))
+> handleKey Backspace (s : sz, ([], (), cs), ss) =
+>   Just (LotsChanged, (sz, (cz, (), cs), ss))
+>            where
+>              (cz, _, _) = activate (length s, s)
+> handleKey _ _ = Nothing
+
+%endif
 
 \subsection{The inner loop}
 
@@ -212,3 +311,136 @@ boxes of the correct size. The rest of the editor does not use
 dependent types. The wrapping functions convert non-dependent data
 into equivalent dependent data. Rendering does the opposite.
 
+%if False
+
+> foreign import ccall
+>   initscr :: IO () 
+> 
+> foreign import ccall "endwin"
+>   endwin :: IO CInt
+> 
+> foreign import ccall "refresh"
+>   refresh :: IO CInt
+> 
+> foreign import ccall "&LINES"
+>   linesPtr :: Ptr CInt
+> 
+> foreign import ccall "&COLS"
+>   colsPtr :: Ptr CInt
+ 
+> scrSize :: IO (Int, Int)
+> scrSize = do
+>     lnes <- peek linesPtr
+>     cols <- peek colsPtr
+>     return (fromIntegral cols, fromIntegral lnes)
+> 
+> copies :: Int -> a -> [a]
+> copies n a = take n (repeat a)
+> 
+> crlf :: IO ()
+> crlf = putStr "\r\n"
+> 
+> putLn :: String -> IO ()
+> putLn x = putStr x >> crlf
+ 
+%% > -- onScreen c r
+%% > --   c is where the cursor currently is
+%% > --   r is where the viewport currently is
+%% > --   the return value is an updated viewport
+%% > --   containing c
+
+> type UPoint = (Int, Int)
+> type USize = (Int, Int)
+> type URegion = (UPoint, USize)
+>
+> onScreen :: UPoint -> URegion -> URegion
+> onScreen (cx, cy) ((px, py), s@(sw, sh))
+>   = (( intoRange px cx sw, intoRange py cy sh), s)
+>   where
+>     intoRange i j x
+>       | i <= j && j <= i + x = i   -- in range, no change
+>       | otherwise = max 0 (j - div x 2)
+ 
+> getEscapeKey :: [(String, Key)] -> IO (Maybe Key)
+> getEscapeKey [] = return Nothing
+> getEscapeKey sks = case lookup "" sks of
+>   Just k -> return (Just k)
+>   _ -> do
+>     c <- getChar
+>     getEscapeKey [(cs, k) | (d : cs, k) <- sks, d == c]
+> 
+> keyReady :: IO (Maybe Key)
+> keyReady = do
+>   b <- hReady stdin
+>   if not b then return Nothing else do
+>     c <- getChar
+>     case c of
+>       '\n' -> return $ Just Return
+>       '\r' -> return $ Just Return
+>       '\b' -> return $ Just Backspace
+>       '\DEL' -> return $ Just Backspace
+>       _ | c >= ' ' -> return $ Just (CharKey c)
+>       '\ESC' -> do
+>         b <- hReady stdin
+>         if not b then return $ Just Quit else do
+>           c <- getChar
+>           case c of
+>             '[' -> getEscapeKey escapeKeys
+>             _ -> return $ Just Quit
+>       _ -> return $ Nothing
+ 
+> layout :: Size w h -> CharBox (Pair w h) -> [String]
+> layout s l = stringsOfCharMatrix (renderCharBox s l)
+> 
+> outer :: URegion -> TextCursor -> IO ()
+> outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
+>   where
+>   inner ps@(p, _) tc lc@(WCharBox (lw, lh) l, c@(cx, cy)) d = do
+>     refresh
+>     s' <- scrSize
+>     let ps'@((px, py), (sw, sh)) = onScreen c (p, s')
+>     let d' = if ps /= ps' then LotsChanged else d
+>     case d' of
+>       LotsChanged -> do
+>         clearScreen
+>         resetCursor
+>         case (wrapPoint (px, py), wrapPoint (sw, sh)) of
+>           (WPoint x y, WPoint w h) -> do
+>             let cropped = crop ((x, y), (w, h)) (lw, lh) l
+>             mapM_ putStr (layout (w, h) cropped)
+>       LineChanged -> do
+>         resetCursor
+>         down (cy - py)
+>         case (wrapPoint (px, cy), wrapPoint (sw, 1)) of
+>           (WPoint x y, WPoint w h) -> do
+>             let cropped = crop ((x, y), (w, h)) (lw, lh) l
+>             mapM_ putStr (layout (w, h) cropped)
+>       _ -> return ()
+>     if d' > NoChange then do
+>       resetCursor
+>       forward (cx - px)
+>       down (cy - py)
+>      else return ()
+>     mc <- keyReady
+>     case mc of
+>       Nothing   -> inner ps' tc lc NoChange
+>       Just Quit -> return ()
+>       Just k    -> case handleKey k tc of
+>         Nothing       -> inner ps' tc lc NoChange
+>         Just (d, tc') -> inner ps' tc' (whatAndWhere tc') d
+ 
+> main = do 
+>   hSetBuffering stdout NoBuffering
+>   hSetBuffering stdin NoBuffering
+>   xs <- getArgs
+>   s <- case xs of
+>     [] -> return ""
+>     (x : _) -> readFile x
+>   let (l, ls) = case lines s of
+>         [] -> ("", [])
+>         (l : ls) -> (l, ls)
+>   initscr
+>   outer ((0, 0), (-1, -1)) ([], ([], (), l), ls)
+>   endwin
+
+%endif
