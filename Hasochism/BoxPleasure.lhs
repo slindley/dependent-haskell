@@ -148,7 +148,18 @@ The |joinV| function is defined similarly.
 
 %endif
 
+As we shall see in Section~\ref{subsec:cut}, it can be useful to
+attach further equational constraints to the |Cmp| constructors. An
+irritation with our current formulation is that we have to go back and
+modify the |Cmp| data type each time we wish to add a new
+equation. Ideally we would have some way of keeping the constraints
+open. This seems fiddly to achieve with Haskell as it stands, because
+we appear to require higher-order constraints. We leave a proper
+investigation to future work.
+
 \subsection{Cutting}
+\label{subsec:cutting}
+
 
 For cutting up boxes, and two-dimensional entities in general, we
 introduce a type class |Cut|.
