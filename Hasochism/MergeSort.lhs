@@ -18,16 +18,27 @@
 %format ni = "\F{ni}"
 
 
-The following is a stunt, but quite a safe stunt so do try it at
-home. It uses some of the entertaining new toys to bake order
-invariants into merge sort.
+%The following is a stunt, but quite a safe stunt so do try it at
+%home. It uses some of the entertaining new toys to bake order
+%invariants into merge sort.
 
-We define $\leq$ in type class Prolog, so the typechecker can try to
-figure order out implicitly.
+We turn now to a slightly larger example---a development of merge sort
+which guarantees by type alone to produce outputs in order. The significant
+thing about this construction is what is missing from it: explicit proofs.
+By coding the necessary logic using type classes, we harness instance
+inference as an implicit proof search mechanism and find it quite adequate
+to the task.
+
+Let us start by defining $\leq$ as a `type' class, seen as a relation.
 
 > class LeN (m :: Nat) (n :: Nat) where
 > instance             LeN Z n where
 > instance LeN m n =>  LeN (S m) (S n) where
+
+If we wanted to \emph{close} this type class, we could use module
+abstraction method of Kiselyov and
+Shan~\cite{Kiselyov07position:lightweight} which uses a non-exported
+superclass. We leave this elaboration to the interested reader.
 
 In order to sort numbers, we need to know that any two numbers can be
 ordered one way or the other. Let us say what it means for two numbers
