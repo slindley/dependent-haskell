@@ -243,24 +243,49 @@ character box of size |(w, h)|.
 
 \subsection{Cursors}
 
-Zippers~\cite{Huet97}.
+%format deactivate = "\F{deactivate}"
+%format outward = "\F{outward}"
+%format activate = "\F{activate}"
+%format inward = "\F{inward}"
+%format whatAndWhere = "\F{whatAndWhere}"
+
+We use a zipper structure~\cite{Huet97} to represent a cursor into a
+text buffer. We make no attempt to statically track the size of the
+buffer as a cursor, but do so when we wish to manipulate the whole
+buffer.
+
+A cursor is a triple consisting of: a backwards list of elements
+before the current position, the object at the current position, and a
+forward list of elements after the current position.
 
 > type Cursor a m = ([a], m, [a])
+
+The elements of a |StringCursor| are characters.
+
 > type StringCursor = Cursor Char ()
-> 
+
+The elements of a |TextCursor| are strings. The object at the current
+position is a |StringCursor|.
+ 
 > type TextCursor = Cursor String StringCursor
-> 
+
+The |deactivate| and |activate| functions convert between a unit cursor and a pair of a list and its length.
+
 > deactivate :: Cursor a () -> (Int, [a])
 > deactivate c = outward 0 c where
 >   outward i ([], (), xs)     = (i, xs)
 >   outward i (x : xz, (), xs) = outward (i + 1) (xz, (), x : xs)
-> 
+>
 > activate :: (Int, [a]) -> Cursor a ()
 > activate (i, xs) = inward i ([], (), xs) where
 >   inward _ c@(_, (), [])     = c
 >   inward 0 c                 = c
 >   inward i (xz, (), x : xs)  = inward (i - 1) (x : xz, (), xs)
-> 
+ 
+The |whatAndWhere| function uses |deactivate| and |wrapStrings| to
+generate a well-formed existentially quantified box from a
+|TextCursor|.
+
 > whatAndWhere :: TextCursor -> (WCharBox, (Int, Int))
 > whatAndWhere (czz, cur, css) = (wrapStrings strs, (x, y))
 >   where
