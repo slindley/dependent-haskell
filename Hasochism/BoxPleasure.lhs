@@ -148,7 +148,7 @@ The |joinV| function is defined similarly.
 
 %endif
 
-As we shall see in Section~\ref{subsec:cut}, it can be useful to
+As we shall see in Section~\ref{subsec:cutting}, it can be useful to
 attach further equational constraints to the |Cmp| constructors. An
 irritation with our current formulation is that we have to go back and
 modify the |Cmp| data type each time we wish to add a new

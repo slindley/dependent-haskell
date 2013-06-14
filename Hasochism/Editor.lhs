@@ -38,6 +38,10 @@ to equivalent size-indexed values using existentials, building on the
 
 \subsection{Character matrix boxes}
 
+%format matrixChar = "\F{matrixChar}"
+%format renderCharBox = "\F{renderCharBox}"
+%format stringsOfCharMatrix = "\F{stringsOfCharMatrix}"
+
 Concretely, we use a character matrix box to represent a text buffer.
 
 > type CharMatrix = Matrix Char
@@ -176,6 +180,11 @@ instead of using |Flip| we define an auxiliary |newtype| as follows:
 > wrapLenVec []      = Ex (LenVec (Zy, V0))
 > wrapLenVec (x:xs)  = case wrapLenVec xs of
 >   Ex (LenVec (n, v)) -> Ex (LenVec (Sy n, x :> v))
+
+\todo{Decide how we want to do the rest of this.}
+
+\todo{Perhaps we should use |SillySize| everywhere in place of
+  |Size|?}
 
 < newtype SizeCharBox w h =
 <   SizeCharBox {unSizeCharBox :: (Size w h, CharBox (Pair w h))}

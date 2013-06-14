@@ -194,6 +194,11 @@ Contributions:
 
 The rest of the paper is structured as follows...
 
+Section~\ref{sec:natvec}... Section~\ref{sec:pies}... Section~\ref{sec:merge-sort}...
+Section~\ref{sec:evidence}... Section~\ref{sec:boxes} introduces an
+algebra of size-indexed boxes, which is used to build a text editor in
+Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
+
 \section{A Variety of Quantifiers}
 \label{sec:natvec}
 %include NatVec.lhs
