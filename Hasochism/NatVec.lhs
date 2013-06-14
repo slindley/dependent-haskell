@@ -98,9 +98,8 @@ In Haskell, we can simulate this by abstracting dependently at the type
 level and non-dependently over the singleton representative. We translate
 (from Agda notation to Haskell):
 \[
-  (x\!:\!|Nat|)\to T \qquad \leadsto \qquad |forall (x :: Nat). Natty x -> T|
+  (n\!:\!|Nat|)\to T \qquad \leadsto \qquad |forall (n :: Nat). Natty n -> T|
 \]
-
 Thus equipped, we may write
 
 > vchop :: Natty m -> Vec (m :+ n) x -> (Vec m x, Vec n x)
@@ -112,8 +111,20 @@ There may be an argument from implementation inertia in favour of this
 means of dependent quantification, but it proliferates representations
 of cognate notions, which is an eccentric way to keep things simple.
 
-A further disturbance is in store if we choose to compute only the first
-component returned by |vchop|. Cutting out the suffix gives us
+Moreover, we can only construct $\Pi$-types with domains admitting the
+singleton construction --- currently, simple data structures. At time of
+writing, we cannot form a Haskell analogue of
+\[
+  (n\!:\!|Nat|)\to (|xs|\!:\!|Vec n x|)\to T[|xs|]
+\]
+but we expect this gap to be plugged in the near future. Promoting |Vec n x|
+to a kind perforce involves using numbers not only in terms and types, but
+in kinds as well. In our new, more flexible world, the type/kind distinction
+is increasingly inconvenient, and a clear candidate for abolition.
+
+Meanwhile, a further disturbance is in store if we choose to compute
+only the first component returned by |vchop|. Cutting out the suffix
+gives us
 
 %format vtake = "\F{vtake}"
 %format BAD = "\hfill(\times)"
@@ -193,4 +204,51 @@ proxy with
 > proxy :: f i -> Proxy i
 > proxy _ = Proxy
 
-[so we have an explicit intersection; much needed in Agda]
+The |vtake| example shows that Haskell's |forall|quantifier supports abstraction
+over data which play a relevant and computational role in static types but have
+no impact on run time execution and thus erasable. Most dependently typed
+languages, with ATS being a notable exception, do not offer such a quantifier,
+which seems to us something of an oversight. Coq's program extraction and Brady's
+compilation method both erase components whose types show that they cannot be
+needed in computation, but they do not allow us to make the promise that ordinary
+data in types like |Nat| will not be needed at run time.
+
+Meanwhile, Agda has an `irrelevant' quantifier, abstracting over data
+which will even be ignored by the definitional equality of the type
+system. In effect, the erasure induced by `irrelevance' is static as
+well as dynamic, and is thus more powerful but less applicable. The
+Agda translation of |vtake| cannot make |n| an irrelevant argument,
+because it is needed to compute the length of the input, which most
+certainly is statically relevant.  In contemporary Agda, it seems that
+this |n| must be present at run time.
+
+A further example, showing implicit quantification over data used statically
+to compute a type but erased at run time, applies an |n|-ary operator to
+an |n|-vector of arguments.
+
+%format varity = "\F{varity}"
+
+> type family Arity (n :: Nat) (x :: *) :: *
+> type instance Arity Z      x  =  x
+> type instance Arity (S n)  x  =  x -> Arity n x
+
+> varity :: Arity n x -> Vec n x -> x
+> varity  x  V0         =  x
+> varity  f  (x :> xs)  =  varity (f x) xs
+
+Here, pattern matching on the vector delivers sufficient information about
+its length to unfold the |Arity| computation. Once again, Agda would allow
+|n| to remain implicit in source code, but insist
+on retaining |n| at run time. Meanwhile, Brady's `detagging' optimization
+would retain |n| but remove the constructor tag from the representation of
+vectors, compiling the above match on the vector to match instead on
+|n| then project from the vector.
+
+To sum up, we have distinguished Haskell's dependent static implicit
+|forall|quantifier from the dependent dynamic explicit $\Pi$-types of
+dependent type theory. We have seen how to make |forall| static and
+explicit with a |Proxy|, and how to make it dynamic and explicit
+whenever the singleton construction is possible. However, we have noted
+that whilst Haskell struggles to simulate $\Pi$ with |forall|, the reverse
+is the case in type theory. What is needed, on both sides, is a more
+systematic treatment of the varieties of quantification.
