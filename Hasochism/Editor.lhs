@@ -333,7 +333,7 @@ generate a well-formed existentially quantified box from a
 We give a brief overview of the editor's inner loop. The full code is
 available as literate Haskell at:
 
-  \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism}
+  \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism/Editor.lhs}
 
 The current position in the text buffer is represented using a zipper
 structure over an undindexed list of strings. The current position and

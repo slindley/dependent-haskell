@@ -79,6 +79,7 @@
 \usepackage{amsmath}
 \usepackage{xspace}
 \usepackage{url}
+\usepackage{hyperref}
 
 \newcommand{\singletons}{\textsf{singletons}\xspace}
 
