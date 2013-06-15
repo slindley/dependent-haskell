@@ -6,6 +6,7 @@
 
 > module BoxPleasure where
 >
+> import Data.Monoid
 > import NatVec
 >
 
