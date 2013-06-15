@@ -45,8 +45,8 @@ to be more generally useful. The type of sizes is given by the
 
 > type Size = Natty :**: Natty
 >
-> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
->   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
+> data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
+>   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
 
 In general, the separating conjunction |:**:| of two indexed type
 constructors is an indexed product whose index is also a product, in
@@ -55,8 +55,8 @@ corresponding component of the index.
 
 We also define a \emph{non-separating conjunction}.
 
-> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
->   (:&:) :: p k -> q k -> (p :*: q) k
+> data (p :: kappa -> *) :*: (q :: kappa -> *) :: kappa -> * where
+>   (:&:) :: p kappa -> q kappa -> (p :*: q) k
 
 The non-separating conjunction |:*:| is an indexed product in which
 the index is shared across both components of the product.
@@ -96,7 +96,7 @@ category are indexed. The morphisms are inhabitants of the following
 
 Let us define a type class of monads over indexed types.
 
-> class MonadIx (m :: (k -> *) -> (k -> *)) where
+> class MonadIx (m :: (kappa -> *) -> (kappa -> *)) where
 >   returnIx :: a :-> m a
 >   extendIx :: (a :-> m b) -> (m a :-> m b)
 

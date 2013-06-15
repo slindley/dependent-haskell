@@ -112,7 +112,7 @@ Now that we can combine ordered lists of singleton numbers, we shall need to
 construct singletons for the numbers we intend to sort. We do so via a
 general data type for existential quantification.
 
-> data Ex (p :: k -> *) where
+> data Ex (p :: kappa -> *) where
 >   Ex :: p i -> Ex p
 
 A `wrapped |Nat|' is then a |Natty| singleton for any type-level number.

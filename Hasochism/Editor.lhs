@@ -106,7 +106,7 @@ we instantiate the |Cut| type class for matrices.
 
 %if False
 
-> data Ex (p :: k -> *) where
+> data Ex (p :: kappa -> *) where
 >   Ex :: p i -> Ex p
 
 > type WNat = Ex Natty

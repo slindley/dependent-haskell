@@ -9,11 +9,11 @@
 > import NatVec
 >
 
-> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
->   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
-
-> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
->   (:&:) :: p k -> q k -> (p :*: q) k
+> data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
+>   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
+>
+> data (p :: kappa -> *) :*: (q :: kappa -> *) :: kappa -> * where
+>   (:&:) :: p kappa -> q kappa -> (p :*: q) kappa
 
 > type Size = Natty :**: Natty
 > 

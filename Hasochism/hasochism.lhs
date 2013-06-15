@@ -67,6 +67,10 @@
 
 %format BAD = "\hfill(\times)"
 
+%format iota = "\iota"
+%format kappa = "\kappa"
+
+
 %format show = "\F{show}"
 
 \newcommand{\F}{\mathsf}
