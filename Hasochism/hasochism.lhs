@@ -214,13 +214,11 @@ Specifically, this paper contributes
 \end{itemize}
 
 \paragraph{Overview}
-Section~\ref{sec:natvec} explores variation in forms of dependent Section~\ref{sec:pies}... Section~\ref{sec:merge-sort}...
-Section~\ref{sec:evidence}... Section~\ref{sec:boxes} introduces an
+Section~\ref{sec:natvec} explores variations on the theme of dependent quantification, through paradigmatic examples involving natural numbers and vectors.
+ Section~\ref{sec:pies} focuses on the implicit/explicit distinction, whilst developing standard library functionality for vectors, identifying areas of concern. Section~\ref{sec:merge-sort} delivers merge-sort, using instance inference for proof search.
+Section~\ref{sec:evidence} explores the use of data types to represent effective evidence. Section~\ref{sec:boxes} introduces an
 algebra of size-indexed boxes, which is used to build a text editor in
 Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
-
-\todo{Identify places in the paper where we should compare with SHE
-and the \singletons library.}
 
 \section{A Variety of Quantifiers}
 \label{sec:natvec}
