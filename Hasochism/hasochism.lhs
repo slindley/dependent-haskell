@@ -127,7 +127,7 @@ dependently typed languages more broadly.
 
 In the design of Standard ML, Milner and his colleagues achieved a remarkable
 alignment of distinctions:
-\[\begin{array}{||l||||r||l||}
+~\cite{Milner78,ML}\[\begin{array}{||l||||r||l||}
 \hline
 \textrm{syntactic category}  & \textbf{terms}      &     \textbf{types} \\
 \textrm{phase distinction}   & \textbf{dynamic}    &    \textbf{static} \\
@@ -155,54 +155,66 @@ destroy the dynamic/static distinction, as shown by Coq's venerable
 program extraction algorithm~\cite{Paulin89a}, erasing types and
 proofs from dependently typed constructions.
 
-Meanwhile, Haskell's type classes demonstrate the value of dynamic
-components which are none the less implicit---instance
-dictionaries. Indeed, type inference seems a timid virtue once you
-glimpse the prospect of \emph{program} inference, yet some are made
-nervous by the prospect of unwritten programs being run. Similarly,
-Haskell's combination of higher kinds and constraints means that
-sometimes static types must be given explicitly, in order not only to
-check them, but also to drive the generation of invisible boilerplate.
+Meanwhile, Haskell's type classes~\cite{WadlerB89} demonstrate the
+value of dynamic components which are none the less
+implicit---instance dictionaries. Indeed, type inference seems a timid
+virtue once you glimpse the prospect of \emph{program} inference, yet
+some are made nervous by the prospect of unwritten programs being
+run. Similarly, Haskell's combination of higher kinds and constraints
+means that sometimes static types must be given explicitly, in order
+not only to check them, but also to drive the generation of invisible
+boilerplate.
 
+Milner's aligned distinctions have shifted apart, but Haskell persists
+with one dependent quantifier for implicit abstraction over static
+types. What counts as a `type' has begun to stretch. Our
+\emph{Strathclyde Haskell Enhancement} preprocessor~\cite{she},
+systematized and sugared common constructions for building the type
+level analogues of run time data, together with run time witnesses to
+type level values, allowing something which was made to look like a
+dependent quantifier for explicit abstraction over dynamic terms---the
+$\Pi$-type of dependent type theory---in domains simple enough to
+admit the singleton construction. Before long, Glasgow Haskell
+headquarters responded with a proper kind system for `promoted' data
+types~\cite{YorgeyWCJVM12}, making possible the \singletons
+library~\cite{EisenbergW12}. The arrival of data types at the kind
+level necessitated polymorphism in kinds: Haskell is now a dependently
+\emph{kinded} language, and although it is a nuisance that the
+kind-level $\forall$ is compulsorily implicit, the fresh abstractions
+it offers have yielded considerable simplification, e.g., in support
+of generic programming~\cite{Magalhaes12}.
 
-\todo{mention promotion~\cite{YorgeyWCJVM12}}
+So we decided to have some fun, motivated by the reliability benefits
+of programming at a higher level of static precision, and the
+experience of doing so in prototype dependently typed languages---in
+our case, Epigram~\cite{McBrideM04} and Agda~\cite{norell:thesis}.
+There is a real sense of comfort which comes from achieving a high
+level of hygiene, and it is something which we want to bring with us
+into practical programming in industrial strength languages like
+Haskell.  Of course, reality intervenes at this point: some desirable
+methods are harder to express than one might hope, but we can also
+report some pleasant surprises.  We hope our experiments inform both
+programming practice with current tools and the direction of travel
+for Haskell's evolution.
 
-\todo{cite SHE~\cite{she} and \singletons library~\cite{EisenbergW12}}
-
-\todo{mention ``The right kind of generic programming''
-  \cite{Magalhaes12}}
-
-\todo{Conor to work in motivations / contributions}
-
-Motivations:
+Specifically, this paper contributes
 \begin{itemize}
-\item For everyone. Dependent types. More precise types $\Rightarrow$ stronger
-  static guaranteees $\Rightarrow$ more reliable programs.
+\item an analysis of how to achieve dependent quantification in Haskell, framed
+  by the distinctions drawn above---we note that Agda and Haskell both have
+  room for improvement;
 
-\item For Haskell programmers. Explore techniques for practical
-  dependently typed Haskell programming.
+\item practical techniques for dependently typed programming in
+  Haskell, with a view to minimizing explicit proof in program texts;
 
-\item For compiler implementors. Identify improvements in light of
-  hasochism.
+\item an implementation of merge-sort guaranteeing the ordering invariant
+  for its output, in which the proofs are \emph{silent};
+
+\item an algebra for tiling size-indexed boxes, fitting with precision,
+  leading to an implementation of a screen editor.
 \end{itemize}
 
-Contributions:
-
-\begin{itemize}
-\item Comparison between Agda-style dependently typed programming and
-  dependently typed programming in Haskell
-
-\item Practical techniques for dependently typed programming in
-  Haskell
-
-\item MergeSort example
-
-\item An algebra of size-indexed boxes including editor example
-\end{itemize}
-
-The rest of the paper is structured as follows...
-
-Section~\ref{sec:natvec}... Section~\ref{sec:pies}... Section~\ref{sec:merge-sort}...
+\paragraph{Overview}
+Section~\ref{sec:natvec} explores variation in forms of dependent Section~\ref{sec:pies}... Section~\ref{sec:merge-sort}...
 Section~\ref{sec:evidence}... Section~\ref{sec:boxes} introduces an
 algebra of size-indexed boxes, which is used to build a text editor in
 Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
