@@ -390,6 +390,8 @@ cropping function of type:
 < Cut p => Region (Pair (Pair x y) (Pair w h)) -> Size (Pair s t) ->
 <   Box p (Pair s t) -> Box p (Pair (Min w (s :- x)) (Min h (t :- y)))
 
+where |Min| is minimum on promoted |Nat|s.
+
 This proved considerably more difficult to use as we had to reason
 about interactions between subtraction, addition, and
 minimum. Moreover, the less-refined version is often what we want in
