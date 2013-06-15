@@ -156,7 +156,7 @@ matching.
 
 %$
 
-For contructions like |vlength| it is most convenient to omit the
+For constructions like |vlength| it is most convenient to omit the
 |NATTY| constraint from the successor constructor.  For eliminations
 like |idMatrix|, it is most convenient to attach the |NATTY|
 constraint to the successor constructor. It is hard to predict which
@@ -180,3 +180,12 @@ add the constraint; a tricky example provoked us to add it, but it broke
 too much code, so we reverted the change. Our experience suggests that
 omitting the constraint is more convenient more of the time. We should,
 however, prefer to omit the entire construction.
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes NATTYInNatty
+%%  LocalWords:  FlexibleContexts Applicative Traversable Foldable fs
+%%  LocalWords:  NatVec NATTYC nattyC NattyC ZyC SyC VecC vcopiesC ss
+%%  LocalWords:  forall vappC xs Functor fmap fmapDefault foldMap ZyD
+%%  LocalWords:  foldMapDefault NattyD SyD Eisenberg Weirich Sy Vec
+%%  LocalWords:  vlength Zy vlengthC natterC MatrixC MatC unMatC
+%%  LocalWords:  idMatrix unMat idMatrixC

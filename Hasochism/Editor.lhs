@@ -345,7 +345,7 @@ available as literate Haskell at:
   \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism/Editor.lhs}
 
 The current position in the text buffer is represented using a zipper
-structure over an undindexed list of strings. The current position and
+structure over an unindexed list of strings. The current position and
 size of the screen is represented as two pairs of integers. On a
 change to the buffer, the inner loop proceeds as follows.
 \begin{itemize}
@@ -506,3 +506,26 @@ interact with the outside world, and in particular foreign APIs
 >   endwin
 
 %endif
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies mapM Applicative CInt
+%%  LocalWords:  Traversable Foldable ANSIEscapes NatVec BoxPleasure
+%%  LocalWords:  existentials CharMatrix CharBox matrixChar wh css ps
+%%  LocalWords:  vcopies renderCharBox Ver unMat vappend Hor vapp ess
+%%  LocalWords:  stringsOfCharMatrix foldMap horCut fst snd vchop Zy
+%%  LocalWords:  verCut tess bess WNat wrapNat Sy combinators WPoint
+%%  LocalWords:  wrapPair WSize WRegion intToNat wrapInt wrapPoint xs
+%%  LocalWords:  wrapSize wrapRegion Vec combinator newtype unFlip ss
+%%  LocalWords:  WVec wrapVec WLenVec wrapLenVec WSizeCharBox maxn xz
+%%  LocalWords:  wrapString wrapStrings juxV StringCursor TextCursor
+%%  LocalWords:  whatAndWhere czz strs ArrowDir UpArrow DownArrow Eq
+%%  LocalWords:  LeftArrow RightArrow CharKey ArrowKey escapeKeys Ord
+%%  LocalWords:  NoChange PointChanged LineChanged LotsChanged sz cz
+%%  LocalWords:  handleKey sUp pos sDown Haskell unindexed infeasible
+%%  LocalWords:  APIs ccall initscr endwin linesPtr Ptr colsPtr lnes
+%%  LocalWords:  scrSize fromIntegral crlf putStr putLn UPoint USize
+%%  LocalWords:  URegion onScreen cx cy px py intoRange sw sks lookup
+%%  LocalWords:  getEscapeKey getChar keyReady hReady stdin tc lw lh
+%%  LocalWords:  clearScreen resetCursor mc lc hSetBuffering stdout
+%%  LocalWords:  NoBuffering getArgs readFile

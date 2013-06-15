@@ -346,3 +346,9 @@ a brick wall is \emph{stopping}.
 %% \end{thebibliography}
 
 \end{document}
+
+%%  LocalWords:  Haskell Lindley Strathclyde Conor Haskell's Hindley
+%%  LocalWords:  Milner tilings prover Agda Milner's Coq's kinded GHC
+%%  LocalWords:  preprocessor systematized polymorphism minimizing
+%%  LocalWords:  invariants GADTs GHC's compositional WNat scalable
+%%  LocalWords:  preventably generalizing unduplicated hasochism
