@@ -18,10 +18,10 @@
 
 > type Size = Natty :**: Natty
 > 
-> maxn :: Natty m -> Natty n -> Natty (Max m n)
-> maxn Zy     n      = n
-> maxn (Sy m) Zy     = Sy m
-> maxn (Sy m) (Sy n) = Sy (maxn m n)
+> type family Max (m :: Nat) (n :: Nat) :: Nat
+> type instance Max Z     n     = n
+> type instance Max (S m) Z     = S m
+> type instance Max (S m) (S n) = S (Max m n)
 
 > cmp :: Natty m -> Natty n -> Cmp m n
 > cmp Zy      Zy      = EQNat
@@ -106,14 +106,6 @@ equations for computing the maximum of |m| and |n| in each case.
 >                 CmpMax m n
 >   GTNatMax :: (m ~ (n :+ S z),  Max m n ~ m)  =>
 >     Natty z ->  CmpMax m n
-
-where maximum on promoted |Nat|s is given by the following type
-family:
-
-> type family Max (m :: Nat) (n :: Nat) :: Nat
-> type instance Max Z     n     = n
-> type instance Max (S m) Z     = S m
-> type instance Max (S m) (S n) = S (Max m n)
 
 Having added these straightforward equalities, our definition of
 |juxH| now type checks without the need to explicitly invoke any lemmas. 

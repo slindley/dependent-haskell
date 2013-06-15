@@ -8,20 +8,8 @@
 >
 > import NatVec
 > import Evidence
->
-> type family Max (m :: Nat) (n :: Nat) :: Nat
-> type instance Max Z     n     = n
-> type instance Max (S m) Z     = S m
-> type instance Max (S m) (S n) = S (Max m n)
-> 
-> maxn :: Natty m -> Natty n -> Natty (Max m n)
-> maxn Zy     n      = n
-> maxn (Sy m) Zy     = Sy m
-> maxn (Sy m) (Sy n) = Sy (maxn m n)
 
 %endif
-
-%format maxn = "\F{maxn}"
 
 %format cmp = "\F{cmp}"
 
@@ -129,6 +117,13 @@ the sizes do not match up. Let us consider the horizontal version
 > juxH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (w1 :+ w2) (Max h1 h2))
+
+where |Max| computes the maximum of two promoted |Nat|s:
+
+> type family Max (m :: Nat) (n :: Nat) :: Nat
+> type instance Max Z     n     = n
+> type instance Max (S m) Z     = S m
+> type instance Max (S m) (S n) = S (Max m n)
 
 As well as the two boxes it takes singleton representations of their
 sizes, as it must compute on the sizes.
