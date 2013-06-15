@@ -34,6 +34,8 @@
 %format :*: = ":\!\!*\!\!:"
 %format :&: = ":\!\!\&\!\!:"
 
+%format :-> = ":\!\!-\!\!>"
+
 %format (Pair (x) (y)) = Prime(x, y)
 
 %format x1 = x "_1"
@@ -250,13 +252,11 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 \section{Boxes}
 \label{sec:boxes}
 
-\todo{Somewhere present the monadic structure of boxes.}
-
 %include BoxPain.lhs
 
 %include BoxPleasure.lhs
 
-\section{An editor}
+\section{An Editor}
 \label{sec:editor}
 
 %include Editor.lhs

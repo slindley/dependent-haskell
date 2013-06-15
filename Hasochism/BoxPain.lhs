@@ -25,8 +25,8 @@
 
 %format cmp = "\F{cmp}"
 
-%format joinH = "\F{joinH}"
-%format joinV = "\F{joinV}"
+%format juxH = "\F{juxH}"
+%format juxV = "\F{juxV}"
 
 %format maxLT = "\F{maxLT}"
 %format maxEQ = "\F{maxEQ}"
@@ -36,7 +36,7 @@
 In this section we introduce our main example, an algebra for building
 size-indexed rectangular tilings, which we call simply \emph{boxes}.
 
-\subsection{Two flavours of conjunction}
+\subsection{Two Flavours of Conjunction}
 \label{subsec:conjunction}
 
 In order to define size indexes, we introduce some kit which turns out
@@ -64,7 +64,7 @@ the index is shared across both components of the product.
 We will use both separating and non-separating conjunction extensively
 in Section~\ref{subsec:more-existentials}.
 
-\subsection{Box and Join}
+\subsection{The Box Data Type}
 
 We now introduce the type of boxes.
 
@@ -85,21 +85,57 @@ the building blocks for arbitrary graphical user interfaces. In
 Section~\ref{sec:editor} we instantiate content to the type of
 character matrices, which we use to implement a text editor.
 
-A natural operation to define is the one that joins two boxes
+Though |Box| clearly does not have the right type to be an instance of
+the |Monad| type class, it is worth noting that it is a perfectly
+ordinary monad over a slightly richer base category than the category
+of Haskell types used by the |Monad| type class. The objects in this
+category are indexed. The morphisms are inhabitants of the following
+|:->| type.
+
+> type s :-> t = forall i. s i -> t i
+
+Let us define a type class of monads over indexed types.
+
+> class MonadIx (m :: (k -> *) -> (k -> *)) where
+>   returnIx :: a :-> m a
+>   extendIx :: (a :-> m b) -> (m a :-> m b)
+
+The |returnIx| method is the unit, and |extendIx| is the Kleisli
+extension of a monad over indexed types. It is straightforward to
+provide an instance for boxes.
+
+> instance MonadIx Box where
+>   returnIx                      = Stuff
+>   extendIx f (Stuff c)          = f c
+>   extendIx f Clear              = Clear
+>   extendIx f (Hor w1 b1 w2 b2)  =
+>     Hor w1 (extendIx f b1) w2 (extendIx f b2)
+>   extendIx f (Ver h1 b1 h2 b2)  =
+>     Ver h1 (extendIx f b1) h2 (extendIx f b2)
+
+The |extendIx| operation performs substitution at |Stuff|
+constructors, by applying its first argument to the content.
+
+Monads over indexed sets, in general, are explored in depth in the
+second author's previous work~\cite{McBride11}.
+
+\subsection{Juxtaposition}
+
+A natural operation to define is the one that juxtaposes two boxes
 together, horizontally or vertically, adding appropriate padding if
 the sizes do not match up. Let us consider the horizontal version
-|joinH|. Its type signature is:
+|juxH|. Its type signature is:
 
-> joinH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
+> juxH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (w1 :+ w2) (Max h1 h2))
 
 As well as the two boxes it takes singleton representations of their
 sizes, as it must compute on the sizes.
 
-We might try to write a definition for |joinH| as follows:
+We might try to write a definition for |juxH| as follows:
 
-< joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
+< juxH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 <   case cmp h1 h2 of
 <     LTNat n  ->
 <       Hor w1 (Ver h1 b1 (Sy n) Clear) w2 b2   -- |BAD|
@@ -127,9 +163,9 @@ free in the equation. The first |n| arguments are singleton natural
 numbers. The last argument represents a context that expects the
 equation to hold.
 
-For |joinH|, we need one lemma for each case of the comparison:
+For |juxH|, we need one lemma for each case of the comparison:
 
-> joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
+> juxH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp h1 h2 of
 >     LTNat z  -> maxLT h1 z $
 >       Hor w1 (Ver h1 b1 (Sy z) Clear) w2 b2

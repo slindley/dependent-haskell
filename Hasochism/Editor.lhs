@@ -199,7 +199,7 @@ character box of size |(w, h)|.
 >     (  Ex ((w1 :&&: h1) :&: b1),
 >        Ex ((w2 :&&: h2) :&: b2)) ->
 >          Ex (  ((w1 `maxn` w2) :&&: (h1 /+/ h2)) :&:
->                joinV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
+>                juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
 
 \todo{Observe that pattern synonyms would be helpful here.}
 
@@ -328,7 +328,7 @@ generate a well-formed existentially quantified box from a
 
 %endif
 
-\subsection{The inner loop}
+\subsection{The Inner Loop}
 
 We give a brief overview of the editor's inner loop. The full code is
 available as literate Haskell at:
