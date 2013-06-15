@@ -56,13 +56,6 @@ one can formulate `propositional equality' types, whose inhabitants
 constitute evidence for equations. Values can be transported between
 provably equal types by explicit appeal to such evidence.
 
-\todo{Write something about |/+/| and compare with \singletons library.}
-
-> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
-> Zy   /+/ n    = n
-> Sy m /+/ n   = Sy (m /+/ n)
-
-
 In Haskell's kernel, type equality is entirely
 syntactic~\cite{SulzmannCJD07}. The above is a collection of axioms
 for Haskell's propositional equality, and every program which relies
