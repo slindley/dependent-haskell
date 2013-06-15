@@ -22,10 +22,6 @@
 > import Pies
 > import BoxPleasure
 
-> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
-> Zy   /+/ n    = n
-> Sy m /+/ n   = Sy (m /+/ n)
-
 %endif
 
 We outline the design of a basic text editor, which represents the
