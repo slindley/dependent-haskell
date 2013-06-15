@@ -295,7 +295,7 @@ There is room for improvement in the treatment of dependent
 quantification, both in Haskell and in dependently typed programming
 languages. Haskell naturally gives good support for quantifying over
 data which are purely static, whilst Agda insists on retaining these
-data at run time. Meanwhile, the \singleton{} shenanigans required to
+data at run time. Meanwhile, the \singletons{} shenanigans required to
 support the dynamic quantifiers are really quite painful, both
 conceptually---with the explosion of |Nat|, |Natty|, |NATTY| and
 |WNat|---and in the practicalities of shuffling between them, spending
