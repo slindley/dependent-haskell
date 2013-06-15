@@ -122,7 +122,8 @@ writing, we cannot form a Haskell analogue of
 but we expect this gap to be plugged in the near future. Promoting |Vec n x|
 to a kind perforce involves using numbers not only in terms and types, but
 in kinds as well. In our new, more flexible world, the type/kind distinction
-is increasingly inconvenient, and a clear candidate for abolition.
+is increasingly inconvenient, and a clear candidate for
+abolition~\cite{Weirich13}.
 
 Meanwhile, a further disturbance is in store if we choose to compute
 only the first component returned by |vchop|. Cutting out the suffix

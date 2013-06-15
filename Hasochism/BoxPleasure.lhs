@@ -338,7 +338,7 @@ dimensions, we first fit horizontally, and then fit veritcally.
 >   GTNat d  -> fst (verCut h2 (Sy d) b)
 
 Note that |fitH| and |fitV| do essentially the same thing as the
-|procustes| function, but on boxes rather than vectors, and always
+|procrustes| function, but on boxes rather than vectors, and always
 using |Clear| boxes for padding.
 
 To crop a box to a region, we simply clip then fit.
