@@ -18,26 +18,10 @@
 
 > type Size = Natty :**: Natty
 > 
-> type family Max (m :: Nat) (n :: Nat) :: Nat
-> type instance Max Z     n     = n
-> type instance Max (S m) Z     = S m
-> type instance Max (S m) (S n) = S (Max m n)
-> 
 > maxn :: Natty m -> Natty n -> Natty (Max m n)
 > maxn Zy     n      = n
 > maxn (Sy m) Zy     = Sy m
 > maxn (Sy m) (Sy n) = Sy (maxn m n)
->
-> type family (m :: Nat) :- (n :: Nat) :: Nat
-> type instance Z   :- n   = Z
-> type instance S m :- Z   = S m
-> type instance S m :- S n = (m :- n)
->
-> (/-/) :: Natty m -> Natty n -> Natty (m :- n)
-> Zy   /-/ n    = Zy
-> Sy m /-/ Zy   = Sy m
-> Sy m /-/ Sy n = m /-/ n
-
 
 > cmp :: Natty m -> Natty n -> Cmp m n
 > cmp Zy      Zy      = EQNat
@@ -122,6 +106,14 @@ equations for computing the maximum of |m| and |n| in each case.
 >                 CmpMax m n
 >   GTNatMax :: (m ~ (n :+ S z),  Max m n ~ m)  =>
 >     Natty z ->  CmpMax m n
+
+where maximum on promoted |Nat|s is given by the following type
+family:
+
+> type family Max (m :: Nat) (n :: Nat) :: Nat
+> type instance Max Z     n     = n
+> type instance Max (S m) Z     = S m
+> type instance Max (S m) (S n) = S (Max m n)
 
 Having added these straightforward equalities, our definition of
 |juxH| now type checks without the need to explicitly invoke any lemmas. 
@@ -308,6 +300,13 @@ point. The type signature of |clip| is:
 > clip :: Cut p => Size (Pair w h) -> Point (Pair x y) ->
 >   Box p (Pair w h) -> Box p (Pair (w :- x) (h :- y))
 
+where |:-| is type level subtraction:
+
+> type family (m :: Nat) :- (n :: Nat) :: Nat
+> type instance Z   :- n   = Z
+> type instance S m :- Z   = S m
+> type instance S m :- S n = (m :- n)
+
 In order to account for the subtraction in the result, we need to
 augment the |Cmp| data type to include the necessary equations.
 
@@ -321,6 +320,24 @@ augment the |Cmp| data type to include the necessary equations.
 
 To clip in both dimensions, we first clip horizontally, and then clip
 verically.
+%
+
+In order to define clipping we first lift subtraction on types |:-| to
+subtract on singleton naturals |/-/|.
+
+> (/-/) :: Natty m -> Natty n -> Natty (m :- n)
+> Zy   /-/ n    = Zy
+> Sy m /-/ Zy   = Sy m
+> Sy m /-/ Sy n = m /-/ n
+
+In general one needs to define each operation on naturals three times:
+once for |Nat| values, once for |Nat| types, and once for |Natty|
+values. The pain can be somewhat alleviated using the \singletons
+library~\cite{EisenbergW12}, which provides a Template Haskell
+extension to automatically generate all three versions from a single
+definition.
+
+Let us now define clipping.
 
 > clip (w :&&: h) (x :&&: y) b =
 >   clipV (w /-/ x :&&: h) y (clipH (w :&&: h) x b)

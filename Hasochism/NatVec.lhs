@@ -184,6 +184,8 @@ program makes sense.
 The upshot is that there are data which, despite being static, must be
 made explicit. One way to manifest them is via `proxy types', e.g.,
 
+%format kappa = "\kappa"
+
 > data Proxy :: kappa -> * where
 >   Proxy :: Proxy i
 
