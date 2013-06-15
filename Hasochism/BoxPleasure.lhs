@@ -262,6 +262,26 @@ composition of two sub-boxes. We must identify which sub-box the cut
 occurs in, and recurse appropriately. Note that we rely on being able
 to cut content. The definition of vertical box cutting is similar.
 
+\subsection{Boxes as Monoids}
+
+As well as monadic structure, boxes also have monoidal structure.
+
+> instance Cut p => Monoid (Box p wh) where
+>   mempty = Clear
+>   mappend b Clear               = b
+>   mappend Clear b'              = b'
+>   mappend b@(Stuff _) _         = b
+>   mappend (Hor w1 b1 w2 b2) b'  =
+>     Hor w1 (mappend b1 b1') w2 (mappend b2 b2')
+>       where (b1', b2') = horCut w1 w2 b'
+>   mappend (Ver h1 b1 h2 b2) b'  =
+>     Ver h1 (mappend b1 b1') h2 (mappend b2 b2')
+>       where (b1', b2') = verCut h1 h2 b'
+
+The multiplication operation |b `mappend` b'| overlays |b| on top of
+|b'|. It makes essential use of cutting to handle the |Hor| and |Ver|
+cases.
+
 \subsection{Cropping = Clipping + Fitting}
 
 We can \emph{crop} a box to a region. First we need to specify an
