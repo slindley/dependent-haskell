@@ -278,18 +278,19 @@ and box-tiling, where the establishment and maintenance of invariants
 is based not just on propagation of static indices, but on dynamic
 generation of evidence.
 
-After some fairly hairy theorem proving, we learned how to package
-proofs which follow a similar pattern inside GADTs of useful
-evidence. GHC's constraint solver is a good enough automatic theorem
-prover to check the proof steps corresponding to the recursion structure
-of the evidence-generating program. Case analysis on the resulting
-evidence is sufficient to persuade GHC that sorting invariants hold
-and that box snap together. In this respect, Haskell handles simple
-proofs much more neatly than Agda, where proof is as explicit as
-programming because it is programming. There is still room for
-improvement: we do not yet have a \emph{compositional} way to express
-just the \emph{fact} that properties follow by a common proof pattern in
-a way that GHC will silently check.
+After some fairly hairy theorem proving, the worst of which we have
+spared you, we learned how to package proofs which follow a similar
+pattern inside GADTs of useful evidence. GHC's constraint solver is a
+good enough automatic theorem prover to check the proof steps
+corresponding to the recursion structure of the evidence-generating
+program. Case analysis on the resulting evidence is sufficient to
+persuade GHC that sorting invariants hold and that box snap
+together. In this respect, Haskell handles simple proofs much more
+neatly than Agda, where proof is as explicit as programming because it
+is programming. There is still room for improvement: we do not yet
+have a \emph{compositional} way to express just the \emph{fact} that
+properties follow by a common proof pattern in a way that GHC will
+silently check.
 
 There is room for improvement in the treatment of dependent
 quantification, both in Haskell and in dependently typed programming
