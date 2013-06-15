@@ -210,8 +210,10 @@ where |maxn| is maximum on singleton natural numbers:
 
 \todo{Observe that pattern synonyms would be helpful here.}
 
-\todo{Observe that the \singletons library doesn't appear to provide
-  any special support for existential quantification over singletons}
+Curiously, the \singletons library does not appear to provide any
+special support for existential quantification over singletons. It
+should be possible to automatically generate the code for wrapping
+dynamic objects in existentials.
 
 \subsection{Cursors}
 
