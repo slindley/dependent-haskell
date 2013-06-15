@@ -191,7 +191,7 @@ captures the notion of `corresponding positions'.
 >   return = pure
 >   xs >>= f = diagonal (Mat (fmap f xs))
 
-Gibbons (in communication with McBride and Paterson) notes that the
+Gibbons (in communication with McBride and Paterson~\cite{McbrideP08}) notes that the
 |diagonal| construction for unsized lists does not yield a monad, because
 the associativity law fails in the case of `ragged' lists of lists. By
 using sized vectors, we square away the problem cases.
