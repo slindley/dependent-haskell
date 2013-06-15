@@ -56,6 +56,13 @@ one can formulate `propositional equality' types, whose inhabitants
 constitute evidence for equations. Values can be transported between
 provably equal types by explicit appeal to such evidence.
 
+\todo{Write something about |/+/| and compare with \singletons library.}
+
+> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
+> Zy   /+/ n    = n
+> Sy m /+/ n   = Sy (m /+/ n)
+
+
 In Haskell's kernel, type equality is entirely
 syntactic~\cite{SulzmannCJD07}. The above is a collection of axioms
 for Haskell's propositional equality, and every program which relies
@@ -176,8 +183,6 @@ program makes sense.
 
 The upshot is that there are data which, despite being static, must be
 made explicit. One way to manifest them is via `proxy types', e.g.,
-
-%format kappa = "\kappa"
 
 > data Proxy :: kappa -> * where
 >   Proxy :: Proxy i

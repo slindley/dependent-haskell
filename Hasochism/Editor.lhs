@@ -22,10 +22,6 @@
 > import Pies
 > import BoxPleasure
 
-> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
-> Zy   /+/ n    = n
-> Sy m /+/ n   = Sy (m /+/ n)
-
 %endif
 
 We outline the design of a basic text editor, which represents the
@@ -110,7 +106,7 @@ we instantiate the |Cut| type class for matrices.
 
 %if False
 
-> data Ex (p :: k -> *) where
+> data Ex (p :: kappa -> *) where
 >   Ex :: p i -> Ex p
 
 > type WNat = Ex Natty
@@ -203,7 +199,7 @@ character box of size |(w, h)|.
 >     (  Ex ((w1 :&&: h1) :&: b1),
 >        Ex ((w2 :&&: h2) :&: b2)) ->
 >          Ex (  ((w1 `maxn` w2) :&&: (h1 /+/ h2)) :&:
->                joinV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
+>                juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
 
 \todo{Observe that pattern synonyms would be helpful here.}
 
@@ -332,12 +328,12 @@ generate a well-formed existentially quantified box from a
 
 %endif
 
-\subsection{The inner loop}
+\subsection{The Inner Loop}
 
 We give a brief overview of the editor's inner loop. The full code is
 available as literate Haskell at:
 
-  \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism}
+  \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism/Editor.lhs}
 
 The current position in the text buffer is represented using a zipper
 structure over an undindexed list of strings. The current position and

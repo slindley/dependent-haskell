@@ -6,14 +6,15 @@
 
 > module BoxPleasure where
 >
+> import Data.Monoid
 > import NatVec
 >
 
-> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
->   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
-
-> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
->   (:&:) :: p k -> q k -> (p :*: q) k
+> data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
+>   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
+>
+> data (p :: kappa -> *) :*: (q :: kappa -> *) :: kappa -> * where
+>   (:&:) :: p kappa -> q kappa -> (p :*: q) kappa
 
 > type Size = Natty :**: Natty
 > 
@@ -59,8 +60,8 @@
 
 %format maxn = "\F{maxn}"
 
-%format joinH = "\F{joinH}"
-%format joinV = "\F{joinV}"
+%format juxH = "\F{juxH}"
+%format juxV = "\F{juxV}"
 %format crop = "\F{crop}"
 %format fit = "\F{fit}"
 %format fitH  = "\F{fitH}"
@@ -123,12 +124,12 @@ equations for computing the maximum of |m| and |n| in each case.
 >     Natty z ->  CmpMax m n
 
 Having added these straightforward equalities, our definition of
-|joinH| now type checks without the need to explicitly invoke any lemmas. 
+|juxH| now type checks without the need to explicitly invoke any lemmas. 
 
-> joinH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
+> juxH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (w1 :+ w2) (Max h1 h2))
-> joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
+> juxH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp h1 h2 of
 >     LTNat z  ->
 >       Hor w1 (Ver h1 b1 (Sy z) Clear) w2 b2
@@ -137,14 +138,14 @@ Having added these straightforward equalities, our definition of
 >     GTNat z  ->
 >       Hor w1 b1 w2 (Ver h2 b2 (Sy z) Clear)
 
-The |joinV| function is defined similarly.
+The |juxV| function is defined similarly.
 
 %if False
 
-> joinV ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
+> juxV ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (Max w1 w2) (h1 :+ h2))
-> joinV (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
+> juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp w1 w2 of
 >     LTNat n  ->
 >       Ver h1 (Hor w1 b1 (Sy n) Clear) h2 b2
@@ -261,6 +262,26 @@ The interesting case occurs when horizontally cutting the horizontal
 composition of two sub-boxes. We must identify which sub-box the cut
 occurs in, and recurse appropriately. Note that we rely on being able
 to cut content. The definition of vertical box cutting is similar.
+
+\subsection{Boxes as Monoids}
+
+As well as monadic structure, boxes also have monoidal structure.
+
+> instance Cut p => Monoid (Box p wh) where
+>   mempty = Clear
+>   mappend b Clear               = b
+>   mappend Clear b'              = b'
+>   mappend b@(Stuff _) _         = b
+>   mappend (Hor w1 b1 w2 b2) b'  =
+>     Hor w1 (mappend b1 b1') w2 (mappend b2 b2')
+>       where (b1', b2') = horCut w1 w2 b'
+>   mappend (Ver h1 b1 h2 b2) b'  =
+>     Ver h1 (mappend b1 b1') h2 (mappend b2 b2')
+>       where (b1', b2') = verCut h1 h2 b'
+
+The multiplication operation |b `mappend` b'| overlays |b| on top of
+|b'|. It makes essential use of cutting to handle the |Hor| and |Ver|
+cases.
 
 \subsection{Cropping = Clipping + Fitting}
 

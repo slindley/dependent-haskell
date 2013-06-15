@@ -34,6 +34,8 @@
 %format :*: = ":\!\!*\!\!:"
 %format :&: = ":\!\!\&\!\!:"
 
+%format :-> = ":\!\!-\!\!>"
+
 %format (Pair (x) (y)) = Prime(x, y)
 
 %format x1 = x "_1"
@@ -65,6 +67,10 @@
 
 %format BAD = "\hfill(\times)"
 
+%format iota = "\iota"
+%format kappa = "\kappa"
+
+
 %format show = "\F{show}"
 
 \newcommand{\F}{\mathsf}
@@ -77,6 +83,7 @@
 \usepackage{amsmath}
 \usepackage{xspace}
 \usepackage{url}
+\usepackage{hyperref}
 
 \newcommand{\singletons}{\textsf{singletons}\xspace}
 
@@ -250,13 +257,11 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 \section{Boxes}
 \label{sec:boxes}
 
-\todo{Somewhere present the monadic structure of boxes.}
-
 %include BoxPain.lhs
 
 %include BoxPleasure.lhs
 
-\section{An editor}
+\section{An Editor}
 \label{sec:editor}
 
 %include Editor.lhs
