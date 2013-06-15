@@ -85,3 +85,11 @@ of new data that is justified by the test---the difference, in this case---
 and the refinement of the data being tested---the discovery that one number
 is the other plus the difference. We make sure that every computation which
 analyses data has a type which characterizes what we expect to learn.
+
+
+
+%%  LocalWords:  GADTs PolyKinds DataKinds RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies NatVec Haskell na ve
+%%  LocalWords:  McKinna LTNatN EQNatN GTNatN EQNat Cmp LTNat GTNat
+%%  LocalWords:  Agda cmp Zy Sy procrustes Vec xs vappend vcopies
+%%  LocalWords:  vtake characterizes

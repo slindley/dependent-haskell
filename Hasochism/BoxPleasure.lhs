@@ -86,8 +86,8 @@ type equations we need for free as part of the proof object. As a
 first step, we observe that this is essentially what we are already
 doing in the proof object to encode the necessary equations concerning
 addition. One can always rephrase a GADT as an existential algebraic
-datatype with suitable type equalities. For our basic |Cmp| data type,
-this yields:
+data type with suitable type equalities. For our basic |Cmp| data
+type, this yields:
 
 > data CmpEx :: Nat -> Nat -> * where
 >   LTNatEx :: ((m :+ S z) ~ n)  => Natty z ->  CmpEx m n
@@ -396,3 +396,16 @@ This proved considerably more difficult to use as we had to reason
 about interactions between subtraction, addition, and
 minimum. Moreover, the less-refined version is often what we want in
 practice.
+
+
+
+%%  LocalWords:  PolyKinds KindSignatures MultiParamTypeClasses cmp
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies BoxPleasure Monoid Cmp
+%%  LocalWords:  NatVec Zy EQNat Sy LTNat GTNat wh Hor Ver GADT CmpEx
+%%  LocalWords:  datatype equalities LTNatEx EQNatEx GTNatEx CmpMax
+%%  LocalWords:  LTNatMax EQNatMax GTNatMax juxH juxV equational snd
+%%  LocalWords:  Haskell horCut verCut CmpCuts LTCuts EQCuts GTCuts
+%%  LocalWords:  cmpCuts recurse Monoids monadic monoidal mempty fitV
+%%  LocalWords:  mappend verically clipV clipH veritcally fitH fst
+%%  LocalWords:  procrustes

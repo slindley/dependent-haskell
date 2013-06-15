@@ -258,3 +258,17 @@ than skin deep.
 
 %$%
 
+
+
+
+%%  LocalWords:  PolyKinds KindSignatures MultiParamTypeClasses Agda
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies ScopedTypeVariables Zy
+%%  LocalWords:  NatVec Applicative Foldable Traversable Agda's Sy fs
+%%  LocalWords:  Milner's typechecker Haskell vtake vtrunc Vec vapp
+%%  LocalWords:  vcopies forall pointwise ss Functor xs foldMap fmap
+%%  LocalWords:  foldMapDefault fmapDefault Monad unMat xpose vtail
+%%  LocalWords:  sequenceA Completists xss unsized monad Hindley Bool
+%%  LocalWords:  associativity Milner const polymorphism GHC
+%%  LocalWords:  parametricity underconstrained precomposed
+%%  LocalWords:  Strathclyde instantiators

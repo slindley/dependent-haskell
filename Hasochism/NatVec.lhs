@@ -269,3 +269,13 @@ systematic treatment of the varieties of quantification.
 >   show (x :> xs) = show x ++ " :> " ++ show xs
 
 %endif
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies NatVec Haskell's Eq ys
+%%  LocalWords:  Ord generalized contrarian Vec Haskell functorial xs
+%%  LocalWords:  intensional normalization associativity vappend GADT
+%%  LocalWords:  commutativity vchop forall Zy Sy Agda zs vtake GHC
+%%  LocalWords:  injective axiomatised definedness polymorphism Coq's
+%%  LocalWords:  ScopedTypeVariables Brady's definitional ary Arity
+%%  LocalWords:  varity detagging optimization infixr

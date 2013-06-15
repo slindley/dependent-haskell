@@ -169,3 +169,10 @@ room for improvement in both settings.
 
 And nothing was hidden.]
 %endif
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes MergeSort LeN
+%%  LocalWords:  FlexibleContexts NatVec Kiselyov Shan superclass Zy
+%%  LocalWords:  GADT orderable OWOTO owoto forall Sy sortable Eq Ord
+%%  LocalWords:  LeB OList xn ONil lu xu yu prover WNat wrapNat xs zs
+%%  LocalWords:  ys Agda Haskell's ni

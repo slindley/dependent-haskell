@@ -193,3 +193,11 @@ for theorem proving (along the lines of tactics in Coq, say), we would
 like to avoid the pain of explicit theorem proving as much as
 possible. Thus, we choose to change tack and switch to an alternative
 approach.
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies BoxPain NatVec tilings
+%%  LocalWords:  wh Hor Ver instantiations Monad monad Haskell forall
+%%  LocalWords:  morphisms monads MonadIx returnIx extendIx Kleisli
+%%  LocalWords:  juxH cmp LTNat Sy EQNat GTNat GHC parameterised xn
+%%  LocalWords:  maxLT maxEQ maxGT Zy prover Coq
