@@ -269,9 +269,52 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 \section{Conclusion}
 \label{sec:conclusion}
 
-\todo{Write the conclusion.}
+We have constructed and explored the use of the
+static-versus-dynamic/explicit-versus-implicit matrix of
+value-dependent quantifiers in Haskell. We have observed the
+awkwardness, but enjoyed the mere possibility, of dynamic
+quantification and used it to build substantial examples of sorting
+and box-tiling, where the establishment and maintenance of invariants
+is based not just on propagation of static indices, but on dynamic
+generation of evidence.
 
-The best thing about banging your head off a brick wall is \emph{stopping}.
+After some fairly hairy theorem proving, we learned how to package
+proofs which follow a similar pattern inside GADTs of useful
+evidence. GHC's constraint solver is a good enough automatic theorem
+prover to check the proof steps corresponding to the recursion structure
+of the evidence-generating program. Case analysis on the resulting
+evidence is sufficient to persuade GHC that sorting invariants hold
+and that box snap together. In this respect, Haskell handles simple
+proofs much more neatly than Agda, where proof is as explicit as
+programming because it is programming. There is still room for
+improvement: we do not yet have a \emph{compositional} way to express
+just the \emph{fact} that properties follow by a common proof pattern in
+a way that GHC will silently check.
+
+There is room for improvement in the treatment of dependent
+quantification, both in Haskell and in dependently typed programming
+languages. Haskell naturally gives good support for quantifying over
+data which are purely static, whilst Agda insists on retaining these
+data at run time. Meanwhile, the \singletons{} shenanigans required to
+support the dynamic quantifiers are really quite painful, both
+conceptually---with the explosion of |Nat|, |Natty|, |NATTY| and
+|WNat|---and in the practicalities of shuffling between them, spending
+effort on converting values into singletons and singletons into
+dictionaries containing exact copies of those singletons. If we want
+to build a scalable technology with the precision of indexing we have
+shown in our examples, we had better look for foundations which allow
+the elimination of this complexity, not just the encoding of it.
+
+The key step which we must take is to move on from Milner's alignment
+of coincidences and stop working as if a single dependent static
+implicit quantifier over types is all we need. We have encoded
+quantification over the same type in different ways by abstracting
+over different types in the same way, and the result is predictably
+and, we hope, preventably unpleasant. The Strathclyde team are
+actively exploring the remedy---generalizing the quantifier to reflect
+its true diversity, and allowing each type to be used unduplicated
+wherever it is meaningful.  The best thing about banging your head off
+a brick wall is \emph{stopping}.
 
 \newpage
 
