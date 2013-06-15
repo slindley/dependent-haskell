@@ -112,8 +112,9 @@
 Haskell's type system has outgrown its Hindley-Milner roots to the extent that it
 now stretches to the basics of dependently typed programming. In this paper, we
 collate and classify techniques for programming with dependent types in Haskell,
-and contribute some new ones. In particular, through extended examples ---
-merge sort and rectangular tilings --- we show how to exploit Haskell's constraint
+and contribute some new ones. In particular, through extended
+examples---merge-sort and rectangular tilings---we show how to exploit Haskell's
+constraint
 solver as a theorem prover, delivering code which, as Agda programmers, we envy.
 We explore the compromises involved in simulating variations on the theme of the
 dependent function space in an attempt to help programmers put dependent
@@ -226,6 +227,17 @@ Section~\ref{sec:natvec} explores variations on the theme of dependent quantific
 Section~\ref{sec:evidence} explores the use of data types to represent effective evidence. Section~\ref{sec:boxes} introduces an
 algebra of size-indexed boxes, which is used to build a text editor in
 Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
+
+\paragraph{Online code}
+All of the Haskell source code for the developments in this paper are
+available at \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism}.
+
+\paragraph{Acknowledgements} This work was supported by EPSRC project
+\emph{Haskell Types with Added Value}, grant EP/J014591/1. We are
+grateful to be part of the long running conversation about Haskell's
+type system, and in particular to Simon Peyton Jones, Stephanie
+Weirich, Richard Eisenberg, Iavor Diatchki, Dimitrios Vytiniotis,
+Jos{\'e} Pedro Magalh{\~a}es and our colleague Adam Gundry.
 
 \section{A Variety of Quantifiers}
 \label{sec:natvec}

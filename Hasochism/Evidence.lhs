@@ -50,7 +50,7 @@ a singleton representation of |z| as a witness.
 
 Note that in more conventional dependently typed programming
 languages, such as Agda, it is not possible to write an equivalent of
-our naive definition of |Cmp| --- the value of |z| must be provided as
+our naive definition of |Cmp|---the value of |z| must be provided as
 an argument to the |LTNat| and |GTNat| constructors.
 
 We can now write a comparison function that constructs a suitable

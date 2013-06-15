@@ -114,7 +114,7 @@ means of dependent quantification, but it proliferates representations
 of cognate notions, which is an eccentric way to keep things simple.
 
 Moreover, we can only construct $\Pi$-types with domains admitting the
-singleton construction --- currently, simple data structures. At time of
+singleton construction---currently, simple data structures. At time of
 writing, we cannot form a Haskell analogue of
 \[
   (n\!:\!|Nat|)\to (|xs|\!:\!|Vec n x|)\to T[|xs|]
