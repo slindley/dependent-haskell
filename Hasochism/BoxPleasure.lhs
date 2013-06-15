@@ -60,6 +60,9 @@
 %format cmpCuts = "\F{cmpCuts}"
 %format cmp = "\F{cmp}"
 
+%format mempty = "\F{mempty}"
+%format mappend = "\F{mappend}"
+
 
 %% duplicates
 
