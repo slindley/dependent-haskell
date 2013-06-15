@@ -193,19 +193,19 @@ GHC can win it. We repair the definition of |vtake| thus:
 > vtake Zy      n  xs         =  V0
 > vtake (Sy m)  n  (x :> xs)  =  x :> vtake m n xs
 
+\begin{sloppypar}
 Of course, when calling |vtake|, we need to get a proxy from somewhere. If
 we do not already have one, we can write |(Proxy :: Proxy t)| for the
 relevant type level expression |t|. The |ScopedTypeVariables|
 extension allows us to write open types. If we already have some other
 value with the same index, e.g. a singleton value, we can erase it to a
 proxy with
+\end{sloppypar}
 
 %format proxy = "\F{proxy}"
 
 > proxy :: f i -> Proxy i
 > proxy _ = Proxy
-
-\todo{fill in citations}
 
 The |vtake| example shows that Haskell's |forall|quantifier supports
 abstraction over data which play a relevant and computational role in

@@ -200,12 +200,17 @@ Contributions:
 \item An algebra of size-indexed boxes including editor example
 \end{itemize}
 
+\todo{fill in structure}
+
 The rest of the paper is structured as follows...
 
 Section~\ref{sec:natvec}... Section~\ref{sec:pies}... Section~\ref{sec:merge-sort}...
 Section~\ref{sec:evidence}... Section~\ref{sec:boxes} introduces an
 algebra of size-indexed boxes, which is used to build a text editor in
 Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
+
+\todo{Identify places in the paper where we should compare with SHE
+and the \singletons library.}
 
 \section{A Variety of Quantifiers}
 \label{sec:natvec}
@@ -237,6 +242,8 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 \section{Boxes}
 \label{sec:boxes}
 
+\todo{Somewhere present the monadic structure of boxes.}
+
 %include BoxPain.lhs
 
 %include BoxPleasure.lhs
@@ -248,6 +255,8 @@ Section~\ref{sec:editor}. Section~\ref{sec:conclusion} concludes.
 
 \section{Conclusion}
 \label{sec:conclusion}
+
+\todo{Write the conclusion.}
 
 The best thing about banging your head off a brick wall is \emph{stopping}.
 

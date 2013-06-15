@@ -4,7 +4,7 @@
 >     DataKinds, FlexibleInstances, RankNTypes, FlexibleContexts,
 >     TypeOperators, TypeFamilies #-}
 
-> module Editor where
+> module Main where
 >
 > import Prelude hiding (mapM_)
 >
@@ -38,23 +38,25 @@ building on the |Ex| data type of Section~\ref{sec:merge-sort} and the
 separating and non-separating conjunction operators of
 Section~\ref{subsec:conjunction}.
 
-\subsection{Character matrix boxes}
+\subsection{Character Boxes}
 
 %format matrixChar = "\F{matrixChar}"
 %format renderCharBox = "\F{renderCharBox}"
 %format stringsOfCharMatrix = "\F{stringsOfCharMatrix}"
 
-Concretely, we use a character matrix box to represent a text buffer.
+A character box is a box whose content is given by character
+matrices.
 
 > type CharMatrix = Matrix Char
 > type CharBox = Box CharMatrix
 
-We can fill an entire matrix with the same character.
+Concretely, we will use a character box to represent a text buffer. We
+can fill an entire matrix with the same character.
  
 > matrixChar :: Char -> Size wh -> CharMatrix wh
 > matrixChar c (w :&&: h) = Mat (vcopies h (vcopies w c))
 
-We can render a character matrix box as a character matrix.
+We can render a character box as a character matrix.
 
 > renderCharBox ::
 >   Size wh -> CharBox wh -> CharMatrix wh
@@ -75,8 +77,8 @@ We can display a character matrix as a list of strings.
 > stringsOfCharMatrix (Mat vs) =
 >   foldMap ((:[]) . foldMap (:[])) vs
 
-In order to be able to cut (and hence crop) matrix boxes we
-instantiate the |Cut| type class for matrices.
+In order to be able to cut (and hence crop) boxes with matrix content
+we instantiate the |Cut| type class for matrices.
 
 > instance Cut (Matrix e) where
 >   horCut m _ (Mat ess) =
@@ -181,12 +183,12 @@ representing the vector itself should share the same index.
 Similarly, we use non-separating conjunction to wrap a box with its
 size.
 
-> type WCharBox = Ex (Size :*: CharBox)
+> type WSizeCharBox = Ex (Size :*: CharBox)
 
 Given a string of length |w|, we can wrap it as a character box of
 size |(w, 1)|.
 
-> wrapString :: String -> WCharBox
+> wrapString :: String -> WSizeCharBox
 > wrapString s = case wrapLenVec s of
 >   Ex (n :&: Flip v) ->
 >     Ex ((n :&&: Sy Zy) :&: Stuff (Mat (pure v)))
@@ -194,7 +196,7 @@ size |(w, 1)|.
 Given a list of |h| strings of maximum length |w|, we can wrap it as a
 character box of size |(w, h)|.
 
-> wrapStrings :: [String] -> WCharBox
+> wrapStrings :: [String] -> WSizeCharBox
 > wrapStrings []      = Ex ((Zy :&&: Zy) :&: Clear)
 > wrapStrings (s:ss)  =
 >   case (wrapString s, wrapStrings ss) of
@@ -202,6 +204,11 @@ character box of size |(w, h)|.
 >        Ex ((w2 :&&: h2) :&: b2)) ->
 >          Ex (  ((w1 `maxn` w2) :&&: (h1 /+/ h2)) :&:
 >                joinV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
+
+\todo{Observe that pattern synonyms would be helpful here.}
+
+\todo{Observe that the \singletons library doesn't appear to provide
+  any special support for existential quantification over singletons}
 
 \subsection{Cursors}
 
@@ -248,7 +255,7 @@ The |whatAndWhere| function uses |deactivate| and |wrapStrings| to
 generate a well-formed existentially quantified box from a
 |TextCursor|.
 
-> whatAndWhere :: TextCursor -> (WCharBox, (Int, Int))
+> whatAndWhere :: TextCursor -> (WSizeCharBox, (Int, Int))
 > whatAndWhere (czz, cur, css) = (wrapStrings strs, (x, y))
 >   where
 >     (x, cs) = deactivate cur
@@ -328,9 +335,9 @@ generate a well-formed existentially quantified box from a
 \subsection{The inner loop}
 
 We give a brief overview of the editor's inner loop. The full code is
-available at:
+available as literate Haskell at:
 
-  \url{https://github.com/slindley/dependent-haskell/tree/master/Box}
+  \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism}
 
 The current position in the text buffer is represented using a zipper
 structure over an undindexed list of strings. The current position and
@@ -339,12 +346,12 @@ change to the buffer, the inner loop proceeds as follows.
 \begin{itemize}
 \item Wrap the current screen position and size as a singleton region
   using |wrapRegion|.
-\item Unravel the zipper structure to reveal the underlying structure
-  of the buffer as a list of strings.
-\item Use |wrapStrings| to wrap the list of strings as a suitably
-  indexed |CharBox|.
-\item Crop the |CharBox| according to the wrapped singleton region.
-  size.
+\item Unravel the zipper structure using |whatAndWhere| to reveal the
+  underlying structure of the buffer as a list of strings.
+\item This invokes |wrapStrings| to wrap the list of strings as an
+  existential over a suitably indexed |CharBox|.
+\item Crop the wrapped |CharBox| according to the wrapped singleton
+  region.
 \item Render the result as a list of strings using
   |stringsOfCharMatrix . renderCharBox|.
 \end{itemize}
@@ -353,6 +360,13 @@ We take advantage of dependent types to ensure that cropping yields
 boxes of the correct size. The rest of the editor does not use
 dependent types. The wrapping functions convert non-dependent data
 into equivalent dependent data. Rendering does the opposite.
+
+We expect that converting back and forth between raw and indexed data
+every time something changes is expensive. We leave a full performance
+evaluation to future work. One might hope to use indexed data
+everywhere. This is infeasible in practice, because of the need to
+interact with the outside world, and in particular foreign APIs
+(including the curses library we use for our text editor).
 
 %if False
 

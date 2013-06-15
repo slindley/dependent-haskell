@@ -156,12 +156,12 @@ The |joinV| function is defined similarly.
 %endif
 
 As we shall see in Section~\ref{subsec:cutting}, it can be useful to
-attach further equational constraints to the |Cmp| constructors. An
-irritation with our current formulation is that we have to go back and
+attach further equational constraints to the |Cmp| constructors. A
+limitation of our current formulation is that we have to go back and
 modify the |Cmp| data type each time we wish to add a new
 equation. Ideally we would have some way of keeping the constraints
 open. This seems fiddly to achieve with Haskell as it stands, because
-we appear to require higher-order constraints. We leave a proper
+one appears to require higher-order constraints. We leave a proper
 investigation to future work.
 
 \subsection{Cutting}
@@ -262,10 +262,11 @@ composition of two sub-boxes. We must identify which sub-box the cut
 occurs in, and recurse appropriately. Note that we rely on being able
 to cut content. The definition of vertical box cutting is similar.
 
-\subsection{Cropping}
+\subsection{Cropping = Clipping + Fitting}
 
-We define cropping in terms of cutting.
-
+We can \emph{crop} a box to a region. First we need to specify an
+suitably indexed type of regions..
+%
 A point identifies a position inside a box, where |(Zy, Zy)|
 represents the top-left corner, counting top-to-bottom, left-to-right.
 
@@ -277,8 +278,8 @@ the region.
 
 > type Region = Point :**: Size
 
-We can \emph{crop} a box to a region. We decompose cropping into two
-parts, \emph{clipping} and \emph{fitting}.
+We decompose cropping into two parts, \emph{clipping} and
+\emph{fitting}.
 
 Clipping discards everything to the left and above the specified
 point. The type signature of |clip| is:
