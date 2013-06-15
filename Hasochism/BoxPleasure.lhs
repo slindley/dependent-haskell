@@ -300,7 +300,8 @@ augment the |Cmp| data type to include the necessary equations.
 To clip in both dimensions, we first clip horizontally, and then clip
 verically.
 
-> clip (w :&&: h) (x :&&: y) b = clipV (w /-/ x :&&: h) y (clipH (w :&&: h) x b)
+> clip (w :&&: h) (x :&&: y) b =
+>   clipV (w /-/ x :&&: h) y (clipH (w :&&: h) x b)
 > 
 > clipH :: Cut p => Size (Pair w h) -> Natty x ->
 >   Box p (Pair w h) -> Box p (Pair (w :- x) h)
@@ -344,19 +345,21 @@ To crop a box to a region, we simply clip then fit.
 > crop :: Cut p => Region (Pair (Pair x y) (Pair w h)) -> Size (Pair s t) ->
 >   Box p (Pair s t) -> Box p (Pair w h)
 > crop ((x :&&: y) :&&: (w :&&: h)) (s :&&: t) b =
->   fit ((s /-/ x) :&&: (t /-/ y)) (w :&&: h) (clip (s :&&: t) (x :&&: y) b)
+>   fit  ((s /-/ x) :&&: (t /-/ y)) (w :&&: h)
+>        (clip (s :&&: t) (x :&&: y) b)
 
 A convenient feature of our cropping code is that type-level
 subtraction is confined to the |clip| function. This works because in
 the type of |fit| the output box is independent of the size of the
 input box.
 
-In an earlier version of the code we experimented with a cropping
-function of type:
+In an earlier version of the code we experimented with a more refined
+cropping function of type:
 
-< Cut p => Region x y w h -> Size (Pair s t) ->
+< Cut p => Region (Pair (Pair x y) (Pair w h)) -> Size (Pair s t) ->
 <   Box p (Pair s t) -> Box p (Pair (Min w (s :- x)) (Min h (t :- y)))
 
 This proved considerably more difficult to use as we had to reason
 about interactions between subtraction, addition, and
-minimum. Moreover, the less-refined type is often sufficient.
+minimum. Moreover, the less-refined version is often what we want in
+practice.

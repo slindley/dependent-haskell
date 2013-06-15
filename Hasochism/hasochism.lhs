@@ -63,6 +63,8 @@
 %format EXISTS = "\exists\!"
 %format DOT = "\!\!.\!\!"
 
+%format BAD = "\hfill(\times)"
+
 %format show = "\F{show}"
 
 \newcommand{\F}{\mathsf}

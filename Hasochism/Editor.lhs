@@ -29,12 +29,14 @@
 %endif
 
 We outline the design of a basic text editor, which represents the
-text buffer as a box. Using this representation guarantees that
-manipulations such as cropping the buffer to generate screen output
-only generate well-form boxes a given size. We will also need to
-handle dynamic values coming from the outside world. We convert these
-to equivalent size-indexed values using existentials, building on the
-|Ex| of Section~\ref{sec:merge-sort}.
+text buffer as a size-indexed box. Using this representation
+guarantees that manipulations such as cropping the buffer to generate
+screen output only generate well-formed boxes of a given size. We will
+also need to handle dynamic values coming from the outside world. We
+convert these to equivalent size-indexed values using existentials,
+building on the |Ex| data type of Section~\ref{sec:merge-sort} and the
+separating and non-separating conjunction operators of
+Section~\ref{subsec:conjunction}.
 
 \subsection{Character matrix boxes}
 
@@ -86,6 +88,7 @@ instantiate the |Cut| type class for matrices.
 %$
 
 \subsection{Existentials}
+\label{subsec:more-existentials}
 
 %format wrapNat = "\F{wrapNat}"
 %format wrapPair = "\F{wrapPair}"
@@ -113,7 +116,7 @@ instantiate the |Cut| type class for matrices.
 > wrapNat :: Nat -> WNat
 > wrapNat  Z      =  Ex Zy
 > wrapNat  (S m)  =  case wrapNat m of
->                    Ex n -> Ex (Sy n)
+>                      Ex n -> Ex (Sy n)
 
 %endif
 
@@ -121,9 +124,10 @@ In Section~\ref{sec:merge-sort} we introduced existentially quantified
 singletons as a means for taking dynamic values and converting them
 into equivalent singletons.
 
-We now present combinators for more interesting existentials. For the
-editor we will need to generate a region, that is, a pair of pairs of
-singleton naturals from a pair of pairs of natural numbers.
+We now present combinators for constructing existentials over
+composite indexes. For the editor, we will need to generate a region,
+that is, a pair of pairs of singleton naturals from a pair of pairs of
+natural numbers.
 
 > wrapPair :: (a -> Ex p) ->
 >             (b -> Ex q) ->
@@ -132,9 +136,8 @@ singleton naturals from a pair of pairs of natural numbers.
 >   case (w1 x1, w2 x2) of
 >     (Ex v1, Ex v2) -> Ex (v1 :&&: v2)
 
-The type |p :**: q| allows us to construct the type of pairs of |p|
-and |q| singletons. The |wrapPair| function wraps a pair of dynamic
-objects in a suitable existential package.
+The |wrapPair| function wraps a pair of dynamic objects in a suitable
+existential package using a separated conjunction.
 
 > type WPoint = Ex Point
 > type WSize = Ex Size
@@ -150,7 +153,7 @@ objects in a suitable existential package.
 > wrapRegion = wrapPair wrapPoint wrapSize
 
 We might wish to wrap vectors, but the |Vec| type takes the length
-index first, so we cannot us it as is with |Ex|. Thus we can define
+index first, so we cannot use it as is with |Ex|. Thus we can define
 and use a |Flip| combinator, which reverses the arguments of a two
 argument type-operator.
 
@@ -163,7 +166,10 @@ argument type-operator.
 > wrapVec (x:xs)  = case wrapVec xs of
 >   Ex (Flip v) -> Ex (Flip (x :> v))
 
-In fact, we will need to wrap a vector up along with its length:
+In fact, we wish to wrap a vector up together with its length. This is
+where the non-separating conjunction comes into play. The |Natty|
+representing the length of the vector and the |Flip Vec a|
+representing the vector itself should share the same index.
 
 > type WLenVec a = Ex (Natty :*: Flip Vec a)
 
@@ -171,6 +177,9 @@ In fact, we will need to wrap a vector up along with its length:
 > wrapLenVec []      = Ex (Zy :&: Flip V0)
 > wrapLenVec (x:xs)  = case wrapLenVec xs of
 >   Ex (n :&: Flip v) -> Ex (Sy n :&: Flip (x :> v))
+
+Similarly, we use non-separating conjunction to wrap a box with its
+size.
 
 > type WCharBox = Ex (Size :*: CharBox)
 
@@ -180,7 +189,7 @@ size |(w, 1)|.
 > wrapString :: String -> WCharBox
 > wrapString s = case wrapLenVec s of
 >   Ex (n :&: Flip v) ->
->     Ex ((n :&&: (Sy Zy)) :&: Stuff (Mat (pure v)))
+>     Ex ((n :&&: Sy Zy) :&: Stuff (Mat (pure v)))
 
 Given a list of |h| strings of maximum length |w|, we can wrap it as a
 character box of size |(w, h)|.

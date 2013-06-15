@@ -129,7 +129,6 @@ only the first component returned by |vchop|. Cutting out the suffix
 gives us
 
 %format vtake = "\F{vtake}"
-%format BAD = "\hfill(\times)"
 
 < vtake :: Natty m -> Vec (m :+ n) x -> Vec m x -- |BAD|
 < vtake Zy      xs         =  V0

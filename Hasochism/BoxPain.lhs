@@ -19,14 +19,6 @@
 > maxn (Sy m) Zy     = Sy m
 > maxn (Sy m) (Sy n) = Sy (maxn m n)
 
-> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
->   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
-
-> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
->   (:&:) :: p k -> q k -> (p :*: q) k
-
-> type Size = Natty :**: Natty
- 
 %endif
 
 %format maxn = "\F{maxn}"
@@ -44,6 +36,38 @@
 In this section we introduce our main example, an algebra for building
 size-indexed rectangular tilings, which we call simply \emph{boxes}.
 
+\subsection{Two flavours of conjunction}
+\label{subsec:conjunction}
+
+In order to define size indexes, we introduce some kit which turns out
+to be more generally useful. The type of sizes is given by the
+\emph{separated conjunction} of |Natty| with |Natty|.
+
+> type Size = Natty :**: Natty
+>
+> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
+>   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
+
+In general, the separating conjunction |:**:| of two indexed type
+constructors is an indexed product whose index is also a product, in
+which each component of the indexed product is indexed by the
+corresponding component of the index.
+
+We also define a \emph{non-separating conjunction}.
+
+> data (p :: k -> *) :*: (q :: k -> *) :: k -> * where
+>   (:&:) :: p k -> q k -> (p :*: q) k
+
+The non-separating conjunction |:*:| is an indexed product in which
+the index is shared across both components of the product.
+
+We will use both separating and non-separating conjunction extensively
+in Section~\ref{subsec:more-existentials}.
+
+\subsection{Box and Join}
+
+We now introduce the type of boxes.
+
 > data Box :: ((Nat, Nat) -> *) -> (Nat, Nat) -> * where
 >   Stuff  ::  p wh -> Box p wh
 >   Clear  ::  Box p wh
@@ -52,10 +76,9 @@ size-indexed rectangular tilings, which we call simply \emph{boxes}.
 >   Ver    ::  Natty h1 -> Box p (Pair w h1) ->
 >              Natty h2 -> Box p (Pair w h2) -> Box p (Pair w (h1 :+ h2))
 
-A box |b| of with content of size-indexed type |p| and size |wh| has
-type |Box p wh|. Boxes are constructed from content (|Stuff|), clear
-boxes (|Clear|), and horizontal (|Hor|) and vertical (|Ver|)
-composition.
+A box |b| with content of size-indexed type |p| and size |wh| has type
+|Box p wh|. Boxes are constructed from content (|Stuff|), clear boxes
+(|Clear|), and horizontal (|Hor|) and vertical (|Ver|) composition.
 %
 Given suitable instantiations for the content, boxes can be used as
 the building blocks for arbitrary graphical user interfaces. In
@@ -79,11 +102,11 @@ We might try to write a definition for |joinH| as follows:
 < joinH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 <   case cmp h1 h2 of
 <     LTNat n  ->
-<       Hor w1 (Ver h1 b1 (Sy n) Clear) w2 b2
+<       Hor w1 (Ver h1 b1 (Sy n) Clear) w2 b2   -- |BAD|
 <     EQNat    ->
-<       Hor w1 b1 w2 b2
+<       Hor w1 b1 w2 b2                         -- |BAD|
 <     GTNat n  ->
-<       Hor w1 b1 w2 (Ver h2 b2 (Sy n) Clear)
+<       Hor w1 b1 w2 (Ver h2 b2 (Sy n) Clear)   -- |BAD|
 
 Unfortunately, this code does not type check, because GHC has no way
 of knowing that the height of the resulting box is the maximum of the
