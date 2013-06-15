@@ -208,12 +208,25 @@ where |maxn| is maximum on singleton natural numbers:
 > maxn (Sy m) Zy     = Sy m
 > maxn (Sy m) (Sy n) = Sy (maxn m n)
 
-\todo{Observe that pattern synonyms would be helpful here.}
-
 Curiously, the \singletons library does not appear to provide any
 special support for existential quantification over singletons. It
 should be possible to automatically generate the code for wrapping
 dynamic objects in existentials.
+
+We note also that the tendency to use stock datatype components, e.g.,
+|Ex|, |Flip|, |:*:| and |:**:|, causes extra layering of wrapping
+constructors in \emph{patterns} and expressions. We could use a
+bespoke GADT for each type we build in this way, but that would make
+it harder to develop library functionality. Ordinary `let' allows us
+to hide the extra layers in expressions, but is no help for patterns,
+which are currently peculiar in that they admit no form of
+definitional abstraction~\cite{aitken.reppy}. This basic oversight
+would be readily remedied by \emph{pattern synonyms}---linear,
+constructor-form definitions which expand like macros either side of
+the = sign.
+
+
+
 
 \subsection{Cursors}
 
