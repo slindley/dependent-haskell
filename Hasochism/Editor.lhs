@@ -201,6 +201,13 @@ character box of size |(w, h)|.
 >          Ex (  ((w1 `maxn` w2) :&&: (h1 /+/ h2)) :&:
 >                juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
 
+where |maxn| is maximum on singleton natural numbers:
+
+> maxn :: Natty m -> Natty n -> Natty (Max m n)
+> maxn Zy     n      = n
+> maxn (Sy m) Zy     = Sy m
+> maxn (Sy m) (Sy n) = Sy (maxn m n)
+
 \todo{Observe that pattern synonyms would be helpful here.}
 
 \todo{Observe that the \singletons library doesn't appear to provide
