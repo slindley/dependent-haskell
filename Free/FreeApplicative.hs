@@ -40,16 +40,16 @@ instance Functor f => Applicative (FreeApp f) where
   pure v                         = FreeApp FNil (\FNil -> v)
   FreeApp cs f <*> FreeApp cs' g =
      FreeApp (cs /++/ cs')
-       (\xs -> let (ys, zs) = split cs xs in f ys (g zs))
+       (\xs -> let (ys, zs) = split (shape cs) xs in f ys (g zs))
 
 {- split an FList into two parts.
    The first argument directs where to split the list.
 -}
-split :: FList f ts ->
+split :: TList ts ->
            FList g (ts :++: ts') -> (FList g ts, FList g ts')
-split FNil      xs        = (FNil, xs)
-split (c :> cs) (x :> xs) = (x :> ys, zs) where
-  (ys, zs) = split cs xs
+split TNil         xs        = (FNil, xs)
+split (TCons _ ts) (x :> xs) = (x :> ys, zs) where
+  (ys, zs) = split ts xs
 
 {- In older versions of GHC (< 7.6.2, I think), it was necessary to
 add an additional argument to split in order to aid type inference.
@@ -74,3 +74,18 @@ instance Functor f => Applicative (FreeAlt f) where
 instance Functor f => Alternative (FreeAlt f) where
   empty                      = FreeAlt []
   FreeAlt ps <|> FreeAlt ps' = FreeAlt (ps ++ ps')
+
+
+{-- proxy stuff --}
+
+data Proxy (t :: *) = Proxy
+
+-- list of type proxies
+data TList (ts :: [*]) where
+  TNil :: TList '[]
+  TCons :: Proxy t -> TList ts -> TList (t ': ts)
+
+{- shape of an FList -}
+shape :: FList f ts -> TList ts
+shape FNil      = TNil
+shape (c :> cs) = TCons Proxy (shape cs)

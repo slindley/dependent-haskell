@@ -96,46 +96,51 @@ fcomp :: Free f a b -> Free f b c -> Free f a c
 fcomp (Free cs1 p1) (Free cs2 p2) =
   let (ts1, ts2) = (shape cs1, shape cs2) in
   let a = freeIn (Free cs1 p1) in
-    Free (cs1 /++/ mapA (\xs -> (p1 (fstRev ts1 (SCons a SNil) xs)
-                                    (fst (sndRev ts1 (SCons a SNil) xs)), ()))
+    Free (cs1 /++/ mapA (\xs -> (p1 (fstRev ts1 (TCons a TNil) xs)
+                                    (fst (sndRev ts1 (TCons a TNil) xs)), ()))
                         cs2)
          (\ xs -> let (xs1, xs2) = split ts1 ts2 xs in
                     p2 xs2 . p1 xs1)
 
-{- chopping up tuples -}
-split :: SList ts -> SList ts' ->
+{- chopping up tuples
+ 
+The second argument is computationally redundant, but required in
+order to satisfy the type-checker. It wouldn't be necessary if we used
+a suitable GADT in place of the type class RProd. -}
+split :: TList ts -> TList ts' ->
            RProd (ts :++: ts') -> (RProd ts, RProd ts')
-split SNil         _   xs      = ((), xs)
-split (SCons t ts) ts' (x, xs) = ((x, ys), zs) where
+split TNil         _   xs      = ((), xs)
+split (TCons t ts) ts' (x, xs) = ((x, ys), zs) where
   (ys, zs) = split ts ts' xs
 
-sndRev :: SList ts -> SList ts' -> RProd (ts :>++<: ts') -> RProd ts'
-sndRev SNil         _   l = l
-sndRev (SCons t ts) ts' l = snd (sndRev ts (SCons t ts') l)
+sndRev :: TList ts -> TList ts' -> RProd (ts :>++<: ts') -> RProd ts'
+sndRev TNil         _   l = l
+sndRev (TCons t ts) ts' l = snd (sndRev ts (TCons t ts') l)
 
-fstRev' :: SList ts -> SList ts' -> RProd (ts :>++<: ts') -> LProd ts
-fstRev' SNil         _   l = ()
-fstRev' (SCons t ts) ts' l =
-  (fstRev' ts (SCons t ts') l, fst (sndRev ts (SCons t ts') l))
+fstRev' :: TList ts -> TList ts' -> RProd (ts :>++<: ts') -> LProd ts
+fstRev' TNil         _   l = ()
+fstRev' (TCons t ts) ts' l =
+  (fstRev' ts (TCons t ts') l, fst (sndRev ts (TCons t ts') l))
 
-revrev :: SList ts -> LProd ts -> RProd ts
-revrev SNil         l = ()
-revrev (SCons t ts) l = (snd l, revrev ts (fst l))
+revrev :: TList ts -> LProd ts -> RProd ts
+revrev TNil         l = ()
+revrev (TCons t ts) l = (snd l, revrev ts (fst l))
 
-fstRev :: SList ts -> SList ts' -> RProd (ts :>++<: ts') -> RProd ts
+fstRev :: TList ts -> TList ts' -> RProd (ts :>++<: ts') -> RProd ts
 fstRev ts ts' l  = revrev ts (fstRev' ts ts' l) 
 
 {-- proxy stuff --}
 
 data Proxy (t :: *) = Proxy
-data SList (ts :: [*]) where
-  SNil :: SList '[]
-  SCons :: Proxy t -> SList ts -> SList (t ': ts)
+{- list of type proxies -}
+data TList (ts :: [*]) where
+  TNil :: TList '[]
+  TCons :: Proxy t -> TList ts -> TList (t ': ts)
 
 {- shape of an AList -}
-shape :: AList f ts ts' -> SList ts'
-shape ANil = SNil
-shape (c :> cs) = SCons Proxy (shape cs)
+shape :: AList f ts ts' -> TList ts'
+shape ANil = TNil
+shape (c :> cs) = TCons Proxy (shape cs)
 
 {- input type for an arrow -}
 freeIn :: Free f a b -> Proxy a
