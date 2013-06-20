@@ -114,7 +114,7 @@ means of dependent quantification, but it proliferates representations
 of cognate notions, which is an eccentric way to keep things simple.
 
 Moreover, we can only construct $\Pi$-types with domains admitting the
-singleton construction --- currently, simple data structures. At time of
+singleton construction---currently, simple data structures. At time of
 writing, we cannot form a Haskell analogue of
 \[
   (n\!:\!|Nat|)\to (|xs|\!:\!|Vec n x|)\to T[|xs|]
@@ -122,14 +122,14 @@ writing, we cannot form a Haskell analogue of
 but we expect this gap to be plugged in the near future. Promoting |Vec n x|
 to a kind perforce involves using numbers not only in terms and types, but
 in kinds as well. In our new, more flexible world, the type/kind distinction
-is increasingly inconvenient, and a clear candidate for abolition.
+is increasingly inconvenient, and a clear candidate for
+abolition~\cite{Weirich13}.
 
 Meanwhile, a further disturbance is in store if we choose to compute
 only the first component returned by |vchop|. Cutting out the suffix
 gives us
 
 %format vtake = "\F{vtake}"
-%format BAD = "\hfill(\times)"
 
 < vtake :: Natty m -> Vec (m :+ n) x -> Vec m x -- |BAD|
 < vtake Zy      xs         =  V0
@@ -194,19 +194,19 @@ GHC can win it. We repair the definition of |vtake| thus:
 > vtake Zy      n  xs         =  V0
 > vtake (Sy m)  n  (x :> xs)  =  x :> vtake m n xs
 
+\begin{sloppypar}
 Of course, when calling |vtake|, we need to get a proxy from somewhere. If
 we do not already have one, we can write |(Proxy :: Proxy t)| for the
 relevant type level expression |t|. The |ScopedTypeVariables|
 extension allows us to write open types. If we already have some other
 value with the same index, e.g. a singleton value, we can erase it to a
 proxy with
+\end{sloppypar}
 
 %format proxy = "\F{proxy}"
 
 > proxy :: f i -> Proxy i
 > proxy _ = Proxy
-
-\todo{fill in citations}
 
 The |vtake| example shows that Haskell's |forall|quantifier supports
 abstraction over data which play a relevant and computational role in
@@ -269,3 +269,13 @@ systematic treatment of the varieties of quantification.
 >   show (x :> xs) = show x ++ " :> " ++ show xs
 
 %endif
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies NatVec Haskell's Eq ys
+%%  LocalWords:  Ord generalized contrarian Vec Haskell functorial xs
+%%  LocalWords:  intensional normalization associativity vappend GADT
+%%  LocalWords:  commutativity vchop forall Zy Sy Agda zs vtake GHC
+%%  LocalWords:  injective axiomatised definedness polymorphism Coq's
+%%  LocalWords:  ScopedTypeVariables Brady's definitional ary Arity
+%%  LocalWords:  varity detagging optimization infixr

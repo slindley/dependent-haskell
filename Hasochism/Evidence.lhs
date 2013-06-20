@@ -26,7 +26,8 @@ Let us consider the operation of comparing two singleton natural
 numbers. We refine the standard Haskell |Ordering| type to be indexed
 by the natural numbers under comparison.
 
-As a naive first attempt, we might try the following:
+As a na{\"\i}ve first attempt, we might copy the following definition from
+McBride and McKinna~\cite{McBrideM04}:
 
 > data  CmpN :: Nat -> Nat -> * where
 >   LTNatN  :: CmpN m (m :+ S z)
@@ -49,7 +50,7 @@ a singleton representation of |z| as a witness.
 
 Note that in more conventional dependently typed programming
 languages, such as Agda, it is not possible to write an equivalent of
-our naive definition of |Cmp| --- the value of |z| must be provided as
+our naive definition of |Cmp|---the value of |z| must be provided as
 an argument to the |LTNat| and |GTNat| constructors.
 
 We can now write a comparison function that constructs a suitable
@@ -64,13 +65,11 @@ proof object:
 >   EQNat    ->  EQNat
 >   GTNat z  ->  GTNat z
 
-\todo{Cite ``a view from the left''~\cite{McBrideM04} somewhere around
-  here?}
-
-Procrustes is a character from Greek mythology who fit his victims
-into an iron bed either by stretching their limbs or by chopping them
-off. The |procrustes| function fits a vector of length |m| into a
-vector of length |n|, by padding or trimming as necessary.
+The |procrustes| function fits a vector of length |m| into a vector of
+length |n|, by padding or trimming as necessary.  (Procrustes was a
+mythical Greek brigand who would make his unfortunate guests fit into
+an iron bed either by stretching their limbs or by chopping them
+off.)
 
 > procrustes :: a -> Natty m -> Natty n -> Vec m a -> Vec n a
 > procrustes p m n xs = case cmp m n of
@@ -78,5 +77,19 @@ vector of length |n|, by padding or trimming as necessary.
 >   EQNat    -> xs
 >   GTNat z  -> vtake n (proxy (Sy z)) xs 
 
-In both the less-than and greater-than cases it computes explicitly
-with the evidence |z| provided by the |Cmp| data type.
+In both the less-than and greater-than cases, we need the evidence |z|
+provided by the |Cmp| data type; in the former, we even compute with it.
+
+Dependently typed programming often combines testing with the acquisition
+of new data that is justified by the test---the difference, in this case---
+and the refinement of the data being tested---the discovery that one number
+is the other plus the difference. We make sure that every computation which
+analyses data has a type which characterizes what we expect to learn.
+
+
+
+%%  LocalWords:  GADTs PolyKinds DataKinds RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies NatVec Haskell na ve
+%%  LocalWords:  McKinna LTNatN EQNatN GTNatN EQNat Cmp LTNat GTNat
+%%  LocalWords:  Agda cmp Zy Sy procrustes Vec xs vappend vcopies
+%%  LocalWords:  vtake characterizes

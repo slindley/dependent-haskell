@@ -18,9 +18,13 @@ hasochism.pdf: hasochism.aux hasochism.bbl
 	pdflatex hasochism
 	pdflatex hasochism
 
+edit: NatVec.lhs Pies.lhs BoxPleasure.lhs Editor.lhs ANSIEscapes.hs
+	ghc -lncurses --make Editor -o edit
+
 clean:
 	rm -f *.aux *.log *.bbl *.blg *.ptb *~ \
+	*.o *.hi \
 	hasochism.tex
 
 clean-all: clean
-	rm -f hasochism.pdf
+	rm -f edit hasochism.pdf

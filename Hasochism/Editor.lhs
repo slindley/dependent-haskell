@@ -4,7 +4,7 @@
 >     DataKinds, FlexibleInstances, RankNTypes, FlexibleContexts,
 >     TypeOperators, TypeFamilies #-}
 
-> module Editor where
+> module Main where
 >
 > import Prelude hiding (mapM_)
 >
@@ -22,50 +22,50 @@
 > import Pies
 > import BoxPleasure
 
-> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
-> Zy   /+/ n    = n
-> Sy m /+/ n   = Sy (m /+/ n)
-
 %endif
 
 We outline the design of a basic text editor, which represents the
-text buffer as a box. Using this representation guarantees that
-manipulations such as cropping the buffer to generate screen output
-only generate well-form boxes a given size. We will also need to
-handle dynamic values coming from the outside world. We convert these
-to equivalent size-indexed values using existentials, building on the
-|Ex| of Section~\ref{sec:merge-sort}.
+text buffer as a size-indexed box. Using this representation
+guarantees that manipulations such as cropping the buffer to generate
+screen output only generate well-formed boxes of a given size. We will
+also need to handle dynamic values coming from the outside world. We
+convert these to equivalent size-indexed values using existentials,
+building on the |Ex| data type of Section~\ref{sec:merge-sort} and the
+separating and non-separating conjunction operators of
+Section~\ref{subsec:conjunction}.
 
-\subsection{Character matrix boxes}
+\subsection{Character Boxes}
 
 %format matrixChar = "\F{matrixChar}"
 %format renderCharBox = "\F{renderCharBox}"
 %format stringsOfCharMatrix = "\F{stringsOfCharMatrix}"
 
-Concretely, we use a character matrix box to represent a text buffer.
+A character box is a box whose content is given by character
+matrices.
 
 > type CharMatrix = Matrix Char
-> type CharBox wh = Box CharMatrix wh
+> type CharBox = Box CharMatrix
 
-We can fill an entire matrix with the same character.
+Concretely, we will use a character box to represent a text buffer. We
+can fill an entire matrix with the same character.
  
-> matrixChar :: Char -> (Natty w, Natty h) -> CharMatrix (Pair w h)
-> matrixChar c (w, h) = Mat (vcopies h (vcopies w c))
+> matrixChar :: Char -> Size wh -> CharMatrix wh
+> matrixChar c (w :&&: h) = Mat (vcopies h (vcopies w c))
 
-We can render a character matrix box as a character matrix.
+We can render a character box as a character matrix.
 
 > renderCharBox ::
->   Size w h -> CharBox (Pair w h) -> CharMatrix (Pair w h)
+>   Size wh -> CharBox wh -> CharMatrix wh
 > renderCharBox _       (Stuff css)        = css
-> renderCharBox (w, h)  Clear              =
->   matrixChar ' ' (w, h)
-> renderCharBox (w, _)  (Ver h1 b1 h2 b2)  =
->   Mat (unMat (renderCharBox (w, h1) b1)
->     `vappend` unMat (renderCharBox (w, h2) b2))
-> renderCharBox (_, h) (Hor w1 b1 w2 b2)   =
+> renderCharBox wh  Clear              =
+>   matrixChar ' ' wh
+> renderCharBox (w :&&: _)  (Ver h1 b1 h2 b2)  =
+>   Mat (unMat (renderCharBox (w :&&: h1) b1)
+>     `vappend` unMat (renderCharBox (w :&&: h2) b2))
+> renderCharBox (_ :&&: h) (Hor w1 b1 w2 b2)   =
 >   Mat (  vcopies h vappend `vapp`
->          unMat (  renderCharBox (w1, h) b1) `vapp`
->                   unMat (renderCharBox (w2, h) b2))
+>          unMat (  renderCharBox (w1 :&&: h) b1) `vapp`
+>                   unMat (renderCharBox (w2 :&&: h) b2))
 
 We can display a character matrix as a list of strings.
 
@@ -73,8 +73,8 @@ We can display a character matrix as a list of strings.
 > stringsOfCharMatrix (Mat vs) =
 >   foldMap ((:[]) . foldMap (:[])) vs
 
-In order to be able to cut (and hence crop) matrix boxes we
-instantiate the |Cut| type class for matrices.
+In order to be able to cut (and hence crop) boxes with matrix content
+we instantiate the |Cut| type class for matrices.
 
 > instance Cut (Matrix e) where
 >   horCut m _ (Mat ess) =
@@ -86,6 +86,7 @@ instantiate the |Cut| type class for matrices.
 %$
 
 \subsection{Existentials}
+\label{subsec:more-existentials}
 
 %format wrapNat = "\F{wrapNat}"
 %format wrapPair = "\F{wrapPair}"
@@ -103,12 +104,9 @@ instantiate the |Cut| type class for matrices.
 %format unLenVec = "\F{unLenVec}"
 %format unSizeCharBox = "\F{unSizeCharBox}"
 
-%format :**: = ":\!\!*\!*\!\!:"
-%format :&&: = ":\!\!\&\!\&\!\!:"
-
 %if False
 
-> data Ex (p :: k -> *) where
+> data Ex (p :: kappa -> *) where
 >   Ex :: p i -> Ex p
 
 > type WNat = Ex Natty
@@ -116,7 +114,7 @@ instantiate the |Cut| type class for matrices.
 > wrapNat :: Nat -> WNat
 > wrapNat  Z      =  Ex Zy
 > wrapNat  (S m)  =  case wrapNat m of
->                    Ex n -> Ex (Sy n)
+>                      Ex n -> Ex (Sy n)
 
 %endif
 
@@ -124,13 +122,11 @@ In Section~\ref{sec:merge-sort} we introduced existentially quantified
 singletons as a means for taking dynamic values and converting them
 into equivalent singletons.
 
-We now present combinators for more interesting existentials. For the
-editor we will need to generate a region, that is, a pair of pairs of
-singleton naturals from a pair of pairs of natural numbers.
+We now present combinators for constructing existentials over
+composite indexes. For the editor, we will need to generate a region,
+that is, a pair of pairs of singleton naturals from a pair of pairs of
+natural numbers.
 
-> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
->   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
->
 > wrapPair :: (a -> Ex p) ->
 >             (b -> Ex q) ->
 >               (a, b) -> Ex (p :**: q)
@@ -138,13 +134,12 @@ singleton naturals from a pair of pairs of natural numbers.
 >   case (w1 x1, w2 x2) of
 >     (Ex v1, Ex v2) -> Ex (v1 :&&: v2)
 
-The type |p :**: q| allows us to construct the type of pairs of |p|
-and |q| singletons. The |wrapPair| function wraps a pair of dynamic
-objects in a suitable existential package.
+The |wrapPair| function wraps a pair of dynamic objects in a suitable
+existential package using a separated conjunction.
 
-> type WPoint = Ex (Natty :**: Natty)
-> type WSize = Ex (Natty :**: Natty)
-> type WRegion = Ex ((Natty :**: Natty) :**: (Natty :**: Natty))
+> type WPoint = Ex Point
+> type WSize = Ex Size
+> type WRegion = Ex Region
 
 > intToNat :: Int -> Nat
 > intToNat 0 = Z
@@ -156,7 +151,7 @@ objects in a suitable existential package.
 > wrapRegion = wrapPair wrapPoint wrapSize
 
 We might wish to wrap vectors, but the |Vec| type takes the length
-index first, so we cannot us it as is with |Ex|. Thus we can define
+index first, so we cannot use it as is with |Ex|. Thus we can define
 and use a |Flip| combinator, which reverses the arguments of a two
 argument type-operator.
 
@@ -169,85 +164,68 @@ argument type-operator.
 > wrapVec (x:xs)  = case wrapVec xs of
 >   Ex (Flip v) -> Ex (Flip (x :> v))
 
-In fact, we will need to wrap a vector up along with its length, so
-instead of using |Flip| we define an auxiliary |newtype| as follows:
+In fact, we wish to wrap a vector up together with its length. This is
+where the non-separating conjunction comes into play. The |Natty|
+representing the length of the vector and the |Flip Vec a|
+representing the vector itself should share the same index.
 
-> newtype LenVec a n = LenVec {unLenVec :: (Natty n, Vec n a)}
-
-> type WLenVec a = Ex (LenVec a)
+> type WLenVec a = Ex (Natty :*: Flip Vec a)
 
 > wrapLenVec :: [a] -> WLenVec a
-> wrapLenVec []      = Ex (LenVec (Zy, V0))
+> wrapLenVec []      = Ex (Zy :&: Flip V0)
 > wrapLenVec (x:xs)  = case wrapLenVec xs of
->   Ex (LenVec (n, v)) -> Ex (LenVec (Sy n, x :> v))
+>   Ex (n :&: Flip v) -> Ex (Sy n :&: Flip (x :> v))
 
-\todo{Decide how we want to do the rest of this.}
+Similarly, we use non-separating conjunction to wrap a box with its
+size.
 
-\todo{Perhaps we should use |SillySize| everywhere in place of
-  |Size|?}
-
-< newtype SizeCharBox w h =
-<   SizeCharBox {unSizeCharBox :: (Size w h, CharBox (Pair w h))}
-
-Oops... this isn't going to work with |Ex| because |SizeCharBox| takes two arguments.
-
-> data SillySize (wh :: (Nat, Nat)) where
->   SillySize :: Natty w -> Natty h -> SillySize (Pair w h)
-
-> newtype SizeCharBox wh =
->   SizeCharBox {unSizeCharBox :: (SillySize wh, CharBox wh)}
-
-> type WCB = Ex SizeCharBox
-
-> wrapString' :: String -> WCB
-> wrapString' s = case wrapLenVec s of
->   Ex (LenVec (n, v)) ->
->     Ex (SizeCharBox (SillySize n (Sy Zy), Stuff (Mat (pure v))))
-
-> wrapStrings' :: [String] -> WCB
-> wrapStrings' []      = Ex (SizeCharBox (SillySize Zy Zy, Clear))
-> wrapStrings' (s:ss)  =
->   case (wrapString' s, wrapStrings' ss) of
->     (  Ex (SizeCharBox (SillySize w1 h1, b1)),
->        Ex (SizeCharBox (SillySize w2 h2, b2))) ->
->          Ex (SizeCharBox (  SillySize (w1 `maxn` w2) (h1 /+/ h2),
->                             joinV (w1, h1) (w2, h2) b1 b2))
-
-
-
-[old text]
-
-
-%% > data WrappedVec a :: * where
-%% >   WVec :: Vec n a -> WrappedVec a
-%% >
-%% > wrapList :: [a] -> WrappedVec a
-%% > wrapList []      = WVec V0
-%% > wrapList (x:xs)  = case wrapList xs of
-%% >   WVec v -> WVec (x :> v)
+> type WSizeCharBox = Ex (Size :*: CharBox)
 
 Given a string of length |w|, we can wrap it as a character box of
 size |(w, 1)|.
 
-> data WCharBox :: * where
->   WCharBox :: Size w h -> CharBox (Pair w h) -> WCharBox
->
-> wrapString :: String -> WCharBox
+> wrapString :: String -> WSizeCharBox
 > wrapString s = case wrapLenVec s of
->   Ex (LenVec (n, v)) ->
->     WCharBox (n, Sy Zy) (Stuff (Mat (pure v)))
+>   Ex (n :&: Flip v) ->
+>     Ex ((n :&&: Sy Zy) :&: Stuff (Mat (pure v)))
 
 Given a list of |h| strings of maximum length |w|, we can wrap it as a
 character box of size |(w, h)|.
 
-> wrapStrings :: [String] -> WCharBox
-> wrapStrings []      = WCharBox (Zy, Zy) Clear
+> wrapStrings :: [String] -> WSizeCharBox
+> wrapStrings []      = Ex ((Zy :&&: Zy) :&: Clear)
 > wrapStrings (s:ss)  =
 >   case (wrapString s, wrapStrings ss) of
->     (WCharBox (w1, h1) b1, WCharBox (w2, h2) b2) ->
->       WCharBox
->         (w1 `maxn` w2, h1 /+/ h2)
->         (joinV (w1, h1) (w2, h2) b1 b2)
+>     (  Ex ((w1 :&&: h1) :&: b1),
+>        Ex ((w2 :&&: h2) :&: b2)) ->
+>          Ex (  ((w1 `maxn` w2) :&&: (h1 /+/ h2)) :&:
+>                juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
+
+where |maxn| is maximum on singleton natural numbers:
+
+> maxn :: Natty m -> Natty n -> Natty (Max m n)
+> maxn Zy     n      = n
+> maxn (Sy m) Zy     = Sy m
+> maxn (Sy m) (Sy n) = Sy (maxn m n)
+
+Curiously, the \singletons library does not appear to provide any
+special support for existential quantification over singletons. It
+should be possible to automatically generate the code for wrapping
+dynamic objects in existentials.
+
+We note also that the tendency to use stock datatype components, e.g.,
+|Ex|, |Flip|, |:*:| and |:**:|, causes extra layering of wrapping
+constructors in \emph{patterns} and expressions. We could use a
+bespoke GADT for each type we build in this way, but that would make
+it harder to develop library functionality. Ordinary `let' allows us
+to hide the extra layers in expressions, but is no help for patterns,
+which are currently peculiar in that they admit no form of
+definitional abstraction~\cite{aitken.reppy}. This basic oversight
+would be readily remedied by \emph{pattern synonyms}---linear,
+constructor-form definitions which expand like macros either side of
+the = sign.
+
+
 
 
 \subsection{Cursors}
@@ -295,7 +273,7 @@ The |whatAndWhere| function uses |deactivate| and |wrapStrings| to
 generate a well-formed existentially quantified box from a
 |TextCursor|.
 
-> whatAndWhere :: TextCursor -> (WCharBox, (Int, Int))
+> whatAndWhere :: TextCursor -> (WSizeCharBox, (Int, Int))
 > whatAndWhere (czz, cur, css) = (wrapStrings strs, (x, y))
 >   where
 >     (x, cs) = deactivate cur
@@ -372,26 +350,26 @@ generate a well-formed existentially quantified box from a
 
 %endif
 
-\subsection{The inner loop}
+\subsection{The Inner Loop}
 
 We give a brief overview of the editor's inner loop. The full code is
-available at:
+available as literate Haskell at:
 
-  \url{https://github.com/slindley/dependent-haskell/tree/master/Box}
+  \url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism/Editor.lhs}
 
 The current position in the text buffer is represented using a zipper
-structure over an undindexed list of strings. The current position and
+structure over an unindexed list of strings. The current position and
 size of the screen is represented as two pairs of integers. On a
 change to the buffer, the inner loop proceeds as follows.
 \begin{itemize}
 \item Wrap the current screen position and size as a singleton region
   using |wrapRegion|.
-\item Unravel the zipper structure to reveal the underlying structure
-  of the buffer as a list of strings.
-\item Use |wrapStrings| to wrap the list of strings as a suitably
-  indexed |CharBox|.
-\item Crop the |CharBox| according to the wrapped singleton region.
-  size.
+\item Unravel the zipper structure using |whatAndWhere| to reveal the
+  underlying structure of the buffer as a list of strings.
+\item This invokes |wrapStrings| to wrap the list of strings as an
+  existential over a suitably indexed |CharBox|.
+\item Crop the wrapped |CharBox| according to the wrapped singleton
+  region.
 \item Render the result as a list of strings using
   |stringsOfCharMatrix . renderCharBox|.
 \end{itemize}
@@ -400,6 +378,13 @@ We take advantage of dependent types to ensure that cropping yields
 boxes of the correct size. The rest of the editor does not use
 dependent types. The wrapping functions convert non-dependent data
 into equivalent dependent data. Rendering does the opposite.
+
+We expect that converting back and forth between raw and indexed data
+every time something changes is expensive. We leave a full performance
+evaluation to future work. One might hope to use indexed data
+everywhere. This is infeasible in practice, because of the need to
+interact with the outside world, and in particular foreign APIs
+(including the curses library we use for our text editor).
 
 %if False
 
@@ -479,13 +464,13 @@ into equivalent dependent data. Rendering does the opposite.
 >             _ -> return $ Just Quit
 >       _ -> return $ Nothing
  
-> layout :: Size w h -> CharBox (Pair w h) -> [String]
+> layout :: Size wh -> CharBox wh -> [String]
 > layout s l = stringsOfCharMatrix (renderCharBox s l)
 > 
 > outer :: URegion -> TextCursor -> IO ()
 > outer ps tc = inner ps tc (whatAndWhere tc) LotsChanged
 >   where
->   inner ps@(p, _) tc lc@(WCharBox (lw, lh) l, c@(cx, cy)) d = do
+>   inner ps@(p, _) tc lc@(Ex ((lw :&&: lh) :&: l), c@(cx, cy)) d = do
 >     refresh
 >     s' <- scrSize
 >     let ps'@((px, py), (sw, sh)) = onScreen c (p, s')
@@ -496,15 +481,15 @@ into equivalent dependent data. Rendering does the opposite.
 >         resetCursor
 >         case wrapRegion ps' of
 >           Ex ((x :&&: y) :&&: (w :&&: h)) -> do
->             let cropped = crop ((x, y), (w, h)) (lw, lh) l
->             mapM_ putStr (layout (w, h) cropped)
+>             let cropped = crop ((x :&&: y) :&&: (w :&&: h)) (lw :&&: lh) l
+>             mapM_ putStr (layout (w :&&: h) cropped)
 >       LineChanged -> do
 >         resetCursor
 >         down (cy - py)
 >         case wrapRegion ((px, cy), (sw, 1)) of
 >           Ex ((x :&&: y) :&&: (w :&&: h)) -> do
->             let cropped = crop ((x, y), (w, h)) (lw, lh) l
->             mapM_ putStr (layout (w, h) cropped)
+>             let cropped = crop ((x :&&: y) :&&: (w :&&: h)) (lw :&&: lh) l
+>             mapM_ putStr (layout (w :&&: h) cropped)
 >       _ -> return ()
 >     if d' > NoChange then do
 >       resetCursor
@@ -534,3 +519,26 @@ into equivalent dependent data. Rendering does the opposite.
 >   endwin
 
 %endif
+
+%%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies mapM Applicative CInt
+%%  LocalWords:  Traversable Foldable ANSIEscapes NatVec BoxPleasure
+%%  LocalWords:  existentials CharMatrix CharBox matrixChar wh css ps
+%%  LocalWords:  vcopies renderCharBox Ver unMat vappend Hor vapp ess
+%%  LocalWords:  stringsOfCharMatrix foldMap horCut fst snd vchop Zy
+%%  LocalWords:  verCut tess bess WNat wrapNat Sy combinators WPoint
+%%  LocalWords:  wrapPair WSize WRegion intToNat wrapInt wrapPoint xs
+%%  LocalWords:  wrapSize wrapRegion Vec combinator newtype unFlip ss
+%%  LocalWords:  WVec wrapVec WLenVec wrapLenVec WSizeCharBox maxn xz
+%%  LocalWords:  wrapString wrapStrings juxV StringCursor TextCursor
+%%  LocalWords:  whatAndWhere czz strs ArrowDir UpArrow DownArrow Eq
+%%  LocalWords:  LeftArrow RightArrow CharKey ArrowKey escapeKeys Ord
+%%  LocalWords:  NoChange PointChanged LineChanged LotsChanged sz cz
+%%  LocalWords:  handleKey sUp pos sDown Haskell unindexed infeasible
+%%  LocalWords:  APIs ccall initscr endwin linesPtr Ptr colsPtr lnes
+%%  LocalWords:  scrSize fromIntegral crlf putStr putLn UPoint USize
+%%  LocalWords:  URegion onScreen cx cy px py intoRange sw sks lookup
+%%  LocalWords:  getEscapeKey getChar keyReady hReady stdin tc lw lh
+%%  LocalWords:  clearScreen resetCursor mc lc hSetBuffering stdout
+%%  LocalWords:  NoBuffering getArgs readFile

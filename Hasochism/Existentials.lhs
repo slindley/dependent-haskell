@@ -13,7 +13,7 @@
 %format :**: = ":\!\!*\!*\!\!:"
 %format :&&: = ":\!\!\&\!\&\!\!:"
 
-> data Ex (p :: k -> *) where
+> data Ex (p :: kappa -> *) where
 >   Ex :: p i -> Ex p
 
 > type WNat = Ex Natty
@@ -23,8 +23,8 @@
 > wrapNat  n  =  case wrapNat (n-1) of
 >                  Ex wn -> Ex (Sy wn)
 
-> data (p :: j -> *) :**: (q :: k -> *) :: (j, k) -> * where
->   (:&&:) :: p j -> q k -> (p :**: q) (Pair j k)
+> data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
+>   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
 
 > wrapPair :: (a -> Ex p) ->
 >             (b -> Ex q) ->

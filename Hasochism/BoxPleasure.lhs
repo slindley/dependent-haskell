@@ -6,30 +6,22 @@
 
 > module BoxPleasure where
 >
+> import Data.Monoid
 > import NatVec
 >
-> type Size w h = (Natty w, Natty h)
+
+> data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
+>   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
+>
+> data (p :: kappa -> *) :*: (q :: kappa -> *) :: kappa -> * where
+>   (:&:) :: p kappa -> q kappa -> (p :*: q) kappa
+
+> type Size = Natty :**: Natty
 > 
 > type family Max (m :: Nat) (n :: Nat) :: Nat
 > type instance Max Z     n     = n
 > type instance Max (S m) Z     = S m
 > type instance Max (S m) (S n) = S (Max m n)
-> 
-> maxn :: Natty m -> Natty n -> Natty (Max m n)
-> maxn Zy     n      = n
-> maxn (Sy m) Zy     = Sy m
-> maxn (Sy m) (Sy n) = Sy (maxn m n)
->
-> type family (m :: Nat) :- (n :: Nat) :: Nat
-> type instance Z   :- n   = Z
-> type instance S m :- Z   = S m
-> type instance S m :- S n = (m :- n)
->
-> (/-/) :: Natty m -> Natty n -> Natty (m :- n)
-> Zy   /-/ n    = Zy
-> Sy m /-/ Zy   = Sy m
-> Sy m /-/ Sy n = m /-/ n
-
 
 > cmp :: Natty m -> Natty n -> Cmp m n
 > cmp Zy      Zy      = EQNat
@@ -52,8 +44,8 @@
 
 %format maxn = "\F{maxn}"
 
-%format joinH = "\F{joinH}"
-%format joinV = "\F{joinV}"
+%format juxH = "\F{juxH}"
+%format juxV = "\F{juxV}"
 %format crop = "\F{crop}"
 %format fit = "\F{fit}"
 %format fitH  = "\F{fitH}"
@@ -67,6 +59,9 @@
 %format verCut = "\F{verCut}"
 %format cmpCuts = "\F{cmpCuts}"
 %format cmp = "\F{cmp}"
+
+%format mempty = "\F{mempty}"
+%format mappend = "\F{mappend}"
 
 
 %% duplicates
@@ -94,8 +89,8 @@ type equations we need for free as part of the proof object. As a
 first step, we observe that this is essentially what we are already
 doing in the proof object to encode the necessary equations concerning
 addition. One can always rephrase a GADT as an existential algebraic
-datatype with suitable type equalities. For our basic |Cmp| data type,
-this yields:
+data type with suitable type equalities. For our basic |Cmp| data
+type, this yields:
 
 > data CmpEx :: Nat -> Nat -> * where
 >   LTNatEx :: ((m :+ S z) ~ n)  => Natty z ->  CmpEx m n
@@ -116,12 +111,12 @@ equations for computing the maximum of |m| and |n| in each case.
 >     Natty z ->  CmpMax m n
 
 Having added these straightforward equalities, our definition of
-|joinH| now type checks without the need to explicitly invoke any lemmas. 
+|juxH| now type checks without the need to explicitly invoke any lemmas. 
 
-> joinH ::  Size w1 h1 -> Size w2 h2 ->
+> juxH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (w1 :+ w2) (Max h1 h2))
-> joinH (w1, h1) (w2, h2) b1 b2 =
+> juxH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp h1 h2 of
 >     LTNat z  ->
 >       Hor w1 (Ver h1 b1 (Sy z) Clear) w2 b2
@@ -130,14 +125,14 @@ Having added these straightforward equalities, our definition of
 >     GTNat z  ->
 >       Hor w1 b1 w2 (Ver h2 b2 (Sy z) Clear)
 
-The |joinV| function is defined similarly.
+The |juxV| function is defined similarly.
 
 %if False
 
-> joinV ::  Size w1 h1 -> Size w2 h2 ->
+> juxV ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
 >             Box p (Pair (Max w1 w2) (h1 :+ h2))
-> joinV (w1, h1) (w2, h2) b1 b2 =
+> juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp w1 w2 of
 >     LTNat n  ->
 >       Ver h1 (Hor w1 b1 (Sy n) Clear) h2 b2
@@ -149,12 +144,12 @@ The |joinV| function is defined similarly.
 %endif
 
 As we shall see in Section~\ref{subsec:cutting}, it can be useful to
-attach further equational constraints to the |Cmp| constructors. An
-irritation with our current formulation is that we have to go back and
+attach further equational constraints to the |Cmp| constructors. A
+limitation of our current formulation is that we have to go back and
 modify the |Cmp| data type each time we wish to add a new
 equation. Ideally we would have some way of keeping the constraints
 open. This seems fiddly to achieve with Haskell as it stands, because
-we appear to require higher-order constraints. We leave a proper
+one appears to require higher-order constraints. We leave a proper
 investigation to future work.
 
 \subsection{Cutting}
@@ -255,29 +250,57 @@ composition of two sub-boxes. We must identify which sub-box the cut
 occurs in, and recurse appropriately. Note that we rely on being able
 to cut content. The definition of vertical box cutting is similar.
 
-\subsection{Cropping}
+\subsection{Boxes as Monoids}
 
-We define cropping in terms of cutting.
+As well as monadic structure, boxes also have monoidal structure.
 
+> instance Cut p => Monoid (Box p wh) where
+>   mempty = Clear
+>   mappend b Clear               = b
+>   mappend Clear b'              = b'
+>   mappend b@(Stuff _) _         = b
+>   mappend (Hor w1 b1 w2 b2) b'  =
+>     Hor w1 (mappend b1 b1') w2 (mappend b2 b2')
+>       where (b1', b2') = horCut w1 w2 b'
+>   mappend (Ver h1 b1 h2 b2) b'  =
+>     Ver h1 (mappend b1 b1') h2 (mappend b2 b2')
+>       where (b1', b2') = verCut h1 h2 b'
+
+The multiplication operation |b `mappend` b'| overlays |b| on top of
+|b'|. It makes essential use of cutting to handle the |Hor| and |Ver|
+cases.
+
+\subsection{Cropping = Clipping + Fitting}
+
+We can \emph{crop} a box to a region. First we need to specify an
+suitably indexed type of regions..
+%
 A point identifies a position inside a box, where |(Zy, Zy)|
 represents the top-left corner, counting top-to-bottom, left-to-right.
 
-> type Point x y = (Natty x, Natty y)
+> type Point = Natty :**: Natty
 
 A region identifies a rectangular area inside a box by a pair of the
 point representing the top-left corner of the region, and the size of
 the region.
 
-> type Region x y w h = (Point x y, Size w h)
+> type Region = Point :**: Size
 
-We can \emph{crop} a box to a region. We decompose cropping into two
-parts, \emph{clipping} and \emph{fitting}.
+We decompose cropping into two parts, \emph{clipping} and
+\emph{fitting}.
 
 Clipping discards everything to the left and above the specified
 point. The type signature of |clip| is:
 
-> clip :: Cut p => Size w h -> Point x y ->
+> clip :: Cut p => Size (Pair w h) -> Point (Pair x y) ->
 >   Box p (Pair w h) -> Box p (Pair (w :- x) (h :- y))
+
+where |:-| is type level subtraction:
+
+> type family (m :: Nat) :- (n :: Nat) :: Nat
+> type instance Z   :- n   = Z
+> type instance S m :- Z   = S m
+> type instance S m :- S n = (m :- n)
 
 In order to account for the subtraction in the result, we need to
 augment the |Cmp| data type to include the necessary equations.
@@ -292,27 +315,46 @@ augment the |Cmp| data type to include the necessary equations.
 
 To clip in both dimensions, we first clip horizontally, and then clip
 verically.
+%
 
-> clip (w, h) (x, y) b = clipV (w /-/ x, h) y (clipH (w, h) x b)
+In order to define clipping we first lift subtraction on types |:-| to
+subtract on singleton naturals |/-/|.
+
+> (/-/) :: Natty m -> Natty n -> Natty (m :- n)
+> Zy   /-/ n    = Zy
+> Sy m /-/ Zy   = Sy m
+> Sy m /-/ Sy n = m /-/ n
+
+In general one needs to define each operation on naturals three times:
+once for |Nat| values, once for |Nat| types, and once for |Natty|
+values. The pain can be somewhat alleviated using the \singletons
+library~\cite{EisenbergW12}, which provides a Template Haskell
+extension to automatically generate all three versions from a single
+definition.
+
+Let us now define clipping.
+
+> clip (w :&&: h) (x :&&: y) b =
+>   clipV (w /-/ x :&&: h) y (clipH (w :&&: h) x b)
 > 
-> clipH :: Cut p => Size w h -> Natty x ->
+> clipH :: Cut p => Size (Pair w h) -> Natty x ->
 >   Box p (Pair w h) -> Box p (Pair (w :- x) h)
-> clipH (w, h) x b = case cmp w x of
+> clipH (w :&&: h) x b = case cmp w x of
 >   GTNat d  -> snd (horCut x (Sy d) b)
 >   _        -> Clear
 > 
-> clipV :: Cut p => Size w h -> Natty y ->
+> clipV :: Cut p => Size (Pair w h) -> Natty y ->
 >   Box p (Pair w h) -> Box p (Pair w (h :- y))
-> clipV (w, h) y b = case cmp h y of
+> clipV (w :&&: h) y b = case cmp h y of
 >   GTNat d  -> snd (verCut y (Sy d) b)
 >   _        -> Clear
 
 Fitting pads or cuts a box to the given size. To fit in both
 dimensions, we first fit horizontally, and then fit veritcally.
 
-> fit :: Cut p => Size w1 h1 -> Size w2 h2 ->
+> fit :: Cut p => Size (Pair w1 h1) -> Size (Pair w2 h2) ->
 >   Box p (Pair w1 h1) -> Box p (Pair w2 h2)
-> fit (w1, h1) (w2, h2) b = fitV h1 h2 (fitH w1 w2 b)
+> fit (w1 :&&: h1) (w2 :&&: h2) b = fitV h1 h2 (fitH w1 w2 b)
 > 
 > fitH :: Cut p => Natty w1 -> Natty w2 ->
 >   Box p (Pair w1 h) -> Box p (Pair w2 h)
@@ -329,27 +371,44 @@ dimensions, we first fit horizontally, and then fit veritcally.
 >   GTNat d  -> fst (verCut h2 (Sy d) b)
 
 Note that |fitH| and |fitV| do essentially the same thing as the
-|procustes| function, but on boxes rather than vectors, and always
+|procrustes| function, but on boxes rather than vectors, and always
 using |Clear| boxes for padding.
 
 To crop a box to a region, we simply clip then fit.
 
-> crop :: Cut p => Region x y w h -> Size s t ->
+> crop :: Cut p => Region (Pair (Pair x y) (Pair w h)) -> Size (Pair s t) ->
 >   Box p (Pair s t) -> Box p (Pair w h)
-> crop ((x, y), (w, h)) (s, t) b =
->   fit (s /-/ x, t /-/ y) (w, h) (clip (s, t) (x, y) b)
+> crop ((x :&&: y) :&&: (w :&&: h)) (s :&&: t) b =
+>   fit  ((s /-/ x) :&&: (t /-/ y)) (w :&&: h)
+>        (clip (s :&&: t) (x :&&: y) b)
 
 A convenient feature of our cropping code is that type-level
 subtraction is confined to the |clip| function. This works because in
 the type of |fit| the output box is independent of the size of the
 input box.
 
-In an earlier version of the code we experimented with a cropping
-function of type:
+In an earlier version of the code we experimented with a more refined
+cropping function of type:
 
-< Cut p => Region x y w h -> Size s t ->
+< Cut p => Region (Pair (Pair x y) (Pair w h)) -> Size (Pair s t) ->
 <   Box p (Pair s t) -> Box p (Pair (Min w (s :- x)) (Min h (t :- y)))
+
+where |Min| is minimum on promoted |Nat|s.
 
 This proved considerably more difficult to use as we had to reason
 about interactions between subtraction, addition, and
-minimum. Moreover, the less-refined type is often sufficient.
+minimum. Moreover, the less-refined version is often what we want in
+practice.
+
+
+
+%%  LocalWords:  PolyKinds KindSignatures MultiParamTypeClasses cmp
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies BoxPleasure Monoid Cmp
+%%  LocalWords:  NatVec Zy EQNat Sy LTNat GTNat wh Hor Ver GADT CmpEx
+%%  LocalWords:  datatype equalities LTNatEx EQNatEx GTNatEx CmpMax
+%%  LocalWords:  LTNatMax EQNatMax GTNatMax juxH juxV equational snd
+%%  LocalWords:  Haskell horCut verCut CmpCuts LTCuts EQCuts GTCuts
+%%  LocalWords:  cmpCuts recurse Monoids monadic monoidal mempty fitV
+%%  LocalWords:  mappend verically clipV clipH veritcally fitH fst
+%%  LocalWords:  procrustes

@@ -1,3 +1,89 @@
+@TechReport{aitken.reppy,
+  author = 	 {William Aitken and John Reppy},
+  title = 	 {Abstract Value Constructors},
+  institution =  {Cornell University},
+  year = 	 1992,
+  number = 	 {TR 92-1290}}
+
+@phdthesis{norell:thesis,
+  author  = {Ulf Norell},
+  title	  = {Towards a practical programming language based on dependent type
+	     theory},
+  school  = {Department of Computer Science and Engineering, Chalmers University of Technology},
+  year	  = 2007,
+  month	  = {September},
+  address = {SE-412 96 G\"{o}teborg, Sweden}
+}
+
+@Unpublished{she,
+  author = 	 {Conor McBride},
+  title = 	 {The {S}trathclyde {H}askell {E}nhancement},
+  note = 	 {\url{https://personal.cis.strath.ac.uk/conor.mcbride/pub/she/}},
+  year = 	 2013}
+
+@InProceedings{Weirich13,
+  author = 	 {Stephanie Weirich and Justin Hsu and Richard A. Eisenberg},
+  title = 	 {Towards dependently typed Haskell: System FC with kind equality},
+  booktitle = {Proceedings of the The 18th ACM SIGPLAN International Conference on Functional Programming, ICFP '13},
+  year = 	 2013,
+  publisher = {ACM}}
+
+@inproceedings{WadlerB89,
+  author    = {Philip Wadler and
+               Stephen Blott},
+  title     = {How to Make ad-hoc Polymorphism Less ad-hoc},
+  booktitle = {POPL},
+  year      = {1989},
+  pages     = {60-76},
+  ee        = {http://doi.acm.org/10.1145/75277.75283},
+  crossref  = {DBLP:conf/popl/1989},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@proceedings{DBLP:conf/popl/1989,
+  title     = {Conference Record of the Sixteenth Annual ACM Symposium
+               on Principles of Programming Languages, Austin, Texas, USA,
+               January 11-13, 1989},
+  booktitle = {POPL},
+  publisher = {ACM Press},
+  year      = {1989},
+  isbn      = {0-89791-294-2},
+  ee        = {http://dl.acm.org/citation.cfm?id=75277},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@book{ML,
+  author    = {Robin Milner and
+               Mads Tofte and
+               Robert Harper},
+  title     = {Definition of standard {ML}},
+  publisher = {MIT Press},
+  year      = {1990},
+  isbn      = {978-0-262-63132-7},
+  pages     = {I-XI, 1-101},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@article{Milner78,
+  author    = {Robin Milner},
+  title     = {A Theory of Type Polymorphism in Programming},
+  journal   = {J. Comput. Syst. Sci.},
+  volume    = {17},
+  number    = {3},
+  year      = {1978},
+  pages     = {348-375},
+  ee        = {http://dx.doi.org/10.1016/0022-0000(78)90014-4},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@Unpublished{McBride00:case-talk,
+  author = 	 {Conor McBride},
+  title = 	 {A {C}ase {F}or {D}ependent {F}amilies},
+  note = 	 {Seminar at {LFCS}, Edinburgh.
+    \url{http://www.strictlypositive.org/a-case/}},
+  year = 	 {2000}
+}
+
 @UNPUBLISHED{Pollack90,
   AUTHOR = {Robert Pollack},
   TITLE = {Implicit Syntax},
@@ -10,8 +96,8 @@
 @inproceedings{Paulin89a,
   author = {Christine Paulin-Mohring},
   address = {Austin},
-  booktitle = {Sixteenth Annual ACM Symposium on Principles of Prog
-ramming Languages},
+  booktitle = {Sixteenth Annual ACM Symposium on Principles of
+                  Programming Languages},
   month = jan,
   publisher = {ACM},
   title = {Extracting ${F}_{\omega}$'s programs from proofs in 
@@ -56,6 +142,12 @@ the {Calculus of Constructions}},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
+@INPROCEEDINGS{Kiselyov07position:lightweight,
+    author = {Oleg Kiselyov and Chung-chieh Shan},
+    title = {Position: Lightweight Static Resources: Sexy types for embedded and systems programming},
+    booktitle = {In TFP ’07, the 8th Symposium on Trends in Functional Programming},
+    year = {2007}
+}
 
 @inproceedings{EisenbergW12,
   author    = {Richard A. Eisenberg and
@@ -72,10 +164,10 @@ the {Calculus of Constructions}},
   author    = {Brent A. Yorgey and
                Stephanie Weirich and
                Julien Cretin and
-               Simon L. Peyton Jones and
+               Simon L. {Peyton Jones} and
                Dimitrios Vytiniotis and
                Jos{\'e} Pedro Magalh{\~a}es},
-  title     = {Giving Haskell a promotion},
+  title     = {Giving {H}askell a promotion},
   booktitle = {TLDI},
   year      = {2012},
   pages     = {53--66},
@@ -110,7 +202,7 @@ the {Calculus of Constructions}},
 
 @article{Huet97,
   author    = {G{\'e}rard P. Huet},
-  title     = {The Zipper},
+  title     = {The {Z}ipper},
   journal   = {J. Funct. Program.},
   volume    = {7},
   number    = {5},
@@ -166,4 +258,12 @@ the {Calculus of Constructions}},
   doi = {10.1145/2364394.2364397},
   publisher = {ACM},
   address = {New York, NY, USA},
+}
+
+@misc{McBride11,
+  author    = {Conor McBride},
+  title     = {Kleisli arrows of outrageous fortune},
+  year      = {2011},
+  note      = {Accepted for publication. \\
+               \url{https://personal.cis.strath.ac.uk/conor.mcbride/Kleisli.pdf}}
 }

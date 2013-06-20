@@ -191,7 +191,7 @@ captures the notion of `corresponding positions'.
 >   return = pure
 >   xs >>= f = diagonal (Mat (fmap f xs))
 
-Gibbons (in communication with McBride and Paterson) notes that the
+Gibbons (in communication with McBride and Paterson~\cite{McbrideP08}) notes that the
 |diagonal| construction for unsized lists does not yield a monad, because
 the associativity law fails in the case of `ragged' lists of lists. By
 using sized vectors, we square away the problem cases.
@@ -258,3 +258,17 @@ than skin deep.
 
 %$%
 
+
+
+
+%%  LocalWords:  PolyKinds KindSignatures MultiParamTypeClasses Agda
+%%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators
+%%  LocalWords:  FlexibleContexts TypeFamilies ScopedTypeVariables Zy
+%%  LocalWords:  NatVec Applicative Foldable Traversable Agda's Sy fs
+%%  LocalWords:  Milner's typechecker Haskell vtake vtrunc Vec vapp
+%%  LocalWords:  vcopies forall pointwise ss Functor xs foldMap fmap
+%%  LocalWords:  foldMapDefault fmapDefault Monad unMat xpose vtail
+%%  LocalWords:  sequenceA Completists xss unsized monad Hindley Bool
+%%  LocalWords:  associativity Milner const polymorphism GHC
+%%  LocalWords:  parametricity underconstrained precomposed
+%%  LocalWords:  Strathclyde instantiators
