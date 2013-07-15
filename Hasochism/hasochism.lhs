@@ -101,7 +101,7 @@
 
 \authorinfo{Sam Lindley}
            {University of Strathclyde}
-           {sam.lindley@@strath.ac.uk}
+           {Sam.Lindley@@ed.ac.uk}
 \authorinfo{Conor McBride}
            {University of Strathclyde}
            {conor.mcbride@@strath.ac.uk}
