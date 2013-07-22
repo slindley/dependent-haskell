@@ -54,8 +54,9 @@ for two numbers to be so orderable.
 Testing which way around the numbers are is quite a lot like the usual
 Boolean version, except with evidence. The step case requires
 unpacking and repacking because the constructors are used at different
-types. However, instance inference is sufficient to deduce the logical
-goals from the information revealed by testing.
+types (|OWOTO m n| versus |OWOTO (S m) (S n)|). However, instance
+inference is sufficient to deduce the logical goals from the
+information revealed by testing.
 
 > owoto :: forall m n. Natty m -> Natty n -> OWOTO m n
 > owoto Zy      n       = LE
