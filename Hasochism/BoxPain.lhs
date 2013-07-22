@@ -84,6 +84,9 @@ category are indexed. The morphisms are inhabitants of the following
 
 Let us define a type class of monads over indexed types.
 
+%format returnIx = "\F{returnIx}"
+%format extendIx = "\F{extendIx}"
+
 > class MonadIx (m :: (kappa -> *) -> (kappa -> *)) where
 >   returnIx :: a :-> m a
 >   extendIx :: (a :-> m b) -> (m a :-> m b)
