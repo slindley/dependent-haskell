@@ -139,9 +139,9 @@ constraint.
 \subsection{Matrices and a Monad}
 
 It is quite handy that |Vec n| is both |Applicative| and |Traversable|.
-If we define a |Matrix| as a vertical vector of horizontal vectors, thus
-(arranging |Matrix|'s arguments conveniently for the tiling library later
-in the paper),
+If we define a |Matrix| as a vertical vector of height |h| containing
+horizontal vectors of width |w|, thus (arranging |Matrix|'s arguments
+conveniently for the tiling library later in the paper),
 
 %format unMat = "\F{unMat}"
 
