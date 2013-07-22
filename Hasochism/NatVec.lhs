@@ -75,6 +75,8 @@ which allows us to define `families' (meaning merely `functions') of `types'
 in the sloppy sense of `things at the type level', not just the pedantic sense
 of `things of kind |*|'.
 
+%format :+ = "\mathbin{\mbox{$:\!\!+$}}"
+
 > type family (m :: Nat) :+ (n :: Nat) :: Nat
 > type instance  Z    :+  n  =  n
 > type instance  S m  :+  n  =  S (m :+ n)
@@ -82,18 +84,23 @@ of `things of kind |*|'.
 In an intensional dependent type theory, such a definition extends the
 normalization algorithm by which the type checker decides type
 equality up to the partial evaluation of open terms. If syntactically
-distinct types share a normal form, then they share the same terms.
-Of course, functions often have algebraic properties, e.g. associativity and
-commutativity, which are not obvious from computation alone. Fortunately,
+distinct types share a normal form, then they share the same terms. E.g.,
+in type theory, terms inhabiting |Vec (S (S Z) :+ n) x| also inhabit
+|Vec (S (S n)) x| without further ado.
+Of course, functions often satisfy laws, e.g. associativity and
+commutativity, which are not directly computational: terms of type
+|Vec (n :+ S (S Z)) x| do not inhabit |Vec (S (S n)) x|, even though the two
+coincide for all concrete values of |n|. Fortunately,
 one can formulate `propositional equality' types, whose inhabitants
 constitute evidence for equations. Values can be transported between
 provably equal types by explicit appeal to such evidence.
 
 In Haskell's kernel, type equality is entirely
-syntactic~\cite{SulzmannCJD07}. The above is a collection of axioms
+syntactic~\cite{SulzmannCJD07}, so that kernel terms in |Vec (S (S Z) :+ n) x|
+do not also inhabit |Vec (S (S n)) x|. The above `definition' \emph{axiomatizes} |(:+)|
 for Haskell's propositional equality, and every program which relies
-on computation must be elaborated in terms of explicit appeal to
-evidence. The translation from the surface language to the kernel
+on computing sums must be elaborated with explicit appeal to
+evidence derived from those axioms. The translation from the surface language to the kernel
 attempts to generate this evidence by a powerful but inscrutable
 constraint solving heuristic. Experience suggests that the solver
 computes aggressively, regardless of whether type level programs are

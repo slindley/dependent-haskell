@@ -143,13 +143,11 @@ dependently typed languages more broadly.
 
 In the design of Standard ML, Milner and his colleagues achieved a remarkable
 alignment of distinctions:
-~\cite{Milner78,ML}\[\begin{array}{||l||||r||l||}
-\hline
+~\cite{Milner78,ML}\[\begin{array}{l||r@@{\quad}l}
 \textrm{syntactic category}  & \textbf{terms}      &     \textbf{types} \\
 \textrm{phase distinction}   & \textbf{dynamic}    &    \textbf{static} \\
 \textrm{inference}           & \textbf{explicit}   &  \textbf{implicit} \\
 \textrm{abstraction}         & \textbf{simple}     & \textbf{dependent} \\
-\hline
 \end{array}\]
 
 The things you write are the things you run, namely terms, for which
