@@ -37,6 +37,7 @@ Section~\ref{subsec:conjunction}.
 \subsection{Character Boxes}
 
 %format matrixChar = "\F{matrixChar}"
+%format matrixCharI = "\F{matrixChar}"
 %format renderCharBox = "\F{renderCharBox}"
 %format stringsOfCharMatrix = "\F{stringsOfCharMatrix}"
 
@@ -51,6 +52,16 @@ can fill an entire matrix with the same character.
  
 > matrixChar :: Char -> Size wh -> CharMatrix wh
 > matrixChar c (w :&&: h) = Mat (vcopies h (vcopies w c))
+
+It is possible to define |matrixChar| in terms of |pure| rather than |vcopies|:
+
+> matrixCharI c (w :&&: h) =
+>   natter w (natter h (Mat (pure (pure c))))
+
+This is clearly less efficient than the previous definition as the
+|natter| invocations synthesise |NATTY| dictionaries from the |Natty|
+values we already have to hand, before |pure| converts back to the
+original |Natty| values (recall that |pure = vcopies natty|).
 
 We can render a character box as a character matrix.
 
