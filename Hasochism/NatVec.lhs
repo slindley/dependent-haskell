@@ -179,23 +179,25 @@ gives us
 
 but the resulting type error
 
-{\tiny
+{\scriptsize
 \begin{verbatim}
 NatVec.lhs:120:44:
     Could not deduce (n2 ~ (n1 :+ n0))
     from the context (m ~ 'S n1)
       bound by a pattern with constructor
-                 Sy :: forall (n :: Nat). Natty n -> Natty ('S n),
-               in an equation for `vtake'
+          Sy :: forall (n :: Nat). Natty n -> Natty ('S n),
+        in an equation for `vtake'
       at NatVec.lhs:120:10-13
     or from ((m :+ n) ~ 'S n2)
       bound by a pattern with constructor
-                 :> :: forall x (n :: Nat). x -> Vec n x -> Vec ('S n) x,
-               in an equation for `vtake'
+          :> :: forall x (n :: Nat).
+                  x -> Vec n x -> Vec ('S n) x,
+        in an equation for `vtake'
       at NatVec.lhs:120:18-24
       `n2' is a rigid type variable bound by
            a pattern with constructor
-             :> :: forall x (n :: Nat). x -> Vec n x -> Vec ('S n) x,
+             :> :: forall x (n :: Nat).
+                     x -> Vec n x -> Vec ('S n) x,
            in an equation for `vtake'
            at NatVec.lhs:120:18
     Expected type: Vec (n1 :+ n0) x
