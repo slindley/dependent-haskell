@@ -100,7 +100,7 @@ In Haskell, we can simulate this by abstracting dependently at the type
 level and non-dependently over the singleton representative. We translate
 (from Agda notation to Haskell):
 \[
-  (n\!:\!|Nat|)\to T \qquad \leadsto \qquad |forall (n :: Nat). Natty n -> T|
+  (n\!:\!|Nat|)\to T \qquad \leadsto \qquad |forall (n :: Nat). Natty n -> |T
 \]
 Thus equipped, we may write
 
