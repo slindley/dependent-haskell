@@ -266,7 +266,8 @@ Jos{\'e} Pedro Magalh{\~a}es and our colleague Adam Gundry.
 
 %include MergeSort.lhs
 
-\section{Evidence Combining Data with Proof}
+% \section{Evidence Combining Data with Proof}
+\section{What are the Data which Go with Proofs?}
 \label{sec:evidence}
 
 %include Evidence.lhs
