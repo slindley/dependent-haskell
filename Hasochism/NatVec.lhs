@@ -132,15 +132,6 @@ run time replica of some static data as a \emph{singleton} GADT.
 >   Zy  :: Natty Z
 >   Sy  :: Natty n -> Natty (S n)
 
-\todo{Reinstate the definition of \mbox{|(/+/)|} somewhere.}
-%if False
-
-> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
-> Zy    /+/  n  = n
-> Sy m  /+/  n  = Sy (m /+/ n)
-
-%endif
-
 Each type level value |n| in the |Nat| kind has a unique representative
 in the type |Natty n|, so analysing the latter will reveal useful facts
 about the former. The `$\Pi$-types', often written $(x\!:\!S)\to T$, of

@@ -216,12 +216,17 @@ character box of size |(w, h)|.
 >          Ex (  ((w1 `maxn` w2) :&&: (h1 /+/ h2)) :&:
 >                juxV (w1 :&&: h1) (w2 :&&: h2) b1 b2)
 
-where |maxn| is maximum on singleton natural numbers:
+where |maxn| is maximum and \mbox{|(/+/)|} is addition on singleton
+natural numbers:
 
 > maxn :: Natty m -> Natty n -> Natty (Max m n)
 > maxn  Zy      n       = n
 > maxn  (Sy m)  Zy      = Sy m
 > maxn  (Sy m)  (Sy n)  = Sy (maxn m n)
+>
+> (/+/) :: Natty m -> Natty n -> Natty (m :+ n)
+> Zy    /+/  n  = n
+> Sy m  /+/  n  = Sy (m /+/ n)
 
 Curiously, the \singletons library does not appear to provide any
 special support for existential quantification over singletons. It

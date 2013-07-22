@@ -185,18 +185,19 @@ boilerplate.
 Milner's aligned distinctions have shifted apart, but Haskell persists
 with one dependent quantifier for implicit abstraction over static
 types. What counts as a `type' has begun to stretch.
-\todo{split the following (too long) sentence.}
+%
 Our \emph{Strathclyde Haskell Enhancement} (SHE)
-preprocessor~\cite{she}, systematized and sugared common constructions
+preprocessor~\cite{she} systematized and sugared common constructions
 for building the type level analogues of run time data, together with
-run time witnesses to type level values, allowing something which was
-made to look like a dependent quantifier for explicit abstraction over
+run time witnesses to type level values. SHE then provides something
+which resembles a dependent quantifier for explicit abstraction over
 dynamic terms---the $\Pi$-type of dependent type theory---in domains
-simple enough to admit the singleton construction. Before long,
-Glasgow Haskell headquarters responded with a proper kind system for
-`promoted' data types~\cite{YorgeyWCJVM12}, making possible the
-\singletons library~\cite{EisenbergW12}. The arrival of data types at
-the kind level necessitated polymorphism in kinds: Haskell is now a
+simple enough to admit the singleton construction.
+%
+Before long, Glasgow Haskell headquarters responded with a proper kind
+system for `promoted' data types~\cite{YorgeyWCJVM12}, making possible
+the \singletons library~\cite{EisenbergW12}. The arrival of data types
+at the kind level necessitated polymorphism in kinds: Haskell is now a
 dependently \emph{kinded} language, and although it is a nuisance that
 the kind-level $\forall$ is compulsorily implicit, the fresh
 abstractions it offers have yielded considerable simplification, e.g.,
