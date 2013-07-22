@@ -314,7 +314,7 @@ augment the |Cmp| data type to include the necessary equations.
 >       Natty z ->  Cmp m n
 
 To clip in both dimensions, we first clip horizontally, and then clip
-verically.
+vertically.
 %
 
 In order to define clipping we first lift subtraction on types |:-| to
