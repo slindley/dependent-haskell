@@ -36,18 +36,18 @@ to be more generally useful. The type of sizes is given by the
 > data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
 >   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
 
-In general, the separating conjunction~\cite{Reynolds02} \mbox{|:**:|}
-of two indexed type constructors is an indexed product whose index is
-also a product, in which each component of the indexed product is
-indexed by the corresponding component of the index.
+In general, the separating conjunction~\cite{Reynolds02}
+\mbox{|(:**:)|} of two indexed type constructors is an indexed product
+whose index is also a product, in which each component of the indexed
+product is indexed by the corresponding component of the index.
 
 We also define a \emph{non-separating conjunction}.
 
 > data (p :: kappa -> *) :*: (q :: kappa -> *) :: kappa -> * where
 >   (:&:) :: p kappa -> q kappa -> (p :*: q) k
 
-The non-separating conjunction |:*:| is an indexed product in which
-the index is shared across both components of the product.
+The non-separating conjunction \mbox{|(:*:)|} is an indexed product in
+which the index is shared across both components of the product.
 
 We will use both separating and non-separating conjunction extensively
 in Section~\ref{subsec:more-existentials}.
