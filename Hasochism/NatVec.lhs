@@ -155,10 +155,10 @@ of cognate notions, which is an eccentric way to keep things simple.
 
 Moreover, we can only construct $\Pi$-types with domains admitting the
 singleton construction. Whilst Monnier and
-Haguenauer~\cite{monnierhaguenauer2010} have given a generic treatment
-of the singleton construction, their result is not reproducible in
-current GHC because GADTs are not promotable as kinds. We cannot form
-a Haskell analogue of
+Haguenauer~\cite{MonnierH10} have given a generic treatment of the
+singleton construction, their result is not reproducible in current
+GHC because GADTs are not promotable as kinds. We cannot form a
+Haskell analogue of
 \[
   (n\!:\!|Nat|)\to (|xs|\!:\!|Vec n x|)\to T[|xs|]
 \]
