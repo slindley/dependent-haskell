@@ -127,10 +127,11 @@ of term level natural numbers.
 > wrapNat  Z      =  Ex Zy
 > wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
 
-You can see that |wrapNat| delivers the |WNat| corresponding
-to the |Nat| it receives, but that property is sadly not enforced by
-type. However, once we have |WNat|s, we can build merge-sort in the usual
-divide-and-conquer way.
+You can see that |wrapNat| delivers the |WNat| corresponding to the
+|Nat| it receives, but that property is sadly not enforced by
+type---an inevitable consequence of separating |Nat| from its
+singletons. However, once we have |WNat|s, we can build merge-sort in
+the usual divide-and-conquer way.
 
 > deal :: [x] -> ([x], [x])
 > deal []        = ([], [])
