@@ -301,18 +301,18 @@ is based not just on propagation of static indices, but on dynamic
 generation of evidence.
 
 After some fairly hairy theorem proving, the worst of which we have
-spared you, we learned how to package
-proofs which follow a similar pattern inside GADTs of useful
-evidence. GHC's constraint solver is a good enough automatic theorem
-prover to check the proof steps corresponding to the recursion
-structure of the evidence-generating program. Case analysis on the
-resulting evidence is sufficient to persuade GHC that sorting
-invariants hold and that boxes snap together. In this respect, Haskell
-handles simple proofs much more neatly than Agda, where proof is as
-explicit as programming because it is programming. There is still room
-for improvement: we do not yet have a \emph{compositional} way to
-express just the \emph{fact} that properties follow by a common proof
-pattern in a way that GHC will silently check.
+spared you, we learned how to package proofs which follow a similar
+pattern inside GADTs of useful evidence. GHC's constraint solver is a
+good enough automatic theorem prover to check the proof steps
+corresponding to the recursion structure of the evidence-generating
+program. Case analysis on the resulting evidence is sufficient to
+persuade GHC that sorting invariants hold and that boxes snap
+together. In this respect, Haskell handles simple proofs much more
+neatly than Agda, where proving is as explicit as programming because
+it is programming. There is still room for improvement: we do not yet
+have a \emph{compositional} way to express just the \emph{fact} that
+properties follow by a common proof pattern in a way that GHC will
+silently check.
 
 There is room for improvement also in the treatment of dependent
 quantification, both in Haskell and in dependently typed programming
