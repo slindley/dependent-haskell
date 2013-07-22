@@ -275,6 +275,8 @@ that they cannot be needed in computation, but they do not allow us to
 make the promise that ordinary data in types like |Nat| will not be
 needed at run time.
 
+\todo{cite Abel and Scherer~\cite{AbelS12}}
+
 Meanwhile, Agda has an `irrelevant' quantifier, abstracting over data
 which will even be ignored by the definitional equality of the type
 system. In effect, the erasure induced by `irrelevance' is static as
