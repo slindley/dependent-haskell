@@ -22,6 +22,11 @@
 
 %endif
 
+In the previous section we gave ordering proofs as instances of the
+|OWOTO| data type. In this section, and even more so in the next, we
+will be concerned not only with the fact of ordering, but also the
+degree of it.
+
 Let us consider the operation of comparing two singleton natural
 numbers. We refine the standard Haskell |Ordering| type to be indexed
 by the natural numbers under comparison.

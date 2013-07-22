@@ -62,8 +62,13 @@
 %format b21 = b "_{21}"
 %format b22 = b "_{22}"
 
+%format p1 = p "_1"
+%format p2 = p "_2"
+
 %format EXISTS = "\exists\!"
 %format DOT = "\!\!.\!\!"
+
+%format ~ = "\sim"
 
 %format BAD = "\hfill(\times)"
 
@@ -72,6 +77,9 @@
 
 
 %format show = "\F{show}"
+
+%format fst = "\F{fst}"
+%format snd = "\F{snd}"
 
 \newcommand{\F}{\mathsf}
 
@@ -261,7 +269,8 @@ Jos{\'e} Pedro Magalh{\~a}es and our colleague Adam Gundry.
 
 %include MergeSort.lhs
 
-\section{Evidence Combining Data with Proof}
+% \section{Evidence Combining Data with Proof}
+\section{What are the Data which Go with Proofs?}
 \label{sec:evidence}
 
 %include Evidence.lhs
