@@ -152,7 +152,6 @@ room for improvement in both settings.
 
 
 %if False
-\todo{Hide the following code?}
 
 [Here's some spare kit I built to see what was happening.
 

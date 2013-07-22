@@ -266,16 +266,14 @@ that they cannot be needed in computation, but they do not allow us to
 make the promise that ordinary data in types like |Nat| will not be
 needed at run time.
 
-\todo{cite Abel and Scherer~\cite{AbelS12}}
-
-Meanwhile, Agda has an `irrelevant' quantifier, abstracting over data
-which will even be ignored by the definitional equality of the type
-system. In effect, the erasure induced by `irrelevance' is static as
-well as dynamic, and is thus more powerful but less applicable. The
-Agda translation of |vtake| cannot make |n| an irrelevant argument,
-because it is needed to compute the length of the input, which most
-certainly is statically relevant.  In contemporary Agda, it seems that
-this |n| must be present at run time.
+Meanwhile, Agda has an `irrelevant' quantifier~\cite{AbelS12},
+abstracting over data which will even be ignored by the definitional
+equality of the type system. In effect, the erasure induced by
+`irrelevance' is static as well as dynamic, and is thus more powerful
+but less applicable. The Agda translation of |vtake| cannot make |n|
+an irrelevant argument, because it is needed to compute the length of
+the input, which most certainly is statically relevant.  In
+contemporary Agda, it seems that this |n| must be present at run time.
 
 A further example, showing implicit quantification over data used statically
 to compute a type but erased at run time, applies an |n|-ary operator to
@@ -299,6 +297,17 @@ optimization~\cite{BradyMM03} would retain |n| but remove the
 constructor tag from the representation of vectors, compiling the
 above match on the vector to match instead on |n| then project from
 the vector.
+
+Miquel's implicit calculus of constructions (ICC)~\cite{Miquel01}
+extends type theory with a static implicit quantifier, the ``implicit
+product'', which erases like a System F $\forall$.
+%
+Barras and Bernado's (ICC$^*$)~\cite{BarrasB08} adds a static explicit
+quantifier to restore decidable type checking.
+%
+Adding something like the static explicit quantifier (and a
+Pollack-style implicit synthesis mechanism) to Agda would restore to
+Agda the missing static half of our quantifier matrix.
 
 To sum up, we have distinguished Haskell's dependent static implicit
 |forall|quantifier from the dependent dynamic explicit $\Pi$-types of
