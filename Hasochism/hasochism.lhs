@@ -78,6 +78,9 @@
 
 %format show = "\F{show}"
 
+%format fst = "\F{fst}"
+%format snd = "\F{snd}"
+
 \newcommand{\F}{\mathsf}
 
 \renewcommand{\hscodestyle}{\small}
