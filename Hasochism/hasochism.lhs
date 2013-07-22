@@ -62,8 +62,13 @@
 %format b21 = b "_{21}"
 %format b22 = b "_{22}"
 
+%format p1 = p "_1"
+%format p2 = p "_2"
+
 %format EXISTS = "\exists\!"
 %format DOT = "\!\!.\!\!"
+
+%format ~ = "\sim"
 
 %format BAD = "\hfill(\times)"
 

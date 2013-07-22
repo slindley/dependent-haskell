@@ -36,10 +36,10 @@ to be more generally useful. The type of sizes is given by the
 > data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
 >   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
 
-In general, the separating conjunction |:**:| of two indexed type
-constructors is an indexed product whose index is also a product, in
-which each component of the indexed product is indexed by the
-corresponding component of the index.
+In general, the separating conjunction~\cite{Reynolds02} \mbox{|:**:|}
+of two indexed type constructors is an indexed product whose index is
+also a product, in which each component of the indexed product is
+indexed by the corresponding component of the index.
 
 We also define a \emph{non-separating conjunction}.
 

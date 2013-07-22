@@ -273,7 +273,7 @@ cases.
 \subsection{Cropping = Clipping + Fitting}
 
 We can \emph{crop} a box to a region. First we need to specify an
-suitably indexed type of regions..
+suitably indexed type of regions.
 %
 A point identifies a position inside a box, where |(Zy, Zy)|
 represents the top-left corner, counting top-to-bottom, left-to-right.

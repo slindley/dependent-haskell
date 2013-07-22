@@ -128,7 +128,7 @@ of term level natural numbers.
 > wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
 
 You can see that |wrapNat| delivers the |WNat| corresponding
-to the |Nat| it receives, but that property is sadly, not enforced by
+to the |Nat| it receives, but that property is sadly not enforced by
 type. However, once we have |WNat|s, we can build merge-sort in the usual
 divide-and-conquer way.
 
