@@ -197,10 +197,10 @@ We can straightforwardly define a cut comparison function.
 >   Natty a -> Natty b ->
 >   Natty c -> Natty d ->
 >     CmpCuts a b c d
-> cmpCuts Zy b Zy     d  = EQCuts
-> cmpCuts Zy b (Sy c) d  = LTCuts c
-> cmpCuts (Sy a) b Zy d  = GTCuts a
-> cmpCuts (Sy a) b (Sy c) d = case cmpCuts a b c d of
+> cmpCuts  Zy      b  Zy      d = EQCuts
+> cmpCuts  Zy      b  (Sy c)  d = LTCuts c
+> cmpCuts  (Sy a)  b  Zy      d = GTCuts a
+> cmpCuts  (Sy a)  b  (Sy c)  d = case cmpCuts a b c d of
 >   LTCuts z  -> LTCuts z
 >   EQCuts    -> EQCuts
 >   GTCuts z  -> GTCuts z
@@ -298,9 +298,9 @@ point. The type signature of |clip| is:
 where |:-| is type level subtraction:
 
 > type family (m :: Nat) :- (n :: Nat) :: Nat
-> type instance Z   :- n   = Z
-> type instance S m :- Z   = S m
-> type instance S m :- S n = (m :- n)
+> type instance Z    :-  n    = Z
+> type instance S m  :-  Z    = S m
+> type instance S m  :-  S n  = (m :- n)
 
 In order to account for the subtraction in the result, we need to
 augment the |Cmp| data type to include the necessary equations.
@@ -321,9 +321,9 @@ In order to define clipping we first lift subtraction on types |:-| to
 subtract on singleton naturals |/-/|.
 
 > (/-/) :: Natty m -> Natty n -> Natty (m :- n)
-> Zy   /-/ n    = Zy
-> Sy m /-/ Zy   = Sy m
-> Sy m /-/ Sy n = m /-/ n
+> Zy    /-/  n     = Zy
+> Sy m  /-/  Zy    = Sy m
+> Sy m  /-/  Sy n  = m /-/ n
 
 In general one needs to define each operation on naturals three times:
 once for |Nat| values, once for |Nat| types, and once for |Natty|
