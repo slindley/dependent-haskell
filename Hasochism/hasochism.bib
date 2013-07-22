@@ -12,7 +12,6 @@
   school  = {Department of Computer Science and Engineering, Chalmers University of Technology},
   year	  = 2007,
   month	  = {September},
-  address = {SE-412 96 G\"{o}teborg, Sweden}
 }
 
 @Unpublished{she,
@@ -21,12 +20,14 @@
   note = 	 {\url{https://personal.cis.strath.ac.uk/conor.mcbride/pub/she/}},
   year = 	 2013}
 
-@InProceedings{Weirich13,
-  author = 	 {Stephanie Weirich and Justin Hsu and Richard A. Eisenberg},
-  title = 	 {Towards dependently typed Haskell: System FC with kind equality},
-  booktitle = {Proceedings of the The 18th ACM SIGPLAN International Conference on Functional Programming, ICFP '13},
-  year = 	 2013,
-  publisher = {ACM}}
+@inproceedings{Weirich13,
+  author    = {Stephanie Weirich and Justin Hsu and Richard A. Eisenberg},
+  title     = {Towards dependently typed Haskell: {System FC} with kind equality},
+  note      = {To appear},
+  booktitle = {ICFP},
+  year      = 2013,
+  publisher = {ACM}
+}
 
 @inproceedings{WadlerB89,
   author    = {Philip Wadler and
@@ -35,20 +36,8 @@
   booktitle = {POPL},
   year      = {1989},
   pages     = {60-76},
+  publisher = {ACM},
   ee        = {http://doi.acm.org/10.1145/75277.75283},
-  crossref  = {DBLP:conf/popl/1989},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@proceedings{DBLP:conf/popl/1989,
-  title     = {Conference Record of the Sixteenth Annual ACM Symposium
-               on Principles of Programming Languages, Austin, Texas, USA,
-               January 11-13, 1989},
-  booktitle = {POPL},
-  publisher = {ACM Press},
-  year      = {1989},
-  isbn      = {0-89791-294-2},
-  ee        = {http://dl.acm.org/citation.cfm?id=75277},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
@@ -59,7 +48,7 @@
   title     = {The Definition of standard {ML}},
   publisher = {MIT Press},
   year      = {1990},
-  isbn      = {978-0-262-63132-7},
+  OPTisbn      = {978-0-262-63132-7},
   pages     = {I-XI, 1-101},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
@@ -90,15 +79,14 @@
   NOTE = {Informal Proceedings of First Workshop on 
                  Logical Frameworks, Antibes},
   YEAR = {1990},
-  MONTH = MAY
+  OPTMONTH = MAY
 }
 
 @inproceedings{Paulin89a,
   author = {Christine Paulin-Mohring},
-  address = {Austin},
-  booktitle = {Sixteenth Annual ACM Symposium on Principles of
-                  Programming Languages},
-  month = jan,
+  OPTaddress = {Austin},
+  booktitle = {POPL},
+  OPTmonth = jan,
   publisher = {ACM},
   title = {Extracting ${F}_{\omega}$'s programs from proofs in 
 the {Calculus of Constructions}},
@@ -120,14 +108,14 @@ the {Calculus of Constructions}},
   title     = {Inductive Families Need Not Store Their Indices},
   booktitle = {TYPES},
   year      = {2003},
-  pages     = {115-129},
+  pages     = {115--129},
   ee        = {http://dx.doi.org/10.1007/978-3-540-24849-1_8},
   crossref  = {DBLP:conf/types/2003},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
 @proceedings{DBLP:conf/types/2003,
-  editor    = {Stefano Berardi and
+  OPTeditor    = {Stefano Berardi and
                Mario Coppo and
                Ferruccio Damiani},
   title     = {Types for Proofs and Programs, International Workshop, TYPES
@@ -135,10 +123,10 @@ the {Calculus of Constructions}},
                Papers},
   booktitle = {TYPES},
   publisher = {Springer},
-  series    = {Lecture Notes in Computer Science},
+  series    = {LNCS},
   volume    = {3085},
   year      = {2004},
-  isbn      = {3-540-22164-6},
+  OPTisbn      = {3-540-22164-6},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
@@ -147,8 +135,8 @@ the {Calculus of Constructions}},
               Shan, Chung-chieh},
     title = {Position: Lightweight Static Resources: Sexy types for
                   embedded and systems programming},
-    booktitle = {TFP ’07, the 8th Symposium on Trends in Functional
-                  Programming},
+    booktitle = {TFP},
+    publisher = {Springer},
     year = {2007}
 }
 
@@ -157,6 +145,7 @@ the {Calculus of Constructions}},
                Stephanie Weirich},
   title     = {Dependently typed programming with singletons},
   booktitle = {Haskell},
+  publisher = {ACM},
   year      = {2012},
   pages     = {117-130},
   ee        = {http://doi.acm.org/10.1145/2364506.2364522},
@@ -173,6 +162,7 @@ the {Calculus of Constructions}},
   title     = {Giving {H}askell a promotion},
   booktitle = {TLDI},
   year      = {2012},
+  publisher = {ACM},
   pages     = {53--66},
   ee        = {http://doi.acm.org/10.1145/2103786.2103795},
   bibsource = {DBLP, http://dblp.uni-trier.de}
@@ -185,6 +175,9 @@ the {Calculus of Constructions}},
   title     = {{ATS}: A Language That Combines Programming with Theorem Proving},
   booktitle = {FroCoS},
   year      = {2005},
+  publisher = {Springer},
+  volume    = 3717,
+  series    = {LNCS},
   pages     = {310--320},
   ee        = {http://dx.doi.org/10.1007/11559306_19},
   bibsource = {DBLP, http://dblp.uni-trier.de}
@@ -198,6 +191,7 @@ the {Calculus of Constructions}},
   title     = {{System F} with type equality coercions},
   booktitle = {TLDI},
   year      = {2007},
+  publisher = {ACM},
   pages     = {53--66},
   ee        = {http://doi.acm.org/10.1145/1190315.1190324},
   bibsource = {DBLP, http://dblp.uni-trier.de}
@@ -230,7 +224,7 @@ the {Calculus of Constructions}},
   volume    = {18},
   number    = {1},
   year      = {2008},
-  pages     = {1-13},
+  pages     = {1--13},
   ee        = {http://dx.doi.org/10.1017/S0956796807006326},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
@@ -243,7 +237,7 @@ the {Calculus of Constructions}},
   volume    = {14},
   number    = {1},
   year      = {2004},
-  pages     = {69-111},
+  pages     = {69--111},
   ee        = {http://dx.doi.org/10.1017/S0956796803004829},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
@@ -251,16 +245,11 @@ the {Calculus of Constructions}},
 @inproceedings{Magalhaes12,
   author = {Magalh\~{a}es, Jos{\'e} Pedro},
   title = {The right kind of generic programming},
-  booktitle = {Proceedings of the 8th ACM SIGPLAN Workshop on Generic Programming},
-  series = {WGP '12},
+  booktitle = {WGP},
   year = {2012},
-  isbn = {978-1-4503-1576-0},
-  location = {Copenhagen, Denmark},
   pages = {13--24},
   numpages = {12},
-  doi = {10.1145/2364394.2364397},
   publisher = {ACM},
-  address = {New York, NY, USA},
 }
 
 @misc{McBride11,
