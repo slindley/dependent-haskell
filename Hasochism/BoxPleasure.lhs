@@ -147,10 +147,10 @@ As we shall see in Section~\ref{subsec:cutting}, it can be useful to
 attach further equational constraints to the |Cmp| constructors. A
 limitation of our current formulation is that we have to go back and
 modify the |Cmp| data type each time we wish to extract new evidence
-from the |cmp| function. The code of the latter remains the same, and
-will still typecheck without explicit proof provided the induction
-which establishes the evidence fits with the recursion pattern of
-|cmp|. Ideally we would have some way to abstract |Cmp| and |cmp| over
+from the |cmp| function. The code of |cmp| remains the same, and
+typechecks without explicit proof provided the induction
+which establishes the evidence fits with the recursion pattern.
+Ideally we would have some way to abstract |Cmp| and |cmp| over
 properties, but it seems hard to deliver the same implicit checking of
 `fitting the pattern' without higher-order constraints, which are
 currently unsupported in Haskell.  We leave a proper investigation to
