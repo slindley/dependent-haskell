@@ -43,11 +43,9 @@ This |LeN| class has no methods, but it might make sense to deliver
 at least the explicit evidence of ordering in the corresponding GADT,
 just as the |NATTY| class method delivers |Natty| evidence.
 
-\todo{emphasise meaning of OWOTO}
-
 In order to sort numbers, we need to know that any two numbers can be
-ordered one way or the other. Let us say what it means for two numbers
-to be so orderable.
+ordered \emph{one way or the other} (OWOTO). Let us say what it means
+for two numbers to be so orderable.
 
 > data OWOTO :: Nat -> Nat -> * where
 >   LE  :: LeN x y  => OWOTO x y
