@@ -21,7 +21,7 @@
 %format maxGT = "\F{maxGT}"
 
 
-In this section we introduce our main example, an algebra for building
+Here we introduce our main example, an algebra for building
 size-indexed rectangular tilings, which we call simply \emph{boxes}.
 
 \subsection{Two Flavours of Conjunction}
@@ -88,20 +88,20 @@ Let us define a type class of monads over indexed types.
 %format extendIx = "\F{extendIx}"
 
 > class MonadIx (m :: (kappa -> *) -> (kappa -> *)) where
->   returnIx :: a :-> m a
->   extendIx :: (a :-> m b) -> (m a :-> m b)
+>   returnIx  ::  a :-> m a
+>   extendIx  ::  (a :-> m b) -> (m a :-> m b)
 
 The |returnIx| method is the unit, and |extendIx| is the Kleisli
 extension of a monad over indexed types. It is straightforward to
 provide an instance for boxes.
 
 > instance MonadIx Box where
->   returnIx                      = Stuff
->   extendIx f (Stuff c)          = f c
->   extendIx f Clear              = Clear
->   extendIx f (Hor w1 b1 w2 b2)  =
+>   returnIx                       = Stuff
+>   extendIx  f (Stuff c)          = f c
+>   extendIx  f Clear              = Clear
+>   extendIx  f (Hor w1 b1 w2 b2)  =
 >     Hor w1 (extendIx f b1) w2 (extendIx f b2)
->   extendIx f (Ver h1 b1 h2 b2)  =
+>   extendIx  f (Ver h1 b1 h2 b2)  =
 >     Ver h1 (extendIx f b1) h2 (extendIx f b2)
 
 The |extendIx| operation performs substitution at |Stuff|

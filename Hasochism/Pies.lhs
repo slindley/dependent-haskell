@@ -234,14 +234,14 @@ galling, however, is the fact that the dictionary thus constructed
 contains just an exact replica of the |Natty n| value which |natter| has
 traversed.
 
-We have completed our matrix of dependent quantifiers
-involving the kind |Nat| and two ways (neither of which is the type |Nat|) to
-give its inhabitants run time representation, |NATTY| and |Natty|, which are
-only clumsily interchangeable despite the former wrapping the latter. We could
-(and in the Strathclyde Haskell Enhancement, did) provide a more pleasing
-notation to make the dynamic quantifiers look like $\Pi$-types and their
-explicit instantiators look like ordinary data, but the awkwardness is more
-than skin deep.
+We have completed our matrix of dependent quantifiers involving the
+kind |Nat| and two ways (neither of which is the type |Nat|) to give
+its inhabitants run time representation, |NATTY| and |Natty|, which
+are only clumsily interchangeable despite the former wrapping the
+latter. We could (and indeed SHE does) provide a more pleasing
+notation to make the dynamic quantifiers look like $\Pi$-types and
+their explicit instantiators look like ordinary data, but the
+awkwardness is more than skin deep.
 
 %$%
 

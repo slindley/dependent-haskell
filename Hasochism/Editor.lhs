@@ -53,15 +53,15 @@ can fill an entire matrix with the same character.
 > matrixChar :: Char -> Size wh -> CharMatrix wh
 > matrixChar c (w :&&: h) = Mat (vcopies h (vcopies w c))
 
-It is possible to define |matrixChar| in terms of |pure| rather than |vcopies|:
+%% It is possible to define |matrixChar| in terms of |pure| rather than |vcopies|:
 
-> matrixCharI c (w :&&: h) =
->   natter w (natter h (Mat (pure (pure c))))
+%% > matrixCharI c (w :&&: h) =
+%% >   natter w (natter h (Mat (pure (pure c))))
 
-This is clearly less efficient than the previous definition as the
-|natter| invocations synthesise |NATTY| dictionaries from the |Natty|
-values we already have to hand, before |pure| converts back to the
-original |Natty| values (recall that |pure = vcopies natty|).
+%% This is clearly less efficient than the previous definition as the
+%% |natter| invocations synthesise |NATTY| dictionaries from the |Natty|
+%% values we already have to hand, before |pure| converts back to the
+%% original |Natty| values (recall that |pure = vcopies natty|).
 
 We can render a character box as a character matrix.
 
@@ -74,9 +74,12 @@ We can render a character box as a character matrix.
 >   Mat (unMat (renderCharBox (w :&&: h1) b1)
 >     `vappend` unMat (renderCharBox (w :&&: h2) b2))
 > renderCharBox (_ :&&: h) (Hor w1 b1 w2 b2)   =
->   Mat (  vcopies h vappend `vapp`
->          unMat (  renderCharBox (w1 :&&: h) b1) `vapp`
->                   unMat (renderCharBox (w2 :&&: h) b2))
+>   Mat  (  vcopies h  vappend
+>           `vapp`     unMat (renderCharBox (w1 :&&: h) b1)
+>           `vapp`     unMat (renderCharBox (w2 :&&: h) b2))
+
+Here we use |vcopies h| for |pure| and |vapp| for |(<*>)| to avoid the
+overhead of appealing to |natter h|.
 
 We can display a character matrix as a list of strings.
 
@@ -215,9 +218,9 @@ character box of size |(w, h)|.
 where |maxn| is maximum on singleton natural numbers:
 
 > maxn :: Natty m -> Natty n -> Natty (Max m n)
-> maxn Zy     n      = n
-> maxn (Sy m) Zy     = Sy m
-> maxn (Sy m) (Sy n) = Sy (maxn m n)
+> maxn  Zy      n       = n
+> maxn  (Sy m)  Zy      = Sy m
+> maxn  (Sy m)  (Sy n)  = Sy (maxn m n)
 
 Curiously, the \singletons library does not appear to provide any
 special support for existential quantification over singletons. It
