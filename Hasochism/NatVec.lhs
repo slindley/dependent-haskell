@@ -15,15 +15,41 @@ duplicating an ordinary data type, such as
 
 > data Nat = Z | S Nat deriving (Show, Eq, Ord)
 
-at the \emph{kind} level. It is pleasant to think that the \emph{same} |Nat| is both a
-type and a kind, but sadly, the current conceptual separation of types and kinds
-requires the construction of a separate kind-level replica.
+at the \emph{kind} level. That is, for the price of the above
+\emph{type} declaration, GHC silently generates a new \emph{kind},
+also |Nat|, with inhabitants formed by type level data
+constructors '|Z| and '|S|, where the prefixed quote may be dropped for
+names which do not clash with declared types. It is pleasant to think
+that the \emph{same} |Nat| is both a type and a kind, but sadly, the
+current conceptual separation of types and kinds requires the
+construction of a separate kind-level replica.
 
-The |Nat| kind is now available for deployment in the indexing of
-generalized algebraic data types, now bearing an even stronger resemblance to the
-inductive families of dependent type theories. The family of \emph{vectors} is the
-traditional first example of such a creature, and we shall resist the contrarian
-urge to choose another because we shall need vectors later in the paper.
+The |Nat| kind is now available as a domain for various forms of
+universal quantification, classified on the one hand by whether the
+quantified values are available only statically or also dynamically,
+and on the other hand by whether the associated abstraction and
+application are implicit or explicit in the program text. Picking
+apart Milner's alignment of distinctions, we acquire a matrix of four
+dependent quantifiers for term-like things. In this section and the
+next, we explore the Haskell encodings and the typical usage of these
+quantifiers, tabulated here for the
+paradigmatic example of natural numbers:
+\[
+\begin{array}{r||cc}
+     & \textbf{implicit} & \textbf{explicit} \\
+\hline
+\textbf{static} & |forall ((n :: Nat)).| & |forall ((n :: Nat)). Proxy n ->| \\
+\textbf{dynamic} & |forall n. NATTY n =>| & |forall n. Natty n ->| \\
+\end{array}
+\]
+
+To get to work, we must find types which involve
+numbers. Generalized algebraic data types, now bearing an even
+stronger resemblance to the inductive families of dependent type
+theories, provide one source. The family of \emph{vectors} is the
+traditional first example of such a creature, and we shall resist the
+contrarian urge to choose another because we shall need vectors later
+in the paper.
 
 > data Vec :: Nat -> * -> * where
 >   V0    ::                  Vec Z x
@@ -36,7 +62,14 @@ Here we depart a little from the dependently typed tradition by giving
 \emph{parameter}, |x|, because we plan to develop the functorial
 structure of each |Vec n| in the next section.
 
-However, type level data are useful for more than just indexing data types.
+We note that the correspondence with the inductive families of Agda,
+Coq and Idris is not exact. The |n| in the Haskell type of |(:>)| is
+given a \emph{static} implicit quantifier and erased at run time,
+whereas its type theoretic counterpart is \emph{dynamic} and implicit.
+Idris, at least, is clever enough to erase the run time copy of |n|,
+through Brady's `forcing' optimization~\cite{BradyMM03}.
+
+Meanwhile, type level data are useful for more than just indexing data types.
 We may indeed compute with them, making use of Haskell's `type family' extension,
 which allows us to define `families' (meaning merely `functions') of `types'
 in the sloppy sense of `things at the type level', not just the pedantic sense

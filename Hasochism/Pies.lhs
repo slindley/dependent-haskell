@@ -234,21 +234,8 @@ galling, however, is the fact that the dictionary thus constructed
 contains just an exact replica of the |Natty n| value which |natter| has
 traversed.
 
-We have completed a matrix of dependent quantifiers, shown here for the
-paradigmatic example of natural numbers,
-\[
-\begin{array}{||r||||c||c||}
-\hline
-     & \textbf{implicit} & \textbf{explicit} \\
-\hline
-\hline
-\textbf{static} & |forall ((n :: Nat)).| & |forall ((n :: Nat)). Proxy n ->| \\
-\hline
-\textbf{dynamic} & |forall n. NATTY n =>| & |forall n. Natty n ->| \\
-\hline
-\end{array}
-\]
-involving the kind |Nat|, and two ways (neither of which is the type |Nat|) to
+We have completed our matrix of dependent quantifiers
+involving the kind |Nat| and two ways (neither of which is the type |Nat|) to
 give its inhabitants run time representation, |NATTY| and |Natty|, which are
 only clumsily interchangeable despite the former wrapping the latter. We could
 (and in the Strathclyde Haskell Enhancement, did) provide a more pleasing
