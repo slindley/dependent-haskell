@@ -78,8 +78,9 @@ We can render a character box as a character matrix.
 >           `vapp`     unMat (renderCharBox (w1 :&&: h) b1)
 >           `vapp`     unMat (renderCharBox (w2 :&&: h) b2))
 
-Here we use |vcopies h| for |pure| and |vapp| for |(<*>)| to avoid the
-overhead of appealing to |natter h|.
+Ideally, we would prefer to use the standard applicative interface,
+but here we use |vcopies h| for |pure| and |vapp| for |(<*>)| to avoid
+the overhead of appealing to |natter h|.
 
 We can display a character matrix as a list of strings.
 

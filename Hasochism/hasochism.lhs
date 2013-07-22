@@ -1,4 +1,4 @@
-\documentclass[preprint]{sigplanconf}
+\documentclass{sigplanconf}
 
 
 % US Letter page size
@@ -77,6 +77,9 @@
 
 
 %format show = "\F{show}"
+
+%format const = "\F{const}"
+%format id = "\F{id}"
 
 %format fst = "\F{fst}"
 %format snd = "\F{snd}"
