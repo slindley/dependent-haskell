@@ -100,8 +100,8 @@
 
 \begin{document}
 
-\conferenceinfo{Name}{Date, Address} 
-\copyrightyear{Year} 
+\conferenceinfo{Haskell '13}{September 23--24, Boston, MA, USA} 
+\copyrightyear{2013}
 \copyrightdata{[to be supplied]} 
 
 %% \titlebanner{banner above paper title}        % These are ignored unless

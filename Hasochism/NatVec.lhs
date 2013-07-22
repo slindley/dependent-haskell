@@ -163,16 +163,20 @@ means of dependent quantification, but it proliferates representations
 of cognate notions, which is an eccentric way to keep things simple.
 
 Moreover, we can only construct $\Pi$-types with domains admitting the
-singleton construction---currently, simple data structures. At time of
-writing, we cannot form a Haskell analogue of
+singleton construction. Whilst Monnier and
+Haguenauer~\cite{monnierhaguenauer2010} have given a generic treatment
+of the singleton construction, their result is not reproducible in
+current GHC because GADTs are not promotable as kinds. We cannot form
+a Haskell analogue of
 \[
   (n\!:\!|Nat|)\to (|xs|\!:\!|Vec n x|)\to T[|xs|]
 \]
-but we expect this gap to be plugged in the near future. Promoting |Vec n x|
-to a kind perforce involves using numbers not only in terms and types, but
-in kinds as well. In our new, more flexible world, the type/kind distinction
-is increasingly inconvenient, and a clear candidate for
-abolition~\cite{Weirich13}.
+but we expect this gap to be plugged in the near future. Promoting
+|Vec n x| to a kind perforce involves using numbers not only in terms
+and types, but in kinds as well. In the new, more flexible world, the
+type/kind distinction is increasingly inconvenient, and a clear
+candidate for abolition, as Weirich, Hsu, and Eisenberg
+propose~\cite{Weirich13}.
 
 Meanwhile, a further disturbance is in store if we choose to compute
 only the first component returned by |vchop|. Cutting out the suffix
