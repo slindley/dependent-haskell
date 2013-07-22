@@ -176,7 +176,7 @@ boilerplate.
 Milner's aligned distinctions have shifted apart, but Haskell persists
 with one dependent quantifier for implicit abstraction over static
 types. What counts as a `type' has begun to stretch. Our
-\emph{Strathclyde Haskell Enhancement} preprocessor~\cite{she},
+\emph{Strathclyde Haskell Enhancement} (SHE) preprocessor~\cite{she},
 systematized and sugared common constructions for building the type
 level analogues of run time data, together with run time witnesses to
 type level values, allowing something which was made to look like a
