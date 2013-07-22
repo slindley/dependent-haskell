@@ -226,13 +226,13 @@ We can cajole GHC into building us a |NATTY n| dictionary as follows:
 > natter  Zy      t  =  t
 > natter  (Sy n)  t  =  natter n t
 
-This is an obfuscated identity function, but not in the way that it
-looks.  The |t| being passed along recursively is successively but
-silently precomposed with the dictionary transformer generated from
-the |instance NATTY n => NATTY (S n)| declaration. Particularly
+This may look like an obfuscated identity function, but its type tells
+us otherwise. The |t| being passed along recursively is successively
+but silently precomposed with the dictionary transformer generated
+from the |instance NATTY n => NATTY (S n)| declaration. Particularly
 galling, however, is the fact that the dictionary thus constructed
-contains just an exact replica of the |Natty n| value which |natter| has
-traversed.
+contains just an exact replica of the |Natty n| value which |natter|
+has traversed.
 
 We have completed our matrix of dependent quantifiers involving the
 kind |Nat| and two ways (neither of which is the type |Nat|) to give
