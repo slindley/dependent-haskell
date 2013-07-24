@@ -100,9 +100,11 @@
 
 \begin{document}
 
-\conferenceinfo{Haskell '13}{September 23--24, Boston, MA, USA} 
+\exclusivelicense
+\conferenceinfo{Haskell~'13}{September 23--24, Boston, MA, USA} 
 \copyrightyear{2013}
-\copyrightdata{[to be supplied]} 
+\copyrightdata{978-1-4503-2383-3/13/09}
+\doi{2503778.2503786}
 
 %% \titlebanner{banner above paper title}        % These are ignored unless
 %% \preprintfooter{short description of paper}   % 'preprint' option specified.
