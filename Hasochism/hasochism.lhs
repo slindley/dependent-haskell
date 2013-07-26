@@ -2,8 +2,8 @@
 
 
 % US Letter page size
-%\pdfpagewidth=8.5in
-%\pdfpageheight=11in
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
 
 %include polycode.fmt
 %include forall.fmt
