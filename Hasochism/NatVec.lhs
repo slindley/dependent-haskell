@@ -17,11 +17,11 @@ duplicating an ordinary data type, such as
 
 at the \emph{kind} level. That is, for the price of the above
 \emph{type} declaration, GHC silently generates a new \emph{kind},
-also |Nat|, with inhabitants formed by type level data
-constructors '|Z| and '|S|, where the prefixed quote may be dropped for
-names which do not clash with declared types. It is pleasant to think
-that the \emph{same} |Nat| is both a type and a kind, but sadly, the
-current conceptual separation of types and kinds requires the
+also |Nat|, with inhabitants formed by type level data constructors
+${}^\prime$|Z| and ${}^\prime$|S|, where the prefixed quote may be dropped
+for names which do not clash with declared types. It is pleasant to
+think that the \emph{same} |Nat| is both a type and a kind, but sadly,
+the current conceptual separation of types and kinds requires the
 construction of a separate kind-level replica.
 
 The |Nat| kind is now available as a domain for various forms of

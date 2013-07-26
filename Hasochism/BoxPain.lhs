@@ -27,19 +27,20 @@ size-indexed rectangular tilings, which we call simply \emph{boxes}.
 \subsection{Two Flavours of Conjunction}
 \label{subsec:conjunction}
 
-In order to define size indexes, we introduce some kit which turns out
+In order to define size indexes we introduce some kit which turns out
 to be more generally useful. The type of sizes is given by the
-\emph{separated conjunction} of |Natty| with |Natty|.
+\emph{separated conjunction}~\cite{Reynolds02} of |Natty| with
+|Natty|.
 
 > type Size = Natty :**: Natty
 >
 > data (p :: iota -> *) :**: (q :: kappa -> *) :: (iota, kappa) -> * where
 >   (:&&:) :: p iota -> q kappa -> (p :**: q) (Pair iota kappa)
 
-In general, the separating conjunction~\cite{Reynolds02}
-\mbox{|(:**:)|} of two indexed type constructors is an indexed product
-whose index is also a product, in which each component of the indexed
-product is indexed by the corresponding component of the index.
+In general, the separating conjunction \mbox{|(:**:)|} of two indexed
+type constructors is an indexed product whose index is also a product,
+in which each component of the indexed product is indexed by the
+corresponding component of the index.
 
 We also define a \emph{non-separating conjunction}.
 
@@ -124,12 +125,12 @@ the sizes do not match up. Let us consider the horizontal version
 where |Max| computes the maximum of two promoted |Nat|s:
 
 > type family Max (m :: Nat) (n :: Nat) :: Nat
-> type instance Max Z     n     = n
-> type instance Max (S m) Z     = S m
-> type instance Max (S m) (S n) = S (Max m n)
+> type instance Max  Z      n      = n
+> type instance Max  (S m)  Z      = S m
+> type instance Max  (S m)  (S n)  = S (Max m n)
 
 As well as the two boxes it takes singleton representations of their
-sizes, as it must compute on the sizes.
+sizes, as it must compute on these.
 
 We might try to write a definition for |juxH| as follows:
 
@@ -194,8 +195,7 @@ Using this pattern, it is now possible to use GHC as a theorem
 prover. As GHC does not provide anything in the way of direct support
 for theorem proving (along the lines of tactics in Coq, say), we would
 like to avoid the pain of explicit theorem proving as much as
-possible. Thus, we choose to change tack and switch to an alternative
-approach.
+possible, so we now change tack.
 
 %%  LocalWords:  GADTs PolyKinds KindSignatures MultiParamTypeClasses
 %%  LocalWords:  DataKinds FlexibleInstances RankNTypes TypeOperators

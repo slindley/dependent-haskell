@@ -99,7 +99,7 @@ type, this yields:
 
 Now the fun starts. As well as the equations that define the proof
 object, we can incorporate other equations that encapsulate further
-knowledge implied by the result of the comparison. For now we add
+knowledge implied by the result of the comparison. For now, we add
 equations for computing the maximum of |m| and |n| in each case.
 
 > data CmpMax :: Nat -> Nat -> * where
@@ -181,7 +181,7 @@ horizontal composition of two boxes, we need to perform a special kind
 of comparison. In general, we wish to compare natural numbers $a$ and
 $c$ given the equation $a + b = c + d$, and capture the constraints on
 $a$, $b$, $c$, and $d$ implied by the result of the comparison. For
-instance, if $a \leq c$ then there must exist some number $z$, such
+instance, if $a < c$ then there must exist some number $z$, such
 that $b = (z + 1) + d$ and $c = a + (z + 1)$.
 
 We encode proof objects for cut comparisons using the following data
@@ -276,7 +276,7 @@ cases.
 
 \subsection{Cropping = Clipping + Fitting}
 
-We can \emph{crop} a box to a region. First we need to specify an
+We can \emph{crop} a box to a region. First we need to specify a
 suitably indexed type of regions.
 %
 A point identifies a position inside a box, where |(Zy, Zy)|
@@ -374,7 +374,7 @@ dimensions, we first fit horizontally, and then fit veritcally.
 >   EQNat    -> b
 >   GTNat d  -> fst (verCut h2 (Sy d) b)
 
-Note that |fitH| and |fitV| do essentially the same thing as the
+Observe that |fitH| and |fitV| do essentially the same thing as the
 |procrustes| function, but on boxes rather than vectors, and always
 using |Clear| boxes for padding.
 
@@ -385,6 +385,7 @@ To crop a box to a region, we simply clip then fit.
 > crop ((x :&&: y) :&&: (w :&&: h)) (s :&&: t) b =
 >   fit  ((s /-/ x) :&&: (t /-/ y)) (w :&&: h)
 >        (clip (s :&&: t) (x :&&: y) b)
+
 
 A convenient feature of our cropping code is that type-level
 subtraction is confined to the |clip| function. This works because in
@@ -398,7 +399,7 @@ cropping function of type:
 <   Box p (Pair s t) -> Box p (Pair (Min w (s :- x)) (Min h (t :- y)))
 
 where |Min| is minimum on promoted |Nat|s.
-
+%
 This proved considerably more difficult to use as we had to reason
 about interactions between subtraction, addition, and
 minimum. Moreover, the less-refined version is often what we want in

@@ -54,15 +54,15 @@ can fill an entire matrix with the same character.
 > matrixChar c (w :&&: h) = Mat (vcopies h (vcopies w c))
 
 %% It is possible to define |matrixChar| in terms of |pure| rather than |vcopies|:
-
+%%
 %% > matrixCharI c (w :&&: h) =
 %% >   natter w (natter h (Mat (pure (pure c))))
-
+%%
 %% This is clearly less efficient than the previous definition as the
 %% |natter| invocations synthesise |NATTY| dictionaries from the |Natty|
 %% values we already have to hand, before |pure| converts back to the
 %% original |Natty| values (recall that |pure = vcopies natty|).
-
+%%
 We can render a character box as a character matrix.
 
 > renderCharBox ::
@@ -142,15 +142,13 @@ composite indexes. For the editor, we will need to generate a region,
 that is, a pair of pairs of singleton naturals from a pair of pairs of
 natural numbers.
 
-> wrapPair :: (a -> Ex p) ->
->             (b -> Ex q) ->
->               (a, b) -> Ex (p :**: q)
+> wrapPair :: (a -> Ex p) -> (b -> Ex q) -> (a, b) -> Ex (p :**: q)
 > wrapPair w1 w2 (x1, x2) =
 >   case (w1 x1, w2 x2) of
 >     (Ex v1, Ex v2) -> Ex (v1 :&&: v2)
 
 The |wrapPair| function wraps a pair of dynamic objects in a suitable
-existential package using a separated conjunction.
+existential package using a separating conjunction.
 
 > type WPoint = Ex Point
 > type WSize = Ex Size
@@ -160,10 +158,10 @@ existential package using a separated conjunction.
 > intToNat 0 = Z
 > intToNat n = S (intToNat (n-1))
 
-> wrapInt = wrapNat . intToNat
-> wrapPoint  = wrapPair wrapInt wrapInt
-> wrapSize   = wrapPair wrapInt wrapInt
-> wrapRegion = wrapPair wrapPoint wrapSize
+> wrapInt     = wrapNat . intToNat
+> wrapPoint   = wrapPair wrapInt wrapInt
+> wrapSize    = wrapPair wrapInt wrapInt
+> wrapRegion  = wrapPair wrapPoint wrapSize
 
 We might wish to wrap vectors, but the |Vec| type takes the length
 index first, so we cannot use it as is with |Ex|. Thus we can define
@@ -205,7 +203,7 @@ size |(w, 1)|.
 >     Ex ((n :&&: Sy Zy) :&: Stuff (Mat (pure v)))
 
 Given a list of |h| strings of maximum length |w|, we can wrap it as a
-character box of size |(w, h)|.
+character box of size |(w, h)|
 
 > wrapStrings :: [String] -> WSizeCharBox
 > wrapStrings []      = Ex ((Zy :&&: Zy) :&: Clear)
@@ -280,8 +278,8 @@ The |deactivate| and |activate| functions convert between a unit cursor and a pa
 
 > deactivate :: Cursor a () -> (Int, [a])
 > deactivate c = outward 0 c where
->   outward i ([], (), xs)     = (i, xs)
->   outward i (x : xz, (), xs) = outward (i + 1) (xz, (), x : xs)
+>   outward i  ([], (), xs)      = (i, xs)
+>   outward i  (x : xz, (), xs)  = outward (i + 1) (xz, (), x : xs)
 >
 > activate :: (Int, [a]) -> Cursor a ()
 > activate (i, xs) = inward i ([], (), xs) where

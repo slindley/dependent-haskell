@@ -83,13 +83,15 @@ off.)
 >   GTNat z  -> vtake n (proxy (Sy z)) xs 
 
 In both the less-than and greater-than cases, we need the evidence |z|
-provided by the |Cmp| data type; in the former, we even compute with it.
+provided by the |Cmp| data type; in the former, we even compute with
+it.
 
-Dependently typed programming often combines testing with the acquisition
-of new data that is justified by the test---the difference, in this case---
-and the refinement of the data being tested---the discovery that one number
-is the other plus the difference. We make sure that every computation which
-analyses data has a type which characterizes what we expect to learn.
+Dependently typed programming often combines testing with the
+acquisition of new data that is justified by the test---the
+difference, in this case---and the refinement of the data being
+tested---the discovery that one number is the other plus the
+difference. We make sure that every computation which analyses data
+has a type which characterizes what we expect to learn.
 
 
 
