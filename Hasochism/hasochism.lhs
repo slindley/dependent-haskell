@@ -123,26 +123,31 @@
 \maketitle
 
 \begin{abstract}
-Haskell's type system has outgrown its Hindley-Milner roots to the extent that it
-now stretches to the basics of dependently typed programming. In this paper, we
-collate and classify techniques for programming with dependent types in Haskell,
-and contribute some new ones. In particular, through extended
-examples---merge-sort and rectangular tilings---we show how to exploit Haskell's
-constraint
-solver as a theorem prover, delivering code which, as Agda programmers, we envy.
-We explore the compromises involved in simulating variations on the theme of the
-dependent function space in an attempt to help programmers put dependent
-types to work, and to inform the evolving language design both of Haskell and of
-dependently typed languages more broadly.
+Haskell's type system has outgrown its Hindley-Milner roots to the
+extent that it now stretches to the basics of dependently typed
+programming. In this paper, we collate and classify techniques for
+programming with dependent types in Haskell, and contribute some new
+ones. In particular, through extended examples---merge-sort and
+rectangular tilings---we show how to exploit Haskell's constraint
+solver as a theorem prover, delivering code which, as Agda
+programmers, we envy.  We explore the compromises involved in
+simulating variations on the theme of the dependent function space in
+an attempt to help programmers put dependent types to work, and to
+inform the evolving language design both of Haskell and of dependently
+typed languages more broadly.
 \end{abstract}
 
 %% \category{CR-number}{subcategory}{third-level}
 
+\category{D.1.1}{Applicative (Functional) Programming}{}
+\category{D.3.2}{Language Classifications}{Applicative (functional) languages}
+\category{D.3.3}{Language Constructs and Features}{}
+
 %% \terms
 %% term1, term2
 
-%% \keywords
-%% keyword1, keyword2
+\keywords
+dependent types; singletons; data type promotion; proof search; invariants
 
 \section{Introduction}
 \label{sec:intro}
@@ -344,7 +349,7 @@ its true diversity, and allowing each type to be used unduplicated
 wherever it is meaningful.  The best thing about banging your head off
 a brick wall is \emph{stopping}.
 
-\newpage
+% \newpage
 
 
 %% \appendix
@@ -358,9 +363,172 @@ a brick wall is \emph{stopping}.
 
 % We recommend abbrvnat bibliography style.
 
-\bibliographystyle{abbrvnat}
+\begin{thebibliography}{27}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibliography{hasochism}
+\bibitem[Abel and Scherer(2012)]{AbelS12}
+A.~Abel and G.~Scherer.
+\newblock On irrelevance and algorithmic equality in predicative type theory.
+\newblock \emph{Logical Methods in Computer Science}, 8\penalty0 (1), 2012.
+
+\bibitem[Aitken and Reppy(1992)]{aitken.reppy}
+W.~Aitken and J.~Reppy.
+\newblock Abstract value constructors.
+\newblock Technical Report TR 92-1290, Cornell University, 1992.
+
+\bibitem[Barras and Bernardo(2008)]{BarrasB08}
+B.~Barras and B.~Bernardo.
+\newblock The implicit calculus of constructions as a programming language with
+  dependent types.
+\newblock In \emph{FoSSaCS}, volume 4962 of \emph{LNCS}, pages 365--379, 2008.
+
+\bibitem[Brady(2005)]{brady-thesis}
+E.~Brady.
+\newblock \emph{Practical Implementation of a Dependently Typed Functional
+  Programming Language}.
+\newblock PhD thesis, University of Durham, 2005.
+
+\bibitem[Brady et~al.(2003)Brady, McBride, and McKinna]{BradyMM03}
+E.~Brady, C.~McBride, and J.~McKinna.
+\newblock Inductive families need not store their indices.
+\newblock In \emph{TYPES}, volume 3085 of \emph{LNCS}, pages 115--129.
+  Springer, 2003.
+
+\bibitem[Cui et~al.(2005)Cui, Donnelly, and Xi]{CuiDX05}
+S.~Cui, K.~Donnelly, and H.~Xi.
+\newblock {ATS}: A language that combines programming with theorem proving.
+\newblock In \emph{FroCoS}, volume 3717 of \emph{LNCS}, pages 310--320.
+  Springer, 2005.
+
+\bibitem[Eisenberg and Weirich(2012)]{EisenbergW12}
+R.~A. Eisenberg and S.~Weirich.
+\newblock Dependently typed programming with singletons.
+\newblock In \emph{Haskell}, pages 117--130. ACM, 2012.
+
+\bibitem[Huet(1997)]{Huet97}
+G.~P. Huet.
+\newblock The {Z}ipper.
+\newblock \emph{J. Funct. Program.}, 7\penalty0 (5):\penalty0 549--554, 1997.
+
+\bibitem[Kiselyov and Shan(2007)]{Kiselyov07position:lightweight}
+O.~Kiselyov and C.-c. Shan.
+\newblock Lightweight static resources: Sexy types for embedded and systems
+  programming.
+\newblock In \emph{TFP}, 2007.
+
+\bibitem[Magalh\~{a}es(2012)]{Magalhaes12}
+J.~P. Magalh\~{a}es.
+\newblock The right kind of generic programming.
+\newblock In \emph{WGP}, pages 13--24. ACM, 2012.
+
+\bibitem[McBride(2000)]{McBride00:case-talk}
+C.~McBride.
+\newblock A {C}ase {F}or {D}ependent {F}amilies.
+\newblock Seminar at {LFCS}, Edinburgh.
+  \url{http://www.strictlypositive.org/a-case/}, 2000.
+
+\bibitem[McBride(2011)]{McBride11}
+C.~McBride.
+\newblock Kleisli arrows of outrageous fortune, 2011.
+\newblock Accepted for publication. \\
+  \url{https://personal.cis.strath.ac.uk/conor.mcbride/Kleisli.pdf}.
+
+\vfill\eject
+
+\bibitem[McBride(2013)]{she}
+C.~McBride.
+\newblock The {S}trathclyde {H}askell {E}nhancement.
+\newblock \url{https://personal.cis.strath.ac.uk/conor.mcbride/pub/she/}, 2013.
+
+\bibitem[McBride and McKinna(2004)]{McBrideM04}
+C.~McBride and J.~McKinna.
+\newblock The view from the left.
+\newblock \emph{J. Funct. Program.}, 14\penalty0 (1):\penalty0 69--111, 2004.
+
+\bibitem[McBride and Paterson(2008)]{McbrideP08}
+C.~McBride and R.~Paterson.
+\newblock Applicative programming with effects.
+\newblock \emph{J. Funct. Program.}, 18\penalty0 (1):\penalty0 1--13, 2008.
+
+\bibitem[Milner(1978)]{Milner78}
+R.~Milner.
+\newblock A theory of type polymorphism in programming.
+\newblock \emph{J. Comput. Syst. Sci.}, 17\penalty0 (3):\penalty0 348--375,
+  1978.
+
+\bibitem[Milner et~al.(1990)Milner, Tofte, and Harper]{ML}
+R.~Milner, M.~Tofte, and R.~Harper.
+\newblock \emph{The Definition of standard {ML}}.
+\newblock MIT Press, 1990.
+
+\bibitem[Miquel(2001)]{Miquel01}
+A.~Miquel.
+\newblock The implicit calculus of constructions.
+\newblock In \emph{TLCA}, LNCS, pages 344--359. Springer, 2001.
+
+\bibitem[Monnier and Haguenauer(2010)]{MonnierH10}
+S.~Monnier and D.~Haguenauer.
+\newblock Singleton types here, singleton types there, singleton types
+  everywhere.
+\newblock In \emph{PLPV}, pages 1--8. ACM, 2010.
+
+\bibitem[Norell(2007)]{norell:thesis}
+U.~Norell.
+\newblock \emph{Towards a practical programming language based on dependent
+  type theory}.
+\newblock PhD thesis, Department of Computer Science and Engineering, Chalmers
+  University of Technology, September 2007.
+
+\bibitem[Paulin-Mohring(1989)]{Paulin89a}
+C.~Paulin-Mohring.
+\newblock Extracting ${F}_{\omega}$'s programs from proofs in the {Calculus of
+  Constructions}.
+\newblock In \emph{POPL}. ACM, 1989.
+
+\bibitem[Pollack(1990)]{Pollack90}
+R.~Pollack.
+\newblock Implicit syntax.
+\newblock Informal Proceedings of First Workshop on Logical Frameworks,
+  Antibes, 1990.
+
+\bibitem[Reynolds(2002)]{Reynolds02}
+J.~C. Reynolds.
+\newblock Separation logic: A logic for shared mutable data structures.
+\newblock In \emph{LICS}, pages 55--74. IEEE Computer Society, 2002.
+
+\bibitem[Sulzmann et~al.(2007)Sulzmann, Chakravarty, Jones, and
+  Donnelly]{SulzmannCJD07}
+M.~Sulzmann, M.~M.~T. Chakravarty, S.~L.~P. Jones, and K.~Donnelly.
+\newblock {System F} with type equality coercions.
+\newblock In \emph{TLDI}, pages 53--66. ACM, 2007.
+
+\bibitem[Wadler and Blott(1989)]{WadlerB89}
+P.~Wadler and S.~Blott.
+\newblock How to make ad-hoc polymorphism less ad-hoc.
+\newblock In \emph{POPL}, pages 60--76. ACM, 1989.
+
+\bibitem[Weirich et~al.(2013)Weirich, Hsu, and Eisenberg]{Weirich13}
+S.~Weirich, J.~Hsu, and R.~A. Eisenberg.
+\newblock Towards dependently typed {Haskell}: {System FC} with kind equality.
+\newblock In \emph{ICFP}. ACM, 2013.
+
+\bibitem[Yorgey et~al.(2012)Yorgey, Weirich, Cretin, {Peyton Jones},
+  Vytiniotis, and Magalh{\~a}es]{YorgeyWCJVM12}
+B.~A. Yorgey, S.~Weirich, J.~Cretin, S.~L. {Peyton Jones}, D.~Vytiniotis, and
+  J.~P. Magalh{\~a}es.
+\newblock Giving {H}askell a promotion.
+\newblock In \emph{TLDI}, pages 53--66. ACM, 2012.
+
+\end{thebibliography}
+
+
+%% \bibliographystyle{abbrvnat}
+
+%% \bibliography{hasochism}
 
 % The bibliography should be embedded for final submission.
 
