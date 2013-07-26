@@ -376,6 +376,8 @@ a brick wall is \emph{stopping}.
 
 %%  LocalWords:  Haskell Lindley Strathclyde Conor Haskell's Hindley
 %%  LocalWords:  Milner tilings prover Agda Milner's Coq's kinded GHC
-%%  LocalWords:  preprocessor systematized polymorphism minimizing
+%%  LocalWords:  preprocessor systematized polymorphism minimizing EP
 %%  LocalWords:  invariants GADTs GHC's compositional WNat scalable
-%%  LocalWords:  preventably generalizing unduplicated hasochism
+%%  LocalWords:  preventably generalizing unduplicated hasochism Jos
+%%  LocalWords:  EPSRC Peyton Weirich Eisenberg Iavor Diatchki Magalh
+%%  LocalWords:  Dimitrios Vytiniotis Gundry

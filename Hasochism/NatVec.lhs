@@ -336,4 +336,7 @@ systematic treatment of the varieties of quantification.
 %%  LocalWords:  commutativity vchop forall Zy Sy Agda zs vtake GHC
 %%  LocalWords:  injective axiomatised definedness polymorphism Coq's
 %%  LocalWords:  ScopedTypeVariables Brady's definitional ary Arity
-%%  LocalWords:  varity detagging optimization infixr
+%%  LocalWords:  varity detagging optimization infixr Milner's Coq
+%%  LocalWords:  encodings Idris axiomatizes Monnier Haguenauer Hsu
+%%  LocalWords:  promotable Weirich Eisenberg Miquel's Barras
+%%  LocalWords:  Bernado's

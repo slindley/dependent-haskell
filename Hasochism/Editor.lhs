@@ -78,7 +78,7 @@ We can render a character box as a character matrix.
 >           `vapp`     unMat (renderCharBox (w1 :&&: h) b1)
 >           `vapp`     unMat (renderCharBox (w2 :&&: h) b2))
 
-Ideally, we would prefer to use the standard applicative interface,
+Ideally, we would prefer to use the standard |Applicative| interface,
 but here we use |vcopies h| for |pure| and |vapp| for |(<*>)| to avoid
 the overhead of appealing to |natter h|.
 
@@ -231,10 +231,10 @@ special support for existential quantification over singletons. It
 should be possible to automatically generate the code for wrapping
 dynamic objects in existentials.
 
-We note also that the tendency to use stock datatype components, e.g.,
-|Ex|, |Flip|, |:*:| and |:**:|, causes extra layering of wrapping
-constructors in \emph{patterns} and expressions. We could use a
-bespoke GADT for each type we build in this way, but that would make
+We note also that the tendency to use stock data type components,
+e.g., |Ex|, |Flip|, |:*:| and |:**:|, causes extra layering of
+wrapping constructors in \emph{patterns} and expressions. We could use
+a bespoke GADT for each type we build in this way, but that would make
 it harder to develop library functionality. Ordinary `let' allows us
 to hide the extra layers in expressions, but is no help for patterns,
 which are currently peculiar in that they admit no form of
@@ -558,4 +558,4 @@ interact with the outside world, and in particular foreign APIs
 %%  LocalWords:  URegion onScreen cx cy px py intoRange sw sks lookup
 %%  LocalWords:  getEscapeKey getChar keyReady hReady stdin tc lw lh
 %%  LocalWords:  clearScreen resetCursor mc lc hSetBuffering stdout
-%%  LocalWords:  NoBuffering getArgs readFile
+%%  LocalWords:  NoBuffering getArgs readFile GADT definitional

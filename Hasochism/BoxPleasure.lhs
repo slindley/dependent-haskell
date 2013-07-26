@@ -416,4 +416,4 @@ practice.
 %%  LocalWords:  Haskell horCut verCut CmpCuts LTCuts EQCuts GTCuts
 %%  LocalWords:  cmpCuts recurse Monoids monadic monoidal mempty fitV
 %%  LocalWords:  mappend verically clipV clipH veritcally fitH fst
-%%  LocalWords:  procrustes
+%%  LocalWords:  procrustes GADTs typechecks

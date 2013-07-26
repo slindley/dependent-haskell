@@ -256,6 +256,6 @@ awkwardness is more than skin deep.
 %%  LocalWords:  vcopies forall pointwise ss Functor xs foldMap fmap
 %%  LocalWords:  foldMapDefault fmapDefault Monad unMat xpose vtail
 %%  LocalWords:  sequenceA Completists xss unsized monad Hindley Bool
-%%  LocalWords:  associativity Milner const polymorphism GHC
+%%  LocalWords:  associativity Milner const polymorphism GHC GADTs
 %%  LocalWords:  parametricity underconstrained precomposed
 %%  LocalWords:  Strathclyde instantiators

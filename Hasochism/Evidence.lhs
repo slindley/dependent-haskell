@@ -99,4 +99,4 @@ has a type which characterizes what we expect to learn.
 %%  LocalWords:  FlexibleContexts TypeFamilies NatVec Haskell na ve
 %%  LocalWords:  McKinna LTNatN EQNatN GTNatN EQNat Cmp LTNat GTNat
 %%  LocalWords:  Agda cmp Zy Sy procrustes Vec xs vappend vcopies
-%%  LocalWords:  vtake characterizes
+%%  LocalWords:  vtake characterizes OWOTO CmpN
