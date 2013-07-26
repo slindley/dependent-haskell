@@ -84,16 +84,16 @@ of `things of kind |*|'.
 In an intensional dependent type theory, such a definition extends the
 normalization algorithm by which the type checker decides type
 equality up to the partial evaluation of open terms. If syntactically
-distinct types share a normal form, then they share the same terms. E.g.,
-in type theory, terms inhabiting |Vec (S (S Z) :+ n) x| also inhabit
-|Vec (S (S n)) x| without further ado.
-Of course, functions often satisfy laws, e.g. associativity and
-commutativity, which are not directly computational: terms of type
-|Vec (n :+ S (S Z)) x| do not inhabit |Vec (S (S n)) x|, even though the two
-coincide for all concrete values of |n|. Fortunately,
-one can formulate `propositional equality' types, whose inhabitants
-constitute evidence for equations. Values can be transported between
-provably equal types by explicit appeal to such evidence.
+distinct types share a normal form, then they share the same
+terms. For example, in type theory, terms inhabiting |Vec (S (S Z) :+
+n) x| also inhabit |Vec (S (S n)) x| without further ado.  Of course,
+functions often satisfy laws, e.g. associativity and commutativity,
+which are not directly computational: terms of type |Vec (n :+ S (S
+Z)) x| do not inhabit |Vec (S (S n)) x|, even though the two coincide
+for all concrete values of |n|. Fortunately, one can formulate
+`propositional equality' types, whose inhabitants constitute evidence
+for equations. Values can be transported between provably equal types
+by explicit appeal to such evidence.
 
 In Haskell's kernel, type equality is entirely
 syntactic~\cite{SulzmannCJD07}, so that kernel terms in |Vec (S (S Z) :+ n) x|
@@ -132,13 +132,14 @@ run time replica of some static data as a \emph{singleton} GADT.
 >   Zy  :: Natty Z
 >   Sy  :: Natty n -> Natty (S n)
 
-Each type level value |n| in the |Nat| kind has a unique representative
-in the type |Natty n|, so analysing the latter will reveal useful facts
-about the former. The `$\Pi$-types', often written $(x\!:\!S)\to T$, of
-dependent type theory abstract dependently over explicit dynamic things.
-In Haskell, we can simulate this by abstracting dependently at the type
-level and non-dependently over the singleton representative. We translate
-(from Agda notation to Haskell):
+Each type level value |n| in the |Nat| kind has a unique
+representative in the type |Natty n|, so analysing the latter will
+reveal useful facts about the former. The `$\Pi$-types', often written
+$(x\!:\!S)\to T$, of dependent type theory abstract dependently over
+explicit dynamic things.  In Haskell, we can simulate this behaviour
+by abstracting dependently at the type level and non-dependently over
+the singleton representative. We translate (from Agda notation to
+Haskell):
 \[
   (n\!:\!|Nat|)\to T \qquad \leadsto \qquad |forall (n :: Nat). Natty n -> |T
 \]
@@ -228,7 +229,7 @@ made explicit. One way to manifest them is via `proxy types', e.g.,
 > data Proxy :: kappa -> * where
 >   Proxy :: Proxy i
 
-As you can see, the only dynamic information in |Proxy i| is
+As you can see, the only dynamic information in \,|Proxy i|\, is
 definedness, which there is never the need to check. Kind polymorphism
 allows us to declare the proxy type once and for all. The only point
 of a proxy is to point out that it has the same type at its binding
@@ -256,15 +257,15 @@ proxy with
 
 The |vtake| example shows that Haskell's |forall|quantifier supports
 abstraction over data which play a relevant and computational role in
-static types but have no impact on run time execution and thus
+static types but have no impact on run time execution and are thus
 erasable. Most dependently typed languages, with ATS~\cite{CuiDX05}
 being a notable exception, do not offer such a quantifier, which seems
 to us something of an oversight. Coq's program
 extraction~\cite{Paulin89a} and Brady's compilation
-method~\cite{brady-thesis} both erase components whose types show
-that they cannot be needed in computation, but they do not allow us to
-make the promise that ordinary data in types like |Nat| will not be
-needed at run time.
+method~\cite{brady-thesis} both erase components whose types show that
+they cannot be needed in computation, but they do not allow us to make
+the promise that ordinary data in types like |Nat| will not be needed
+at run time.
 
 Meanwhile, Agda has an `irrelevant' quantifier~\cite{AbelS12},
 abstracting over data which will even be ignored by the definitional
@@ -300,9 +301,9 @@ the vector.
 
 Miquel's implicit calculus of constructions (ICC)~\cite{Miquel01}
 extends type theory with a static implicit quantifier, the ``implicit
-product'', which erases like a System F $\forall$.
+product'', which erases like a System F |forall|quantifier.
 %
-Barras and Bernado's (ICC$^*$)~\cite{BarrasB08} adds a static explicit
+Barras and Bernado's ICC$^*$~\cite{BarrasB08} adds a static explicit
 quantifier to restore decidable type checking.
 %
 Adding something like the static explicit quantifier (and a

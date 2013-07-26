@@ -209,7 +209,7 @@ $f\:\{s\}$ to give the argument.
 The Hindley-Milner type system faces the same issue: even though
 unification is more tractable, we still encounter terms like |const
 True undefined :: Bool| where we do not know which type to give
-|undefined|----parametric polymorphism ensures that we don't need to
+|undefined|---parametric polymorphism ensures that we don't need to
 know. As soon as we lose parametricity, e.g. in |show . read|, the
 ambiguity of the underconstrained type is a problem and rightly yields
 a type error. The `manual override' takes the form of a type annotation,

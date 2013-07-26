@@ -191,7 +191,7 @@ types. What counts as a `type' has begun to stretch.
 Our \emph{Strathclyde Haskell Enhancement} (SHE)
 preprocessor~\cite{she} systematized and sugared common constructions
 for building the type level analogues of run time data, together with
-run time witnesses to type level values. SHE then provides something
+run time witnesses to type level values. SHE then provided something
 which resembles a dependent quantifier for explicit abstraction over
 dynamic terms---the $\Pi$-type of dependent type theory---in domains
 simple enough to admit the singleton construction.
@@ -275,7 +275,7 @@ Jos{\'e} Pedro Magalh{\~a}es and our colleague Adam Gundry.
 %include MergeSort.lhs
 
 % \section{Evidence Combining Data with Proof}
-\section{What are the Data which Go with Proofs?}
+\section{What are the Data that Go with Proofs?}
 \label{sec:evidence}
 
 %include Evidence.lhs

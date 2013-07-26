@@ -35,12 +35,12 @@ Let us start by defining $\leq$ as a `type' class, seen as a relation.
 > instance             LeN Z n where
 > instance LeN m n =>  LeN (S m) (S n) where
 
-If we wanted to \emph{close} this type class, we could use module
+If we wanted to \emph{close} this class, we could use the module
 abstraction method of Kiselyov and
 Shan~\cite{Kiselyov07position:lightweight} which uses a non-exported
-superclass. We leave this elaboration to the interested reader.
-This |LeN| class has no methods, but it might make sense to deliver
-at least the explicit evidence of ordering in the corresponding GADT,
+superclass. We leave this elaboration to the interested reader. The
+|LeN| class has no methods, but it might make sense to deliver at
+least the explicit evidence of ordering in the corresponding GADT,
 just as the |NATTY| class method delivers |Natty| evidence.
 
 In order to sort numbers, we need to know that any two numbers can be
@@ -51,7 +51,7 @@ for two numbers to be so orderable.
 >   LE  :: LeN x y  => OWOTO x y
 >   GE  :: LeN y x  => OWOTO x y
 
-Testing which way around the numbers are is quite a lot like the usual
+Testing which way round the numbers are is quite a lot like the usual
 Boolean version, except with evidence. The step case requires
 unpacking and repacking because the constructors are used at different
 types (|OWOTO m n| versus |OWOTO (S m) (S n)|). However, instance
@@ -143,12 +143,12 @@ the usual divide-and-conquer way.
 > sort [n]  = case wrapNat n of Ex n -> n :< ONil
 > sort xs   = merge (sort ys) (sort zs) where (ys, zs) = deal xs
 
-The need to work with |WNat| is a little clunky, compared to the
-version one might write in Agda where one |Nat| type serves for |Nat|
-and its promotion, |Natty|, |NATTY| and |WNat|, but Agda does not have
-the proof search capacity of Haskell's constraint solver, and so
-requires the theorem proving to be more explicit. There is certainly
-room for improvement in both settings.
+The need to work with |WNat| is a little clunky compared to what one
+might do in Agda where a single |Nat| type serves for |Nat| and its
+promotion, |Natty|, |NATTY| and |WNat|, but Agda does not have the
+proof search capacity of Haskell's constraint solver, and so requires
+the theorem proving to be more explicit. There is certainly room for
+improvement in both settings.
 
 
 
