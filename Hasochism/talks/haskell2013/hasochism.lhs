@@ -167,21 +167,31 @@
 
 
 \begin{frame}
-\frametitle{Promotion}
+\frametitle{Data type promotion}
 
 %format :+ = "\mathbin{\mbox{$:\!\!+$}}"
 %format vappend = "\F{vappend}"
 
-> data Nat = Z | S Nat deriving (Show, Eq, Ord)
->
+% deriving (Show, Eq, Ord)
+
+> data Nat = Z | S Nat
+
+With |DataKinds| enabled, the |Nat| data type can be used as a kind.
+
+Length indexed vectors:
+
 > data Vec :: Nat -> * -> * where
 >   V0    ::                  Vec Z x
 >   (:>)  :: x -> Vec n x ->  Vec (S n) x
 
+Type level addition:
+
 > type family (m :: Nat) :+ (n :: Nat) :: Nat
 > type instance  Z    :+  n  =  n
 > type instance  S m  :+  n  =  S (m :+ n)
->
+
+Appending length indexed vectors:
+
 > vappend :: Vec m x -> Vec n x -> Vec (m :+ n) x
 > vappend  V0         ys  =  ys
 > vappend  (x :> xs)  ys  =  x :> vappend xs ys
@@ -379,10 +389,14 @@ Explicit to implicit:
 \begin{frame}
 \frametitle{Proof objects}
 
+The result of comparing two natural numbers:
+
 > data CmpBase :: Nat -> Nat -> * where
 >   LTNatBase  :: Natty z  ->  CmpBase m (m :+ S z)
 >   EQNatBase  ::              CmpBase m m
 >   GTNatBase  :: Natty z  ->  CmpBase (n :+ S z) n
+
+A comparison function:
 
 > cmpBase :: Natty m -> Natty n -> CmpBase m n
 > cmpBase Zy      Zy      = EQNatBase
@@ -413,6 +427,12 @@ trimming as necessary:
 
 \begin{frame}
 \frametitle{Boxes}
+
+\begin{itemize}
+\item Boxes are size-indexed rectangular tilings.
+\item A box |b| with content of size-indexed type |p| and size |wh| has type
+|Box p wh|.
+\end{itemize}
 
 > data Box :: ((Nat, Nat) -> *) -> (Nat, Nat) -> * where
 >   Stuff  ::  p wh -> Box p wh
@@ -472,14 +492,15 @@ Non-separating conjunction:
 \end{frame}
 
 \begin{frame}
-\frametitle{Juxtaposition}
+\frametitle{Horizontal juxtaposition}
+
+Place two boxes side-by-side:
 
 > juxHPain :: Size (Pair w1 h1) -> Size (Pair w2 h2) ->
->               Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
->                 Box p (Pair (w1 :+ w2) (Max h1 h2))
-
+>               Box p (Pair w1 h1) -> Box p (Pair w2 h2) -> Box p (Pair (w1 :+ w2) (Max h1 h2))
+>
 > type Size = Natty :**: Natty
-
+>
 > type family Max (m :: Nat) (n :: Nat) :: Nat
 > type instance Max  Z      n      = n
 > type instance Max  (S m)  Z      = S m
@@ -488,7 +509,7 @@ Non-separating conjunction:
 \end{frame}
 
 \begin{frame}
-\frametitle{Juxtaposition (broken)}
+\frametitle{Horizontal Juxtaposition (broken)}
 
 < juxH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 <   case cmp h1 h2 of
@@ -604,16 +625,15 @@ Add more type equations:
 \frametitle{Pleasure}
 
 > juxH ::  Size (Pair w1 h1) -> Size (Pair w2 h2) ->
->           Box p (Pair w1 h1) -> Box p (Pair w2 h2) ->
->             Box p (Pair (w1 :+ w2) (Max h1 h2))
+>   Box p (Pair w1 h1) -> Box p (Pair w2 h2) -> Box p (Pair (w1 :+ w2) (Max h1 h2))
 > juxH (w1 :&&: h1) (w2 :&&: h2) b1 b2 =
 >   case cmp h1 h2 of
 >     LTNat z  -> Hor w1 (Ver h1 b1 (Sy z) Clear) w2 b2
 >     EQNat    -> Hor w1 b1 w2 b2
 >     GTNat z  -> Hor w1 b1 w2 (Ver h2 b2 (Sy z) Clear)
 
-The required properties of maximum are available as type equations in
-the proof object.
+The required properties of maximum are now available as type equations
+in the proof object.
 
 \end{frame}
 
