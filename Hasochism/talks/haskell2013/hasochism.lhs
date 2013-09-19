@@ -100,11 +100,11 @@
 \usepackage{xspace}
 \usepackage{url}
 \usepackage{hyperref}
+\usepackage{tikz}
 
 \usetheme{Frankfurt}
 
 
-%% \usepackage{tikz}
 %% \usetikzlibrary{arrows}
 
 %% \usepackage{amsmath}
@@ -165,9 +165,35 @@
 
 %endif
 
+%% \begin{frame}
+
+%% \frametitle{Milner's coincidences}
+%% \[\begin{array}{l||r@@{\quad}l}
+%% \textrm{syntactic category}  & \textbf{terms}      &     \textbf{types} \\
+%%                              &        \mid~~       & \quad\mid \\
+%% \textrm{phase distinction}   & \textbf{dynamic}    &    \textbf{static} \\
+%%                              &        \mid~~       & \quad\mid \\
+%% \textrm{inference}           & \textbf{explicit}   &  \textbf{implicit} \\
+%%                              &        \mid~~       & \quad\mid \\
+%% \textrm{abstraction}         & \textbf{simple}     & \textbf{dependent} \\
+%% \end{array}\]
+
+%% \end{frame}
 
 \begin{frame}
-\frametitle{Data type promotion}
+\frametitle{This talk}
+
+\begin{itemize}
+\item Four different universal quantifiers for dependently typed
+  Haskell programming.
+\item Avoiding explicit proofs by squirreling extra type equations
+  into proof objects.
+\item Existentials for encapsulating dependent types.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Data type promotion (|forall ((n :: Nat)).|)}
 
 %format :+ = "\mathbin{\mbox{$:\!\!+$}}"
 %format vappend = "\F{vappend}"
@@ -200,7 +226,7 @@ Appending length indexed vectors:
 
 
 \begin{frame}
-\frametitle{Singletons}
+\frametitle{Singletons (|forall n. Natty n ->|)}
 
 %format vchop = "\F{vchop}"
 
@@ -228,7 +254,7 @@ If we pass in a |Natty m|, then we can compute over it at run time:
 \end{frame}
 
 \begin{frame}
-\frametitle{Proxies}
+\frametitle{Proxies (|forall ((n :: Nat)). Proxy n ->|)}
 
 %format vtake = "\F{vtake}"
 
@@ -238,7 +264,7 @@ Compute the first component of |vchop|:
 < vtake Zy      xs         =  V0
 < vtake (Sy m)  (x :> xs)  =  x :> vtake m xs
 
-Doesn't type check because GHC does not know how to instantiate |n| in
+Doesn't type check because GHC doesn't know how to instantiate |n| in
 the recursive call.
 
 %format kappa = "\kappa"
@@ -264,7 +290,7 @@ Generate a proxy from existing data:
 \end{frame}
 
 \begin{frame}
-\frametitle{Implicit singletons}
+\frametitle{Implicit singletons (|forall n. NATTY n =>|)}
 
 %format read = "\F{read}"
 
@@ -307,13 +333,13 @@ the result type:
 
 
 \begin{frame}
-\frametitle{Four kinds of quantifier}
+\frametitle{Four kinds of universal quantifier}
 
 \[
 \begin{array}{r||cc}
                  & \textbf{implicit}      & \textbf{explicit} \\
 \hline
-\textbf{static}  & |forall ((n :: Nat)).| & |forall ((n :: Nat)). Proxy n ->| \\
+\textbf{static}  & |forall ((n :: Nat))|  & |forall ((n :: Nat)). Proxy n ->| \\
 \textbf{dynamic} & |forall n. NATTY n =>| & |forall n. Natty n ->| \\
 \end{array}
 \]
@@ -491,7 +517,44 @@ Non-separating conjunction:
 
 \end{frame}
 
-\begin{frame}
+% \usetikzlibrary{shapes.misc}
+\usetikzlibrary{positioning}
+
+\tikzset{stuff/.style={
+% The shape:
+rectangle,
+minimum size=10mm,
+% The rest
+draw=black,
+top color=white,bottom color=red!100,
+font=\huge}}
+
+\tikzset{stuff2/.style={
+% The shape:
+rectangle,
+minimum size=22mm,
+% The rest
+draw=black,
+top color=white,bottom color=blue!100,
+font=\huge}}
+
+\tikzset{blank/.style={
+% The shape:
+rectangle,
+minimum size=10mm,
+% The rest
+draw=black}}
+
+\tikzset{op/.style={
+% The shape:
+rectangle,
+minimum size=5mm,
+% The rest
+draw=white,
+font=\huge}}
+
+
+\begin{frame}[fragile]
 \frametitle{Horizontal juxtaposition}
 
 Place two boxes side-by-side:
@@ -505,6 +568,17 @@ Place two boxes side-by-side:
 > type instance Max  Z      n      = n
 > type instance Max  (S m)  Z      = S m
 > type instance Max  (S m)  (S n)  = S (Max m n)
+
+\begin{tikzpicture}[node distance=2mm and 2mm]
+  \node (z0) [blank, draw=white] {~};
+  \node (a0) [stuff, below=of z0] {~}; 
+  \node (plus) [op, draw=white, right=of a0, yshift=6mm] {+};
+  \node (b0) [stuff2, right=of plus] {~};
+  \node (equals) [op, draw=white, right=of b0] {=};
+  \node (z) [blank, right=of equals, yshift=6mm] {~};
+  \node (a) [stuff, below=of z] {~}; 
+  \node (b) [stuff2, right=of a, yshift=6mm] {~};
+\end{tikzpicture}
 
 \end{frame}
 
@@ -591,15 +665,15 @@ component boxes.
 \begin{frame}
 \frametitle{Type equations for free}
 
-%\only<1>{
+% \only<1>{
 
 > data CmpBaseR :: Nat -> Nat -> * where
 >   LTNatBaseR  :: Natty z  ->  CmpBaseR m (m :+ S z)
 >   EQNatBaseR  ::              CmpBaseR m m
 >   GTNatBaseR  :: Natty z  ->  CmpBaseR (n :+ S z) n
 
-%}
-%\only<2>{
+% }
+% \only<2>{
 
 Make GADT type equations explicit:
 
@@ -608,8 +682,8 @@ Make GADT type equations explicit:
 >   EQNatEx :: (m ~ n)           =>             CmpEx m n
 >   GTNatEx :: (m ~ (n :+ S z))  => Natty z ->  CmpEx m n
 
-%}
-%\only<3->{
+% }
+% \only<3->{
 
 Add more type equations:
 
@@ -618,7 +692,7 @@ Add more type equations:
 >   EQNatMax :: (m ~ n,           Max m n ~ m)  =>             CmpMax m n
 >   GTNatMax :: (m ~ (n :+ S z),  Max m n ~ m)  => Natty z ->  CmpMax m n
 
-%}
+% }
 \end{frame}
 
 \begin{frame}
@@ -644,9 +718,75 @@ in the proof object.
 \item Can add extra type equations to |Cmp| by hand.
 \item Seems difficult to be more modular without higher-order
   constraints.
-\item Works for other equations concerning properties of functions
-  such as subtraction that are defined inductively on the structure of
-  natural numbers.
+\item Works for equations on other functions defined inductively on
+  the structure of natural numbers (e.g. subtraction).
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Existentials}
+
+> data Ex (p :: kappa -> *) where
+>   Ex :: p i -> Ex p
+
+A `wrapped |Nat|' is a |Natty| singleton for any type-level number.
+
+> type WNat = Ex Natty
+
+Translating a |Nat| to its wrapped version:
+
+> wrapNat :: Nat -> WNat
+> wrapNat  Z      =  Ex Zy
+> wrapNat  (S m)  =  case wrapNat m of Ex n -> Ex (Sy n)
+
+\begin{itemize}
+\item Now we can take a plain natural number at run-time and use it in
+  code that expects a |Natty|.
+
+\item Particularly useful for interfacing with library code which uses
+  plain natural numbers.
+%% (e.g. we interface our boxes library with curses to implement a
+%%   screen editor).
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Other stuff}
+
+In the paper:
+
+\begin{itemize}
+\item Philosophy.
+
+\item An implementation of merge sort that guarantees the ordering
+  invariant for its output in which the proofs are silent.
+
+\item More on boxes:
+  \begin{itemize}
+  \item  cropping
+  \item  monoidal structure of boxes
+  \item  a screen editor using boxes
+  \end{itemize}
+\end{itemize}
+
+Literate Haskell code at:
+
+\url{https://github.com/slindley/dependent-haskell/tree/master/Hasochism}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusion}
+
+\begin{itemize}
+\item Dependently-typed programming in Haskell is already feasible.
+\item The proliferation of representations of the same data type
+  (|Nat|, |Natty|, |NATTY|, and |WNat|) is painful.
+\item We might alleviate some pain by providing more uniform support
+  for different kinds of universal quantifier and allowing each type
+  to be used unduplicated wherever meaningful.
 \end{itemize}
 
 \end{frame}
